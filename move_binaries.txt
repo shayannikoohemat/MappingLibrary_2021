@@ -1,0 +1,16 @@
+### Ville Lehtola 2019
+# Linux commands separating the contents of Mapping library to a binary zip file and git repository, see below.
+# The commands have been run already, this file is only a history log of what has been done.
+# The leftovers directory is zipped.
+# The git repository is called mapping-library-source .
+###
+rsync -rv --include '*/' --include '*.a' --exclude '*' --prune-empty-dirs ./ ../leftovers/
+rsync -rv --include '*/' --include '*.laser' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.exe' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.pts' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.bin' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.gz' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.objpts' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.top' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+rsync -rv --include '*/' --include '*.pdf' --exclude '*' --prune-empty-dirs --remove-source-files ./ ../leftovers/
+

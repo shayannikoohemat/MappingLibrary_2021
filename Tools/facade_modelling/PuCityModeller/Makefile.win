@@ -1,0 +1,119 @@
+
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+# Project: City
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = City_private.rc
+OBJ  = src/SplitLine.o src/BackGround.o src/DataAppearance.o src/DataAppearWin.o src/EditLine.o src/ExtensionLine.o src/FittingParWin.o src/main.o src/CityCanvas.o src/CityData.o src/CityWindow.o src/City.o src/QGLCanvas.o src/SegmentLaserData.o src/SelectionBox.o src/TerrestrialParWin.o src/Terrestrial.o src/SegmentParWin.o src/Preprocessing.o src/Convexhull.o src/Outline.o src/Fill.o src/RoofExtrusion.o$(RES)
+LINKOBJ  = src/SplitLine.o src/BackGround.o src/DataAppearance.o src/DataAppearWin.o src/EditLine.o src/ExtensionLine.o src/FittingParWin.o src/main.o src/CityCanvas.o src/CityData.o src/CityWindow.o src/City.o src/QGLCanvas.o src/SegmentLaserData.o src/SelectionBox.o src/TerrestrialParWin.o src/Terrestrial.o src/SegmentParWin.o src/Preprocessing.o src/Convexhull.o src/Outline.o src/Fill.o src/RoofExtrusion.o$(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = City.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before City.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "City.exe" $(LIBS)
+
+src/SplitLine.o: src/SplitLine.cc
+	$(CPP) -c src/SplitLine.cc -o src/SplitLine.o $(CXXFLAGS)
+
+src/BackGround.o: src/BackGround.cc
+	$(CPP) -c src/BackGround.cc -o src/BackGround.o $(CXXFLAGS)
+
+src/DataAppearance.o: src/DataAppearance.cc
+	$(CPP) -c src/DataAppearance.cc -o src/DataAppearance.o $(CXXFLAGS)
+
+src/DataAppearWin.o: src/DataAppearWin.cc
+	$(CPP) -c src/DataAppearWin.cc -o src/DataAppearWin.o $(CXXFLAGS)
+
+src/EditLine.o: src/EditLine.cc
+	$(CPP) -c src/EditLine.cc -o src/EditLine.o $(CXXFLAGS)
+
+src/ExtensionLine.o: src/ExtensionLine.cc
+	$(CPP) -c src/ExtensionLine.cc -o src/ExtensionLine.o $(CXXFLAGS)
+
+src/FittingParWin.o: src/FittingParWin.cc
+	$(CPP) -c src/FittingParWin.cc -o src/FittingParWin.o $(CXXFLAGS)
+
+src/main.o: src/main.cc
+	$(CPP) -c src/main.cc -o src/main.o $(CXXFLAGS)
+
+src/CityCanvas.o: src/CityCanvas.cc
+	$(CPP) -c src/CityCanvas.cc -o src/CityCanvas.o $(CXXFLAGS)
+
+src/CityData.o: src/CityData.cc
+	$(CPP) -c src/CityData.cc -o src/CityData.o $(CXXFLAGS)
+
+src/CityWindow.o: src/CityWindow.cc
+	$(CPP) -c src/CityWindow.cc -o src/CityWindow.o $(CXXFLAGS)
+
+src/City.o: src/City.cc
+	$(CPP) -c src/City.cc -o src/City.o $(CXXFLAGS)
+
+src/QGLCanvas.o: src/QGLCanvas.cc
+	$(CPP) -c src/QGLCanvas.cc -o src/QGLCanvas.o $(CXXFLAGS)
+
+src/SegmentLaserData.o: src/SegmentLaserData.cc
+	$(CPP) -c src/SegmentLaserData.cc -o src/SegmentLaserData.o $(CXXFLAGS)
+
+src/SelectionBox.o: src/SelectionBox.cc
+	$(CPP) -c src/SelectionBox.cc -o src/SelectionBox.o $(CXXFLAGS)
+
+src/TerrestrialParWin.o: src/TerrestrialParWin.cc
+	$(CPP) -c src/TerrestrialParWin.cc -o src/TerrestrialParWin.o $(CXXFLAGS)
+
+src/Terrestrial.o: src/Terrestrial.cc
+	$(CPP) -c src/Terrestrial.cc -o src/Terrestrial.o $(CXXFLAGS)
+
+src/SegmentParWin.o: src/SegmentParWin.cc
+	$(CPP) -c src/SegmentParWin.cc -o src/SegmentParWin.o $(CXXFLAGS)
+
+src/Preprocessing.o: src/Preprocessing.cc
+	$(CPP) -c src/Preprocessing.cc -o src/Preprocessing.o $(CXXFLAGS)
+
+src/Convexhull.o: src/Convexhull.cc
+	$(CPP) -c src/Convexhull.cc -o src/Convexhull.o $(CXXFLAGS)
+
+src/Outline.o: src/Outline.cc
+	$(CPP) -c src/Outline.cc -o src/Outline.o $(CXXFLAGS)
+
+src/Fill.o: src/Fill.cc
+	$(CPP) -c src/Fill.cc -o src/Fill.o $(CXXFLAGS)
+
+src/RoofExtrusion.o: src/RoofExtrusion.cc
+	$(CPP) -c src/Fill.cc -o src/Fill.o $(CXXFLAGS)

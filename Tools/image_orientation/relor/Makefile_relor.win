@@ -1,0 +1,33 @@
+# Project: relor
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = relor.o relor_c.o $(RES)
+LINKOBJ  = relor.o relor_c.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS =  -I"../../../Library/Photogrammetry/include"
+CXXINCS =  $(INCS)
+BIN  = ../../bin/relor.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/relor.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\relor.exe" $(LIBS)
+
+relor.o: relor.cpp
+	$(CPP) -c relor.cpp -o relor.o $(CXXFLAGS)
+
+relor_c.o: relor_c.c
+	$(CC) -c relor_c.c -o relor_c.o $(CFLAGS)

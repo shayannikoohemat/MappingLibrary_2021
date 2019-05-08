@@ -1,0 +1,33 @@
+# Project: viff2vrml
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o viff2vrml.o $(RES)
+LINKOBJ  = main.o viff2vrml.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include" 
+CXXINCS = $(INCS)
+BIN  = ../../bin/viff2vrml.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/viff2vrml.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\viff2vrml.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+viff2vrml.o: viff2vrml.cc
+	$(CPP) -c viff2vrml.cc -o viff2vrml.o $(CXXFLAGS)

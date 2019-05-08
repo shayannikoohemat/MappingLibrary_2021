@@ -1,0 +1,38 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C abs2ext -f Makefile_abs2ext.win
+	$(MAKE) -C absor -f Makefile_absor.win
+	$(MAKE) -C ext2abs -f Makefile_ext2abs.win
+	$(MAKE) -C extor -f Makefile_extor.win
+	$(MAKE) -C intor -f Makefile_intor.win
+	$(MAKE) -C relor -f Makefile_relor.win
+
+clean:
+	$(MAKE) -C abs2ext -f Makefile_abs2ext.win clean
+	$(MAKE) -C absor -f Makefile_absor.win clean
+	$(MAKE) -C ext2abs -f Makefile_ext2abs.win clean
+	$(MAKE) -C extor -f Makefile_extor.win clean
+	$(MAKE) -C intor -f Makefile_intor.win clean
+	$(MAKE) -C relor -f Makefile_relor.win clean

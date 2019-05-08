@@ -1,0 +1,42 @@
+# Project: ChangeResidual
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__ -Wno-deprecated-declarations
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o CompareDatasets.o ReCalculate.o Histograme.o Stastic.o $(RES)
+LINKOBJ  = main.o CompareDatasets.o ReCalculate.o Histograme.o Stastic.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -L $(OPENCV_LIB_DIR) -lopencv_highgui244 -lopencv_core244 -lopencv_imgproc244 -lgfortran
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Foreign/OpenCV/OpenCV-2.4.4/include/opencv" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\core\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\imgproc\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\video\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\features2d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\flann\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\calib3d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\objdetect\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\legacy\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\highgui\include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/ChangeResidual.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/ChangeResidual.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\ChangeResidual.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+CompareDatasets.o: CompareDatasets.cc
+	$(CPP) -c CompareDatasets.cc -o CompareDatasets.o $(CXXFLAGS)
+
+ReCalculate.o: ReCalculate.cc
+	$(CPP) -c ReCalculate.cc -o ReCalculate.o $(CXXFLAGS)
+
+Histograme.o: Histograme.cc
+	$(CPP) -c Histograme.cc -o Histograme.o $(CXXFLAGS)
+
+Stastic.o: Stastic.cc
+	$(CPP) -c Stastic.cc -o Stastic.o $(CXXFLAGS)

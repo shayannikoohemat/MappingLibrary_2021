@@ -1,0 +1,33 @@
+# Project: modeldrivenhypo
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o modeldrivenhypo.o $(RES)
+LINKOBJ  = main.o modeldrivenhypo.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -lBuildings -llas -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Library/Buildings/include" 
+CXXINCS = $(INCS)
+BIN  = ../../bin/modeldrivenhypo.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/modeldrivenhypo.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\modeldrivenhypo.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+modeldrivenhypo.o: modeldrivenhypo.cc
+	$(CPP) -c modeldrivenhypo.cc -o modeldrivenhypo.o $(CXXFLAGS)

@@ -1,0 +1,45 @@
+#############################################################################
+# Makefile for building: laservoxel_lx
+#############################################################################
+
+####### Compiler, tools and options
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o
+LINKOBJ  = main.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -lgfortran  -g3 
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I../../../Library/Buildings/include -I../../../Foreign/ENLSIP -I../../../Foreign/newmat -I../../../Foreign/ANN/include/ANN
+CXXINCS = $(INCS)
+BIN  = ../../bin/AHN2_normalize_heights.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+
+OBJECTS_DIR   = obj/
+
+####### Files
+SOURCES       = main.cpp
+OBJECTS       = main.o
+TARGET        = ../../bin/AHN2_normalize_heights.exe
+
+
+first: all
+####### Implicit rules
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/AHN2_normalize_heights.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\AHN2_normalize_heights.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)

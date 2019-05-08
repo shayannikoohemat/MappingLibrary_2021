@@ -1,0 +1,33 @@
+# Project: abs2ext
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = abs2ext.o abs2ext_c.o $(RES)
+LINKOBJ  = abs2ext.o abs2ext_c.o $(RES)
+LIBS =  -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS =  -I"../../../Library/Photogrammetry/include"
+CXXINCS =  $(INCS)
+BIN  = ../../bin/abs2ext.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/abs2ext.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\abs2ext.exe" $(LIBS)
+
+abs2ext.o: abs2ext.cpp
+	$(CPP) -c abs2ext.cpp -o abs2ext.o $(CXXFLAGS)
+
+abs2ext_c.o: abs2ext_c.c
+	$(CC) -c abs2ext_c.c -o abs2ext_c.o $(CFLAGS)

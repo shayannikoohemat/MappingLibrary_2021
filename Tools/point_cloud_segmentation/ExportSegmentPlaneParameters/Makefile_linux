@@ -1,0 +1,68 @@
+#############################################################################
+# Makefile for building: laservoxel_lx
+#############################################################################
+
+####### Compiler, tools and options
+
+CC            = gcc
+CXX           = g++
+DEFINES       = -DSTANDALONE
+CFLAGS        = -pipe -g -Wall -W -D_REENTRANT $(DEFINES)
+CXXFLAGS      = -pipe -g -Wno-deprecated -Wall -W -D_REENTRANT $(DEFINES)
+INCPATH       = -I. -Iinclude -I../3dlinematch/include -I/home/gerke/opencv2/include/opencv -I../../../Library/LaserScan/include -I../../../Library/Photogrammetry/include -I../../../Library/Buildings/include -I../../../Foreign/ENLSIP -I../../../Foreign/newmat -I../../../Foreign/ANN/include/ANN -I../../../Foreign/NR/utils -I/usr/local/gcc342/include -I/usr/local/include 
+LINK          = g++
+LFLAGS        = -Wl
+LIBS          = -L/home/gerke/Mapping/Library/lib -lBuildings_lx -lLaserScan_lx -lPhotogrammetry_lx  -lNR_lx -lEispack_lx -lLinpack_lx -lnewmat_lx -lANN_lx -lENLSIP_lx -lg2c 
+RM = rm -f
+####### Output directory
+
+#OBJECTS_DIR   = obj/
+
+####### Files
+SOURCES       = main.cpp 
+OBJECTS       = main.o
+TARGET        = ../../bin/ExportSegmentPlaneParameters
+
+
+first: all
+####### Implicit rules
+.PHONY: all all-before all-after clean clean-custom
+
+.SUFFIXES: .c .o .cpp .cc .cxx .C
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.C.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
+
+####### Build rules
+#clean: 
+#	$(RM) $(OBJECTS) $(TARGET) *~ core *.core
+all: Makefile_linux $(TARGET)
+
+$(TARGET):  $(OBJECTS)  
+	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
+
+####### Compile
+
+obj/main.o: main.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+####### Install
+
+install:   FORCE
+
+uninstall:   FORCE
+
+FORCE:
+

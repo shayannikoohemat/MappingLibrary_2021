@@ -1,0 +1,33 @@
+# Project: ext2abs
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = ext2abs.o ext2abs_c.o $(RES)
+LINKOBJ  = ext2abs.o ext2abs_c.o $(RES)
+LIBS =  -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS =  -I"../../../Library/Photogrammetry/include"
+CXXINCS =  $(INCS)
+BIN  = ../../bin/ext2abs.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/ext2abs.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\ext2abs.exe" $(LIBS)
+
+ext2abs.o: ext2abs.cpp
+	$(CPP) -c ext2abs.cpp -o ext2abs.o $(CXXFLAGS)
+
+ext2abs_c.o: ext2abs_c.c
+	$(CC) -c ext2abs_c.c -o ext2abs_c.o $(CFLAGS)

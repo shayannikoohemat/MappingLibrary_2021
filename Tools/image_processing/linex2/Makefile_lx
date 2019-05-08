@@ -1,0 +1,67 @@
+
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+
+# Project: linex2
+# Makefile created by Dev-C++ 4.9.9.2
+
+GCCDIR = /usr/local/gcc342
+CPP  = $(GCCDIR)/bin/g++
+CC  = $(GCCDIR)/bin/gcc
+WINDRES = windres.exe
+RES  = 
+#OBJ  = main.o ../linex/llinex.o ../linex/foerstner.o ../linex/linegrow.o ../linex/burns.o $(RES)
+#LINKOBJ  = main.o ../linex/llinex.o ../linex/foerstner.o ../linex/linegrow.o ../linex/burns.o $(RES)
+OBJ  = main.o 
+LINKOBJ  = main.o 
+LIBS =  -L"lib" -L/usr/local/lib -lhighgui -lcv -lcxcore -lcvaux -L"../../../Library/lib" -llinex_lx -lLaserScan_lx -lPhotogrammetry_lx  -lNR_lx -lEispack_lx -lLinpack_lx -lANN_lx -lnewmat_lx -lg2c   -g3 
+INCS =  -I"include"  -I/usr/local/include/opencv -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Foreign/NR/utils" 
+CXXINCS =  -I$(GCCDIR)/include -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Foreign/NR/utils"  -I/usr/local/include/opencv
+BIN  = ../../bin/linex2_lx
+CXXFLAGS = $(CXXINCS)   -traditional-cpp -g3
+CFLAGS = $(INCS)   -traditional-cpp -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/linex2_lx all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "../../bin/linex2_lx" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+#../linex/llinex.o: ../linex/llinex.c
+#	$(CPP) -c ../linex/llinex.c -o ../linex/llinex.o $(CXXFLAGS)
+#
+#../linex/foerstner.o: ../linex/foerstner.c
+#	$(CPP) -c ../linex/foerstner.c -o ../linex/foerstner.o $(CXXFLAGS)
+#
+#../linex/linegrow.o: ../linex/linegrow.c
+#	$(CPP) -c ../linex/linegrow.c -o ../linex/linegrow.o $(CXXFLAGS)

@@ -1,0 +1,36 @@
+# Project: rectpts
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = rectpts.o rectpts_c.o lrectpts.o $(RES)
+LINKOBJ  = rectpts.o rectpts_c.o lrectpts.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS = -I"../../../Library/Photogrammetry/include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/rectpts.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/rectpts.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\rectpts.exe" $(LIBS)
+
+rectpts.o: rectpts.cpp
+	$(CPP) -c rectpts.cpp -o rectpts.o $(CXXFLAGS)
+
+rectpts_c.o: rectpts_c.c
+	$(CC) -c rectpts_c.c -o rectpts_c.o $(CFLAGS)
+
+lrectpts.o: lrectpts.c
+	$(CC) -c lrectpts.c -o lrectpts.o $(CFLAGS)

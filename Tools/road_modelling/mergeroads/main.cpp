@@ -1,0 +1,71 @@
+
+/*
+    Copyright 2010 University of Twente and Delft University of Technology
+ 
+       This file is part of the Mapping libraries and tools, developed
+  for research, education and projects in photogrammetry and laser scanning.
+
+  The Mapping libraries and tools are free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the License,
+                   or (at your option) any later version.
+
+ The Mapping libraries and tools are distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+          along with the Mapping libraries and tools.  If not, see
+                      <http://www.gnu.org/licenses/>.
+
+----------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------
+
+Merge road polygons belonging to one road
+
+------------------------------------------------------------*/
+
+#include <cstdlib>
+#include <iostream>
+#include <stdio.h>
+#include "InlineArguments.h"
+
+using namespace std;
+
+void PrintUsage()
+{
+  printf("Usage: MergeRoads   -il <input laser points>\n");
+  printf("                    -ip <input map points (Original 3D object points (with height = 0)>\n");
+  printf("                    -it <input map topology (Original map topology)>\n");
+  printf("                    -op <output points (3D object points)>\n");
+  printf("                    -ot <output topology>\n");
+  printf("                    -ol <output 'laser' file>\n");
+//  printf("                   [-ms <minimum size seed polygon (double, def: 100.0)>]\n");
+}
+
+int main(int argc, char *argv[])
+{
+  InlineArguments *args = new InlineArguments(argc, argv);
+
+  void ConnectRoads(char *, char *, char *, char *, char *, char *);//, double);
+  if (args->Contains("-usage") ||
+      !args->Contains("-il") ||
+      !args->Contains("-ip") ||
+      !args->Contains("-it") ||
+      !args->Contains("-op") ||
+      !args->Contains("-ot") ||// {
+      !args->Contains("-ol")) {
+    if (!args->Contains("-usage")) printf("Error: missing programme option.\n");
+    PrintUsage();
+    return EXIT_SUCCESS;
+  }
+
+  // Call the main function
+  ConnectRoads(args->String("-il"), args->String("-ip"), args->String("-it"),
+             args->String("-op"), args->String("-ot"), args->String("-ol"));//,
+   //          args->Double("-ms", 100.0));
+  return EXIT_SUCCESS;
+}

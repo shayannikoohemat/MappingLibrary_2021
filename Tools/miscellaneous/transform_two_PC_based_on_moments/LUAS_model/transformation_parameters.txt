@@ -1,0 +1,3 @@
+Global shift of center of gravity: X=632411.460, Y=5179289.192, Z=17.018
+rotation from local to global system  (point cloud need to be shifted first so that the center of gravity is at 0,0,0): -0.1536
+scale along the x-and y-axis of the coordinate system (from local to global); SX: 0.983, SY: 1.395

@@ -1,0 +1,29 @@
+# Project: 3DIndoor
+# Makefile created by Dev-C++ 5.4.0
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = 3DIndoor.o $(RES)
+LINKOBJ  = 3DIndoor.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lInferenceEngineLib -lBuildings -lLaserScan -lPhotogrammetry  -llas -lEispack -lLinpack -lANN -lnewmat -g3
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Library/Buildings/include" -I"../InferenceEngineLib"
+CXXINCS = $(INCS)
+BIN      = ../../bin/3DIndoor.exe
+CXXFLAGS = $(CXXINCS)  -Wfatal-errors -g3
+CFLAGS   = $(INCS)  -Wfatal-errors -g3
+RM       = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+3DIndoor.o: 3DIndoor.cpp
+	$(CPP) -c 3DIndoor.cpp -o 3DIndoor.o $(CXXFLAGS)

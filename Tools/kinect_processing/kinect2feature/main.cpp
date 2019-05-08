@@ -1,0 +1,72 @@
+
+/*
+    Copyright 2010 University of Twente and Delft University of Technology
+ 
+       This file is part of the Mapping libraries and tools, developed
+  for research, education and projects in photogrammetry and laser scanning.
+
+  The Mapping libraries and tools are free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the License,
+                   or (at your option) any later version.
+
+ The Mapping libraries and tools are distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+          along with the Mapping libraries and tools.  If not, see
+                      <http://www.gnu.org/licenses/>.
+
+----------------------------------------------------------------------------*/
+
+
+#include <cstdlib>
+#include <iostream>
+#include "InlineArguments.h"
+#include <stdio.h>
+using namespace std;
+
+/*-----------------------------------------------------------
+|
+|  Routine Name: main() - Conversion of kinect point clouds to features
+|
+|       Purpose: main program for kinect2feature
+|
+|         Input:
+|		char *clui_info->i_file; {Laser points}
+|		int   clui_info->i_flag; {TRUE if -i specified}
+|
+|		char *clui_info->o_file; {Object points}
+|		int   clui_info->o_flag; {TRUE if -o specified}
+|
+|        Output:
+|       Returns:
+|
+|    Written By: 
+|          Date: Jul 08, 1999
+| Modifications:
+|
+------------------------------------------------------------*/
+
+int main(int argc, char *argv[])
+{
+  InlineArguments *args = new InlineArguments(argc, argv);
+
+  void kinect2feature(char *, char *);
+  
+  if (args->Contains("-usage")) {
+     printf(" -ipc is ascii file of point cloud\n");
+    exit(0);
+  }
+                       
+  if (!args->Contains("-ipc")) {
+    printf("Error: -ipc is a required argument.\n");
+    exit(0);
+  }
+
+  kinect2feature(args->String("-ipc"), args->String("-ol"));
+
+  return EXIT_SUCCESS;
+}

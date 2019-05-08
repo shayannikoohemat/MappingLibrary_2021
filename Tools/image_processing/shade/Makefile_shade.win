@@ -1,0 +1,33 @@
+# Project: shade
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o ShadeImage.o $(RES)
+LINKOBJ  = main.o ShadeImage.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include" 
+CXXINCS = $(INCS)
+BIN  = ../../bin/shade.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/shade.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\shade.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+ShadeImage.o: ShadeImage.cc
+	$(CPP) -c ShadeImage.cc -o ShadeImage.o $(CXXFLAGS)

@@ -1,0 +1,33 @@
+# Project: matchgraphs
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D_DEBUG_ -D__DEBUG__
+CC   = gcc.exe -D_DEBUG_ -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o matchgraphs.o $(RES)
+LINKOBJ  = main.o matchgraphs.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include" 
+CXXINCS = $(INCS)
+BIN  = ../../bin/matchgraphs.exe
+CXXFLAGS = $(CXXINCS)   -g3 -g3
+CFLAGS = $(INCS)   -g3 -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/matchgraphs.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\matchgraphs.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+matchgraphs.o: matchgraphs.cc
+	$(CPP) -c matchgraphs.cc -o matchgraphs.o $(CXXFLAGS)

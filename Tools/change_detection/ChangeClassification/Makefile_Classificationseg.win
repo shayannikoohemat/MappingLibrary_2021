@@ -1,0 +1,51 @@
+# Project: Classification
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__ -Wdeprecated-declarations
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = obj/main.o obj/Classify.o obj/PResidual.o obj/DisToDTM.o obj/CheckContext.o obj/AverageEdgeLength.o obj/WaterClass.o obj/ConnComponent.o $(RES)
+LINKOBJ  = obj/main.o obj/Classify.o obj/PResidual.o obj/DisToDTM.o obj/CheckContext.o obj/AverageEdgeLength.o obj/WaterClass.o obj/ConnComponent.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -L $(OPENCV_LIB_DIR) -lopencv_highgui244 -lopencv_core244 -lopencv_imgproc244 -lgfortran
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Foreign/OpenCV/OpenCV-2.4.4/include/opencv" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\core\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\imgproc\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\video\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\features2d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\flann\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\calib3d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\objdetect\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\legacy\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\highgui\include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/Classificationseg.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/Classificationseg.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\Classificationseg.exe" $(LIBS)
+
+obj/main.o: main.cpp
+	$(CPP) -c main.cpp -o obj/main.o $(CXXFLAGS)
+
+obj/Classify.o: Classify.cc
+	$(CPP) -c Classify.cc -o obj/Classify.o $(CXXFLAGS)
+
+obj/PResidual.o: PResidual.cc
+	$(CPP) -c PResidual.cc -o obj/PResidual.o $(CXXFLAGS)
+
+obj/DisToDTM.o: DisToDTM.cc
+	$(CPP) -c DisToDTM.cc -o obj/DisToDTM.o $(CXXFLAGS)
+
+obj/CheckContext.o: CheckContext.cc
+	$(CPP) -c CheckContext.cc -o obj/CheckContext.o $(CXXFLAGS)
+
+obj/AverageEdgeLength.o: AverageEdgeLength.cc
+	$(CPP) -c AverageEdgeLength.cc -o obj/AverageEdgeLength.o $(CXXFLAGS)
+
+obj/WaterClass.o: WaterClass.cc
+	$(CPP) -c WaterClass.cc -o obj/WaterClass.o $(CXXFLAGS)
+
+obj/ConnComponent.o: ConnComponent.cc
+	$(CPP) -c ConnComponent.cc -o obj/ConnComponent.o $(CXXFLAGS)

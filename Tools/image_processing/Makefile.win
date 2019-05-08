@@ -1,0 +1,48 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C colourdiff -f Makefile_colourdiff.win
+	$(MAKE) -C colourshade -f Makefile_colourshade.win
+	$(MAKE) -C convolve -f Makefile_convolve.win
+	$(MAKE) -C diffviff -f Makefile_diffviff.win
+	$(MAKE) -C gengauss -f Makefile_gengauss.win
+	$(MAKE) -C gradvec -f Makefile_gradvec.win
+	$(MAKE) -C linex -f Makefile_linex.win
+	$(MAKE) -C linex2 -f Makefile_linex2.win
+	$(MAKE) -C pointx -f Makefile_pointx.win
+	$(MAKE) -C rainbow -f Makefile_rainbow.win
+	$(MAKE) -C shade -f Makefile_shade.win
+
+clean:
+	$(MAKE) -C colourdiff -f Makefile_colourdiff.win clean
+	$(MAKE) -C colourshade -f Makefile_colourshade.win clean
+	$(MAKE) -C convolve -f Makefile_convolve.win clean
+	$(MAKE) -C diffviff -f Makefile_diffviff.win clean
+	$(MAKE) -C gengauss -f Makefile_gengauss.win clean
+	$(MAKE) -C gradvec -f Makefile_gradvec.win clean
+	$(MAKE) -C linex -f Makefile_linex.win clean
+	$(MAKE) -C linex2 -f Makefile_linex2.win clean
+	$(MAKE) -C pointx -f Makefile_pointx.win clean
+	$(MAKE) -C rainbow -f Makefile_rainbow.win clean
+	$(MAKE) -C shade -f Makefile_shade.win clean

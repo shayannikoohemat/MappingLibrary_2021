@@ -1,0 +1,17 @@
+# Ville Lehtola 2019
+# Here we list all files that we do NOT want to add into 
+# the Mapping library source repository.
+*.laser
+*.pts
+*.a
+*.bin
+*.exe
+*.gz
+*.objpts
+*.top
+*.pdf
+# Also, ignore images
+*.jpg
+*.png
+
+

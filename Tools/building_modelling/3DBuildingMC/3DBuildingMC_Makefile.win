@@ -1,0 +1,29 @@
+# Project: 3DBuildingMC
+# Makefile created by Dev-C++ 5.4.0
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = 3DBuildingMC.o $(RES)
+LINKOBJ  = 3DBuildingMC.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lInferenceEngineLib  -lBuildings -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -lgfortran  -L $(DEVCPP_DIR)/lib -lCGAL.dll -lgdal  -lboost_system-mgw47-mt-1_62 -lboost_thread-mgw47-mt-1_62 -lmpfr -lgmp -lws2_32 -g3
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Library/Buildings/include" -I"../InferenceEngineLib"
+CXXINCS = $(INCS)
+BIN      = ../../bin/3DBuildingMC.exe
+CXXFLAGS = $(CXXINCS)  -Wfatal-errors -g3
+CFLAGS   = $(INCS)  -Wfatal-errors -g3
+RM       = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+3DBuildingMC.o: 3DBuildingMC.cpp
+	$(CPP) -c 3DBuildingMC.cpp -o 3DBuildingMC.o $(CXXFLAGS)

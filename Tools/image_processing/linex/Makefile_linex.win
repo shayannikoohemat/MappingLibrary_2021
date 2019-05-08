@@ -1,0 +1,69 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+
+# Project: linex
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__ -Wno-deprecated-declarations
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o llinex.o linegrow.o foerstner.o burns_replacement.o $(RES)
+LINKOBJ  = main.o llinex.o linegrow.o foerstner.o burns_replacement.o $(RES)
+LIBLINKOBJ = llinex.o linegrow.o foerstner.o burns_replacement.o
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry -lEispack -lLinpack -lANN -lnewmat -L $(OPENCV_LIB_DIR) -lopencv_highgui244 -lopencv_core244 -lopencv_imgproc244 -lgfortran 
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Foreign/OpenCV/OpenCV-2.4.4/include/opencv" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\core\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\imgproc\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\video\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\features2d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\flann\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\calib3d\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\objdetect\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\legacy\include" -I "..\..\..\Foreign\OpenCV\OpenCV-2.4.4\modules\highgui\include"
+CXXINCS = $(INCS)
+ARCHIVE  = $(MAPPING_LIB_DIR)/liblinex.a
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+BIN  = ../../bin/linex.exe
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(ARCHIVE) $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN) $(ARCHIVE)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\linex.exe" $(LIBS)
+	
+$(ARCHIVE): $(LIBLINKOBJ)
+	ar r $(ARCHIVE) $(LIBLINKOBJ)
+	ranlib $(ARCHIVE)
+
+llinex.o: llinex.c
+	$(CC) -c llinex.c -o llinex.o $(CFLAGS)
+
+foerstner.o: foerstner.c
+	$(CC) -c foerstner.c -o foerstner.o $(CFLAGS)
+
+linegrow.o: linegrow.c
+	$(CC) -c linegrow.c -o linegrow.o $(CFLAGS)
+	
+burns_replacement.o: burns_replacement.c
+	$(CPP) -c burns_replacement.c -o burns_replacement.o $(CFLAGS)

@@ -1,0 +1,66 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C building_modelling -f Makefile.win
+	$(MAKE) -C change_detection -f Makefile.win
+	$(MAKE) -C coordinate_transform -f Makefile.win
+	$(MAKE) -C filtering -f Makefile.win
+	$(MAKE) -C image_conversion -f Makefile.win
+	$(MAKE) -C image_orientation -f Makefile.win
+	$(MAKE) -C image_processing -f Makefile.win
+	$(MAKE) -C landscape_modelling -f Makefile.win
+	$(MAKE) -C miscellaneous -f Makefile.win
+	$(MAKE) -C ortho_rectification -f Makefile.win
+	$(MAKE) -C point_cloud_classification -f Makefile.win
+	$(MAKE) -C point_cloud_conversion -f Makefile.win
+	$(MAKE) -C point_cloud_imaging -f Makefile.win
+	$(MAKE) -C point_cloud_information -f Makefile.win
+	$(MAKE) -C point_cloud_management -f Makefile.win
+	$(MAKE) -C point_cloud_segmentation -f Makefile.win
+	$(MAKE) -C quality_control -f Makefile.win
+	$(MAKE) -C rail_road_modelling -f Makefile.win
+	$(MAKE) -C road_modelling -f Makefile.win
+	$(MAKE) -C strip_processing -f Makefile.win
+
+clean:
+	$(MAKE) -C building_modelling -f Makefile.win clean
+	$(MAKE) -C change_detection -f Makefile.win clean
+	$(MAKE) -C coordinate_transform -f Makefile.win clean
+	$(MAKE) -C filtering -f Makefile.win clean
+	$(MAKE) -C image_conversion -f Makefile.win clean
+	$(MAKE) -C image_orientation -f Makefile.win clean
+	$(MAKE) -C image_processing -f Makefile.win clean
+	$(MAKE) -C landscape_modelling -f Makefile.win clean
+	$(MAKE) -C miscellaneous -f Makefile.win clean
+	$(MAKE) -C ortho_rectification -f Makefile.win clean
+	$(MAKE) -C point_cloud_classification -f Makefile.win clean
+	$(MAKE) -C point_cloud_conversion -f Makefile.win clean
+	$(MAKE) -C point_cloud_imaging -f Makefile.win clean
+	$(MAKE) -C point_cloud_information -f Makefile.win clean
+	$(MAKE) -C point_cloud_management -f Makefile.win clean
+	$(MAKE) -C point_cloud_segmentation -f Makefile.win clean
+	$(MAKE) -C quality_control -f Makefile.win clean
+	$(MAKE) -C rail_road_modelling -f Makefile.win clean
+	$(MAKE) -C road_modelling -f Makefile.win clean
+	$(MAKE) -C strip_processing -f Makefile.win clean

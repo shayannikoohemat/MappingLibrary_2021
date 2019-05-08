@@ -1,0 +1,32 @@
+/* XPM */
+static char *autorotate2_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"    20    20        5            1",
+/* colors */
+". c None",
+"# c #0000B0",
+"a c #00FF00",
+"b c #FFFF80",
+"c c #000000",
+/* pixels */
+"........ccccccccccc.",
+".......cccccccccccc.",
+".......ccaaaaaaaccc.",
+"......ccaaaaaaacccc.",
+"......ccaaaaaaccbcc.",
+".....ccaaaaaaccbbcc.",
+".....ccaaaaaccbbbcc.",
+"....ccaaaaaccbbbbcc.",
+"....ccaaaaccbbbbbcc.",
+"....ccaaaccbbbbbbcc.",
+"...ccaaaccbbbbbbbcc.",
+"...ccaaccbbbbbbbbcc.",
+"...ccaccbbbbbbbbbcc.",
+"..ccaccbbbbbbbbbbcc.",
+"..caccbbbbbbbbbbbcc.",
+".ccccbbbbbccccccccc.",
+".cccbcccccccccccccc.",
+".cccccccccc.........",
+"....................",
+"....................."
+};

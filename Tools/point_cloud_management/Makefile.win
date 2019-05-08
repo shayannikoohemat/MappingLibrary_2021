@@ -1,0 +1,58 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C block2strips -f Makefile_block2strips.win
+	$(MAKE) -C copytag -f Makefile_copytag.win
+	$(MAKE) -C createblock -f Makefile_createblock.win
+	$(MAKE) -C createpointset -f Makefile_createpointset.win
+	$(MAKE) -C createpyramid -f Makefile_createpyramid.win
+	$(MAKE) -C createtiles -f Makefile_createtiles.win
+	$(MAKE) -C mergepyramiddata -f Makefile_mergepyramiddata.win
+	$(MAKE) -C mergetilemetadata -f Makefile_mergetilemetadata.win
+	$(MAKE) -C removetag -f Makefile_removetag.win
+	$(MAKE) -C renametag -f Makefile_renametag.win
+	$(MAKE) -C selectpyramidpart -f Makefile_selectpyramidpart.win
+	$(MAKE) -C setname -f Makefile_setname.win
+	$(MAKE) -C settag -f Makefile_settag.win
+	$(MAKE) -C sortpoints -f Makefile_sortpoints.win
+	$(MAKE) -C sorttags -f Makefile_sorttags.win
+	$(MAKE) -C thinlaser -f Makefile_thinlaser.win
+
+clean:
+	$(MAKE) -C block2strips -f Makefile_block2strips.win clean
+	$(MAKE) -C copytag -f Makefile_copytag.win clean
+	$(MAKE) -C createblock -f Makefile_createblock.win clean
+	$(MAKE) -C createpointset -f Makefile_createpointset.win clean
+	$(MAKE) -C createpyramid -f Makefile_createpyramid.win clean
+	$(MAKE) -C createtiles -f Makefile_createtiles.win clean
+	$(MAKE) -C mergepyramiddata -f Makefile_mergepyramiddata.win clean
+	$(MAKE) -C mergetilemetadata -f Makefile_mergetilemetadata.win clean
+	$(MAKE) -C removetag -f Makefile_removetag.win clean
+	$(MAKE) -C renametag -f Makefile_renametag.win clean
+	$(MAKE) -C selectpyramidpart -f Makefile_selectpyramidpart.win clean
+	$(MAKE) -C setname -f Makefile_setname.win clean
+	$(MAKE) -C settag -f Makefile_settag.win clean clean
+	$(MAKE) -C sortpoints -f Makefile_sortpoints.win clean
+	$(MAKE) -C sorttags -f Makefile_sorttags.win
+	$(MAKE) -C thinlaser -f Makefile_thinlaser.win clean

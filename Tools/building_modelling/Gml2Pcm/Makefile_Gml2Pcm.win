@@ -1,0 +1,67 @@
+
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+# Project: Gml2Pcm
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__ -Dwindows
+CC   = gcc.exe -D__DEBUG__ -Dwindows
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o citymodel.o parser.o parserTinyXml.o tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o$(RES)
+LINKOBJ  = main.o citymodel.o parser.o parserTinyXml.o tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o$(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lLaserScan -lPhotogrammetry  -lEispack -lLinpack -lnewmat -lANN -lgfortran -lopengl32 -lglu32 -lgdi32 -luser32 -lmingw32 -g3 
+INCS = -I"../../../Library/Photogrammetry/include" -I"../../../Library/LaserScan/include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/Gml2Pcm.exe
+CXXFLAGS = $(CXXINCS)   -g3 -fpermissive
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/Gml2Pcm.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\Gml2Pcm.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+citymodel.o: citymodel.cpp
+	$(CPP) -c citymodel.cpp -o citymodel.o $(CXXFLAGS)
+parser.o: parser.cpp
+	$(CPP) -c parser.cpp -o parser.o $(CXXFLAGS)
+parserTinyXml.o: parserTinyXml.cpp
+	$(CPP) -c parserTinyXml.cpp -o parserTinyXml.o $(CXXFLAGS)
+tinystr.o: tinystr.cpp
+	$(CPP) -c tinystr.cpp -o tinystr.o $(CXXFLAGS)
+tinyxml.o: tinyxml.cpp
+	$(CPP) -c tinyxml.cpp -o tinyxml.o $(CXXFLAGS)
+tinyxmlerror.o: tinyxmlerror.cpp
+	$(CPP) -c tinyxmlerror.cpp -o tinyxmlerror.o $(CXXFLAGS)
+tinyxmlparser.o: tinyxmlparser.cpp
+	$(CPP) -c tinyxmlparser.cpp -o tinyxmlparser.o $(CXXFLAGS)

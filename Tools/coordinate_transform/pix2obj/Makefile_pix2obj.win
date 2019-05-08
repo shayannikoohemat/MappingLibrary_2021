@@ -1,0 +1,33 @@
+# Project: pix2obj
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = pix2obj.o pix2obj_c.o $(RES)
+LINKOBJ  = pix2obj.o pix2obj_c.o $(RES)
+LIBS =  -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS =  -I"../../../Library/Photogrammetry/include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/pix2obj.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/pix2obj.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\pix2obj.exe" $(LIBS)
+
+pix2obj.o: pix2obj.cpp
+	$(CPP) -c pix2obj.cpp -o pix2obj.o $(CXXFLAGS)
+
+pix2obj_c.o: pix2obj_c.c
+	$(CC) -c pix2obj_c.c -o pix2obj_c.o $(CFLAGS)

@@ -1,0 +1,40 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C countpoints -f Makefile_countpoints.win
+	$(MAKE) -C histolaser -f Makefile_histolaser.win
+	$(MAKE) -C laserbounds -f Makefile_laserbounds.win
+	$(MAKE) -C laserinfo -f Makefile_laserinfo.win
+	$(MAKE) -C listpointattributes -f Makefile_listpointattributes.win
+	$(MAKE) -C neighbours -f Makefile_neighbours.win
+	$(MAKE) -C pla -f Makefile_pla.win
+
+clean:
+	$(MAKE) -C countpoints -f Makefile_countpoints.win clean
+	$(MAKE) -C histolaser -f Makefile_histolaser.win clean
+	$(MAKE) -C laserbounds -f Makefile_laserbounds.win clean
+	$(MAKE) -C laserinfo -f Makefile_laserinfo.win clean
+	$(MAKE) -C listpointattributes -f Makefile_listpointattributes.win clean
+	$(MAKE) -C neighbours -f Makefile_neighbours.win clean
+	$(MAKE) -C pla -f Makefile_pla.win clean

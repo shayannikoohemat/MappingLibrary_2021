@@ -1,0 +1,36 @@
+# Project: rectpar
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = rectpar.o rectpar_c.o calc_rect_par.o $(RES)
+LINKOBJ  = rectpar.o rectpar_c.o calc_rect_par.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lPhotogrammetry  -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 
+INCS = -I"../../../Library/Photogrammetry/include"
+CXXINCS = $(INCS)
+BIN  = ../../bin/rectpar.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/rectpar.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\rectpar.exe" $(LIBS)
+
+rectpar.o: rectpar.cpp
+	$(CPP) -c rectpar.cpp -o rectpar.o $(CXXFLAGS)
+
+rectpar_c.o: rectpar_c.c
+	$(CC) -c rectpar_c.c -o rectpar_c.o $(CFLAGS)
+
+calc_rect_par.o: calc_rect_par.c
+	$(CC) -c calc_rect_par.c -o calc_rect_par.o $(CFLAGS)

@@ -1,0 +1,33 @@
+# Project: top3d_buildings
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D_DEBUG_
+CC   = gcc.exe -D_DEBUG_
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o Make3DBuildings.o $(RES)
+LINKOBJ  = main.o Make3DBuildings.o $(RES)
+LIBS = -L $(MAPPING_LIB_DIR) -lBuildings -lLaserScan -lPhotogrammetry -llas -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3
+INCS = -I"../../../Library/LaserScan/include"  -I"../../../Library/Photogrammetry/include"  -I"../../../Library/Buildings/include" 
+CXXINCS = $(INCS)
+BIN  = ../../bin/top3d_buildings.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../bin/top3d_buildings.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\..\bin\top3d_buildings.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+Make3DBuildings.o: Make3DBuildings.cpp
+	$(CPP) -c Make3DBuildings.cpp -o Make3DBuildings.o $(CXXFLAGS)

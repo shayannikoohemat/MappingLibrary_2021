@@ -1,0 +1,40 @@
+#
+#    Copyright 2010 University of Twente and Delft University of Technology
+# 
+#       This file is part of the Mapping libraries and tools, developed
+#  for research, education and projects in photogrammetry and laser scanning.
+#
+#  The Mapping libraries and tools are free software: you can redistribute it
+#    and/or modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of the License,
+#                   or (at your option) any later version.
+#
+# The Mapping libraries and tools are distributed in the hope that it will be
+#    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+#        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#                GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#          along with the Mapping libraries and tools.  If not, see
+#                      <http://www.gnu.org/licenses/>.
+#
+#----------------------------------------------------------------------------
+
+
+all:
+	$(MAKE) -C batch -f Makefile_batch.win
+	$(MAKE) -C createbatch -f Makefile_createbatch.win
+	$(MAKE) -C createroad -f Makefile_createroad.win
+	$(MAKE) -C mergeroads -f Makefile_mergeroads.win
+	$(MAKE) -C poleanalysis -f Makefile_poleanalysis.win
+	$(MAKE) -C poles -f Makefile_poles.win
+	$(MAKE) -C smooth3droads -f Makefile_smooth3droads.win
+
+clean:
+	$(MAKE) -C batch -f Makefile_batch.win clean
+	$(MAKE) -C createbatch -f Makefile_createbatch.win clean
+	$(MAKE) -C createroad -f Makefile_createroad.win clean
+	$(MAKE) -C mergeroads -f Makefile_mergeroads.win clean
+	$(MAKE) -C poleanalysis -f Makefile_poleanalysis.win clean
+	$(MAKE) -C poles -f Makefile_poles.win clean
+	$(MAKE) -C smooth3droads -f Makefile_smooth3droads.win clean
