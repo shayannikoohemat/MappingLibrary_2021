@@ -4,6 +4,8 @@
 *.laser
 *.pts
 *.a
+*.o
+*.dll
 *.bin
 *.exe
 *.gz
@@ -13,5 +15,26 @@
 # Also, ignore images
 *.jpg
 *.png
+
+#Shayan 2020
+#directories
+out/
+cmake-build-debug/
+/cmake-build-debug/
+data/
+images/
+.DS_Store
+DS_Store/
+.idea
+.idea/
+Debug/
+Release/
+Foreign/
+
+# log files
+*.log
+**/log
+log/
+
 
 
