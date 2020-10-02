@@ -134,7 +134,7 @@ Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true)`
 
 ##### B5. Generating Volumetric Files and OFF Format
 Technically if everything is fine with previous step, you can directly apply steps B5.1 and B5.2 
-directly on the output of the `extended_laserpoints()` which is the outptu of B4.
+directly on the output of the `extended_laserpoints()` which is the output of B4.
    > If you want to have separate OFF files at the end, after step4 separate walls, floors 
     and ceilings (using the labels) and proceed with step B5.
 ##### B5.1 Generate Volumetric Walls (3D boxes)
@@ -142,10 +142,16 @@ directly on the output of the `extended_laserpoints()` which is the outptu of B4
 The input of this function is the output of MergSurfaces() from utils
  tool OR from ModelingInteriorWalls() from previous step (B4).
 Run `Generate_offset_dist_map()` and `GenerateVolumetricWalls()` respectively. The 2nd function 
-needs the output of Generate_offset_dist_map(). 
-The input values for `Generate_offset_dist_map()` should be the expected wall thickness.
- Inputs divided by 2 will be offset_distance . The argument `fix_offset_dist` multiplied by 2 is the thickness
-  of the wall for walls without two sides.
+needs the output of Generate_offset_dist_map(). Important note here is the role of
+`Generate_offset_dist_map()`, it uses `wall thicknes` stored in `residual_tag` during 
+`mergesurface()`. So leave the `lower_wall_thickness` and `upper_wall_thickness` values as default=0, to use 
+calculated `wallthickness`. But if you want to normalize all the walls to a lower and upper
+thickness to force all the walls look the same then set here the two parameters which represent the min and
+max of wall thickness. 
+
+Similarly, walls without two sides, hence with a zero `wallthickness` attribute, can have an offset as wall thickness,
+then the argument `fix_offset_dist` for `GenerateVolumetricWalls()` multiplied by 2 is the thickness
+  of the wall for such cases.
   
   **outptus**
   

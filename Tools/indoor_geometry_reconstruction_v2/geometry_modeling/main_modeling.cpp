@@ -36,8 +36,8 @@ void PrintUsage()
     printf("      -ext_lpoints      [extended_laserpoints ] <if -MODEL_VolWall true, then define extended_walls as a laser file, ./extended_laserpoints.laser> \n");
     printf("      -wall_fl_cl       [input wall_fl_cl file] <if WALLS_Modeling true, then define the input laserfile containing walls, floors and ceilings, ./wfc.laser> \n");
     printf("      -max_extDist      [max extension dist] <if WALLS_Modeling true, then this threshold is used to extend the segments.> \n");
-    printf("      -lwth             [lower_wall_thickness] <if MODEL_VolWall is true, lower threshold for wall thickness, default 0.20> \n");
-    printf("      -uwth             [upper_wall_thickness] <if MODEL_VolWall is true, upper threshold for wall thickness, default 0.40> \n");
+    printf("      -lwth             [lower_wall_thickness] <if MODEL_VolWall is true, default 0 if residuals as wall thick is given in laserpoints, otherwise -lwth is used, default 0.20> \n");
+    printf("      -uwth             [upper_wall_thickness] <if MODEL_VolWall is true, default 0 if residuals as wall thick is given in laserpoints, otherwise -uwth is used, default 0.40> \n");
     printf("      -corners          [rectangles_vertices] <if MODEL_VolWall is true,then define corners.objpts as rectangles vertices> \n");
     printf("      -edges            [rectangles_edges] <if MODEL_VolWall is true,then define edges.top as rectangles edges> \n");
     printf("      -vertices         [3D boxes_vertices] <if MODEL2OFF is true,then define vertices.objpts as 3Dboxes vertices> \n");
@@ -210,8 +210,8 @@ int main(int argc, char *argv[]){
         /// this function uses the wall thickness stored in the residual attribute of the segments.
         /// if upper and lower values are set to 0 then the function expects the residual attribute of the segments as thickness.
         offset_dist_map = Generate_offset_dist_map (extended_wallflcl,
-                            args->Double("-lwth", 0.20), // 0.20 lower wall thickness
-                            args->Double("-uwth", 0.40)  // 0.40 upper wall thickness
+                            args->Double("-lwth", 0.0), // 0.20 lower wall thickness
+                            args->Double("-uwth", 0.0)  // 0.40 upper wall thickness
         );
 
         /// Generating 3D boxes from min rectangles
