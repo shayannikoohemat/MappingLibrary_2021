@@ -62,13 +62,16 @@ Buffers GenerateWallPatches(LaserPoints lp, double dist, double angle, double di
         char* root, bool verbose);
 
 /// this function is similar to GenerateWallPatches.cpp but faster and for any arbitrary surface
-void Mergesurfaces (const LaserPoints &segmented_lp, double max_dist_between_planes, double max_angle_between_normals,
-                    double max_dist, int min_segment_size, char *root, double max_second_dist_between_planes,
-                    bool calculate_middle_plane, bool calculate_weighted_plane,
-                    bool force_verticality, double verticality_angle_threshold,
-                    bool verbose);
+void Mergesurfaces (LaserPoints &segmented_lp,
+                    double max_dist_between_planes=0.5,
+                    double max_angle_between_normals=5.0, //degrees
+                    double max_dist=1.0, int min_segment_size=100,
+                    char *root= nullptr, double max_second_dist_between_planes=.80,
+                    bool calculate_middle_plane=true, bool calculate_weighted_plane=false,
+                    bool force_verticality=true, double verticality_angle_threshold=10,
+                    bool verbose=false);
 
-/// reshpae segments with strange shapes with calculating TIN. expensive function
+/// reshape segments with strange shapes with calculating TIN. expensive function
 LaserPoints segment_refinement(LaserPoints segmented_lp, int min_segment_size, double maxdistanceInComponent);
 
 /// not complete, not used, not correct
@@ -111,7 +114,7 @@ void LaserPoints_info (LaserPoints &segmented_laserpoints, int min_seg_size);
 /// the function is not tested
 int Trim_doubleTag (LaserPoints &laserpoints, LaserPointTag double_tag, double trim_value, char* ascii_out, bool add_value);
 
-/// trim time in ascii file, if add_value is true then instead of trim it add the value to the time
+/// trim time in ascii file, if add_value is true then instead of trim it adds the value to the time
 int Trim_doubleTag (const string &ascii_infile, int trim_column, double trim_value,
                     const string &ascii_outfile, bool add_value = false);
 

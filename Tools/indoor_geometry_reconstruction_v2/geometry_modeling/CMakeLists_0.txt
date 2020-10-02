@@ -10,4 +10,4 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #set(dir  "../../bin")
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${dir}) # to make a customized build directory
 
-add_subdirectory(./apps/extend2slabs)
+add_subdirectory(./extend2slabs)

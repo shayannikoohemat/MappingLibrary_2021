@@ -12,7 +12,7 @@ using namespace std;
 /// this is the -help note when calling the function in the command prompt
 void PrintUsage()
 {
-    printf("This function create an adjacency graph from segments and looks for permanent structures from ceilings to walls and floors\n");
+    printf("This function creates an adjacency graph from segments and looks for permanent structures from ceilings to walls and floors\n");
     printf("A permanent structure is wall, floor and ceiling.\n");
     printf("Outputs are in output.laser and also individually, e.g. wall.laser\n");
     printf("       no label                    = 0,  white, dark pink\n"
@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
         !args->Contains("-i") ||
         !args->Contains("-root_dir"))
     {
-        if (!args->Contains("-help")) printf("Error: missing programme option.\n");
+        if (!args->Contains("-help")) printf("Error: missing programme options."
+                                             "-i and -root_dir are required parameters. \n");
         PrintUsage();
         return EXIT_SUCCESS;
     }

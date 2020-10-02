@@ -13,14 +13,6 @@ using namespace std;
 
 int main() {
 
-    /* TODO: next week
-     * Done: slanted walls during merge_surface can be enforced to be vertical so it generates more consistent surfaces
-     * TO be done: run merge surface with Force_Verticality flag
-     * Extend walls to SLABS
-     * 
-     * */
-
-
     char str_root[500];
     //char *root = (char*)  "E:/BR_data/Diemen/process/out/door_detection/";
     //char *root = (char*) "D:/test/morph2/out/";
@@ -251,7 +243,7 @@ int main() {
  * This step is not necessary if all walls are connected to the ceiling and floors.
  */
 
-/*    LaserPoints merged_walls;
+    LaserPoints merged_walls;
     LaserPoints slabs; // ceiling OR Floor
     Planes wall_planes;
 
@@ -262,7 +254,7 @@ int main() {
     slabs.Read("/home/shayan/Drive_D/data/Wilhelmapier_VVR/process/modeling/ceiling_master.laser");
     wall_planes.Read((char*) "/home/shayan/Drive_D/data/Wilhelmapier_VVR/process/modeling/out/merged_planes.planes");
     char *root = (char*) "/home/shayan/Drive_D/data/Wilhelmapier_VVR/process/modeling/out/";
-    Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true);*/
+    Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true);
 
 /**********************************************************************************************************************/
 /* MODELING WALLS STEP1 */  /* extension of undershoots */

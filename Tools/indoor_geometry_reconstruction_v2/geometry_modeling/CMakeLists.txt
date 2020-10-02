@@ -47,7 +47,7 @@ file(GLOB utils_Sources
         ../utils/Buffer.cpp
         ../utils/MergeSurfaces.cpp)
 
-set(SOURCE_FILES main_all.cpp
+set(SOURCE_FILES main_modeling.cpp
         ModelingInteriorWalls.cpp
         ModelingInteriorWalls.h
         ../utils/utils.h
@@ -55,5 +55,5 @@ set(SOURCE_FILES main_all.cpp
         ${visualisation_Sources}
         ${utils_Sources})
 
-add_executable(modeling_xx ${SOURCE_FILES})
-target_link_libraries(modeling_xx ${Boost_LIBRARIES})
+add_executable(modeling ${SOURCE_FILES})
+target_link_libraries(modeling ${Boost_LIBRARIES})

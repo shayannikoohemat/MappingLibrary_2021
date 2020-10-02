@@ -16,6 +16,7 @@ DS_Store/
 Debug/
 Release/
 /test_data*
+bin/*
 
 
 # log files

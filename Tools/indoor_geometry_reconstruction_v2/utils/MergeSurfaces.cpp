@@ -7,6 +7,8 @@
 #include "utils.h"
 #include <map>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wwritable-strings"
 struct merged_surfaces_and_planes{
     LaserPoints surface;
     Plane plane;
@@ -32,8 +34,11 @@ forceVerticality(double verticality_angle_threshold, Vector3D &normal, LaserPoin
  * Outputs: outputs are written to the disk: merged_segments.laser and merged_planes.planes
  * if verbose: then it generates: "projected_merged_segments.laser" where you can see the points projected to planes
  * */
-void Mergesurfaces (const LaserPoints &segmented_lp, double max_dist_between_planes, double max_angle_between_normals,
-                        double max_dist, int min_segment_size, char *root, double max_second_dist_between_planes,
+void Mergesurfaces ( LaserPoints &segmented_lp,
+                        double max_dist_between_planes,
+                        double max_angle_between_normals, //degrees
+                        double max_dist, int min_segment_size,
+                        char *root, double max_second_dist_between_planes,
                         bool calculate_middle_plane, bool calculate_weighted_plane,
                         bool force_verticality, double verticality_angle_threshold,
                         bool verbose){
@@ -46,10 +51,16 @@ void Mergesurfaces (const LaserPoints &segmented_lp, double max_dist_between_pla
     double  max_angle_radian;
     max_angle_radian = max_angle_between_normals * pi / 180;
 
-    if (!segmented_lp.HasAttribute (SegmentNumberTag)){
-        printf ("Error: Laserpoints should have SegmentNumberTag! \n");
+    if(segmented_lp.empty()){
+        printf("ERROR: Input laserpoints is empty or not exists. \n");
         EXIT_FAILURE;
     }
+
+    if (!segmented_lp.HasAttribute (SegmentNumberTag)){
+        printf ("ERROR: Laserpoints should have SegmentNumberTag! \n");
+        EXIT_FAILURE;
+    }
+    segmented_lp.RemoveSmallSegments(SegmentNumberTag, 5);
     /// first make a list of segments and sort them by size
     vector <LaserPoints> segments_vec;
     segments_vec = PartitionLpByTag (segmented_lp, SegmentNumberTag, root);
@@ -426,3 +437,5 @@ forceVerticality(double verticality_angle_threshold, Vector3D &normal, LaserPoin
     return vertPlane;
 }
 
+
+#pragma clang diagnostic pop

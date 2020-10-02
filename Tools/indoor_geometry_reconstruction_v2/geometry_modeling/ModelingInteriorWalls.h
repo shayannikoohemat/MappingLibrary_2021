@@ -24,7 +24,7 @@
 /// \param root                 # output processing directory, ./process/
 /// \param verbose              # verbose for DEBUG
 void Extend_Walls_Ceiling (const LaserPoints & merged_walls_lp, const Planes &walls_planes, const LaserPoints &ceiling_lp,
-                           int min_segment_size, char *root, bool verbose=false);
+                           int min_segment_size=100, char *root= nullptr, bool verbose=false);
 
 /// This function extend the segments to their intersection anf creates new min-rectangles
 /*
@@ -48,7 +48,7 @@ void Extend_Walls_Ceiling (const LaserPoints & merged_walls_lp, const Planes &wa
 /// \param root                   # output processing directory, ./process/
 /// \param verbose                # verbose for DEBUG
 void ModelingInteriorWalls (const LaserPoints &laserPoints, const Planes &planes, double max_intersection_dist,
-                            int min_segment_size, char *root, bool verbose=false);
+                            int min_segment_size=100, char *root= nullptr, bool verbose=false);
 ///
 /*
  * Generate Volumetric Walls, floor ceiling means generating boxes from minimum rectangles
@@ -68,8 +68,9 @@ void ModelingInteriorWalls (const LaserPoints &laserPoints, const Planes &planes
 /// \param root                     # output processing directory, ./process/
 /// \param verbose                  # verbose for DEBUG
 void GenerateVolumetricWalls (const ObjectPoints &wall_rectangles_vertices, LineTopologies &wall_rectangle_edges,
-                              const std::map<int, double> &offset_distance_map, double fix_offset_dist,
-                              char *root, bool verbose=false);
+                              const std::map<int, double> &offset_distance_map,
+                              double fix_offset_dist=0.20, // this multiple by two is the fixed wall thickness.
+                              char *root= nullptr, bool verbose=false);
 ///
 /* This function generates the input for GenerateVolumetricWalls function.
  * This function generates a map of wall thickness (offset_distance) based on the Residual attributes in each segment

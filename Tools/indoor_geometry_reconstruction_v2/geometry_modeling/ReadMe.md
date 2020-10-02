@@ -2,8 +2,15 @@
 In this section, we create vector models from segments. We use wall, floor and ceiling segments from 
 **indoor_topology.cpp** for this.
 
+! Don't use the CMakeLists.txt and `main_modeling.cpp` in the `/geometrymodeling` root. 
+! The `main_modeling.cpp` is just for knowing how to use the geometry modeling altogether. 
+Instead use the `cmakes` and `mains` in the three subfolders `./extend2slabs`,
+ `./modelingvolumetricwalls` and `./modelingwalls`
+to build three separate exe files. This is because you need to understand steps individually,
+ and know how to do troubleshooting.
+
 #### A. Preparing Ground Truth
-First we need how the real room layout looks like, to see how is the performance of our automatic 
+First we need to know how the real room layout looks like, to see how is the performance of our automatic 
 method. Therefore, by using pcm (GUI) or CloudCompare clean the data, and to see inside the building
 remove the ceiling. These steps are recommended and shouldn't take more than 10 mins per floor:
 1. remove noisy points outside the main building layout. 
@@ -11,7 +18,7 @@ remove the ceiling. These steps are recommended and shouldn't take more than 10 
 pcm (can take time, so subsampling is recommended) or in CloudCompare by croping the floor and ceiling.
 3. run a connected component analysis (with a point distance of 10 cm). You can do this in 
 `pcm> segmentation`. Before that set the parameter in `segmentation > edit parameters`.
-4. Remove large pieces of furniture and keep the room layout. IF furniture are connected to walls,
+4. Remove large pieces of furniture and keep the room layout. If furniture are connected to walls,
 remove the connection and run conn comp again.
 
 Now you can use this as a reference.  
@@ -93,7 +100,7 @@ Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true)`
   and `ceiling_master.laser`. If there is not such a file, and there are many smaller pieces
   with various heights, then you can use `merge_surfaces` also on floor and ceiling. 
   Alternatively, **to combine files and renumber segments** in `utils/Mls_preprocessing.cpp`
-  there is a tool for this is called `merge_lp_segmented()` you can use this for merging laser files.
+  there is a function for this is called `merge_lp_segmented()` you can use this for merging laser files.
  
 ##### B4. Modeling Interior Walls (extension of surfaces and generating rectangles)
 
@@ -132,18 +139,28 @@ directly on the output of the `extended_laserpoints()` which is the outptu of B4
     and ceilings (using the labels) and proceed with step B5.
 ##### B5.1 Generate Volumetric Walls (3D boxes)
  Modeling volumetric walls generates boxes from rectangles/polygons.
-The input of this function is the output of MergSurfaces() from indoor_geometry_reconstruction
- tool OR from or from ModelingInteriorWalls() from previous step (B4).
+The input of this function is the output of MergSurfaces() from utils
+ tool OR from ModelingInteriorWalls() from previous step (B4).
 Run `Generate_offset_dist_map()` and `GenerateVolumetricWalls()` respectively. The 2nd function 
 needs the output of Generate_offset_dist_map(). 
-The input values for `Generate_offset_dist_map()` should be the expected wall thickness. Inputs divided by 2 will be offset_distance 
+The input values for `Generate_offset_dist_map()` should be the expected wall thickness.
+ Inputs divided by 2 will be offset_distance . The argument `fix_offset_dist` multiplied by 2 is the thickness
+  of the wall for walls without two sides.
+  
+  **outptus**
+  
+   - `walls_vertices.objpts` >> vertices of walls 3D boxes
+   - `walls_faces.top`       >> faces of walls 3D boxes
 
 ##### B5.2 Create OFF files for other 3D software (meshlab, cloudcompare)
-Run `LineTopologies_to_OFFBoxes()` right after step B5.1. The inputs are the outputs of
- `GenerateVolumetricWalls()`. 
- Argument `fix_offset_dist` values is multiplied by 2 is the thickness of the wall for walls without two sides.
+Run `LineTopologies_to_OFFBoxes()` right after step B5.1. The inputs for LineTopologies_to_OFFBoxes
+  are the outputs of `GenerateVolumetricWalls()`. 
  
  After this step the results can be imported into CloudCompare and exported as e.g., OBJ or PLy mesh.
+   
+   **outptu**
+   
+   - `off_output.off` >> OFF files of 3D boxes
  
 #### C. How to visualise results in each step
 A good practice to see the performance of the algorithm and check if the output is suitable for 
