@@ -91,7 +91,6 @@ void VisualizePlanes(LaserPoints segmented_laserpoints, int minsizesegment,
             EnclosingRectangle_Rotation3D (segment_lpoints, 0.10, corners_per_rectangle, edges_per_rectnagle, root);
             /// add the corners and lines to one file
             // Store points and topology in one file
-            // Store points and topology in one file
             if (corners.empty()){
                 next_number = 0;
             } else {
@@ -121,5 +120,52 @@ void VisualizePlanes(LaserPoints segmented_laserpoints, int minsizesegment,
         }
         //printf ("Number of polygons: %d\n", polygon_cnt);
     }
+}
+
+void Visualize2DRectangles(vector< LaserPoints> &laserpoints_vec,ObjectPoints &rect_corners,
+                           LineTopologies &rect_edges, LaserPointTag tag){
+
+    int next_number=0;
+    int line_number=0;
+    for (auto &s : laserpoints_vec){ // s is a slice or a segment of laserpoints
+        if (s.size() > 4){
+            int seg_num = s[0].Attribute(tag);
+            DataBoundsLaser db;
+            db = s.DeriveDataBounds(0);
+            /// Find the minimum enclosing rectangle for the segment in 2D
+            s.DeriveTIN();
+            ObjectPoints corners_per_rectangle;
+            LineTopology edges_per_rectnagle;
+            double max_edge_dist=0.10;
+            s.EnclosingRectangle(max_edge_dist, corners_per_rectangle, edges_per_rectnagle);
+            // Store points and topology in one file
+            if (rect_corners.empty()){
+                next_number = 0;
+            } else {
+                next_number = (rect_corners.back ()).Number () + 1;
+            }
+            /// update the numbering for objectpoints of corners
+            PointNumber pnumber;
+            LineTopology rectangle_edges_renumebr;
+            for (int i=0; i < corners_per_rectangle.size() ; i++){
+                pnumber = PointNumber(next_number + i);
+                //corner = ObjectPoint(corners[i], pnumber, cov3d);
+                corners_per_rectangle[i].NumberRef () = pnumber;
+                /// set slice center z-value to the rectangle corners
+                corners_per_rectangle[i].Z() = s.CentreOfGravity(s.TaggedPointNumberList(tag, seg_num)).GetZ();
+                rect_corners.push_back(corners_per_rectangle[i]);
+                rectangle_edges_renumebr.push_back(pnumber);  // making the linetopology
+            }
+            rectangle_edges_renumebr.push_back(PointNumber(next_number)); // Close the polygon
+            if (rectangle_edges_renumebr.IsClockWise(rect_corners)){
+                rectangle_edges_renumebr.MakeCounterClockWise(rect_corners);
+            }else{
+                rectangle_edges_renumebr.MakeClockWise(rect_corners);
+            }
+
+            rectangle_edges_renumebr.Number () = line_number++; //seg_num
+            rect_edges.push_back(rectangle_edges_renumebr);
+        }
+    } // end of slices
 }
 

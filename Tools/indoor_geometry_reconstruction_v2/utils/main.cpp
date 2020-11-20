@@ -19,7 +19,7 @@ int main(){
 
     LaserPoints lp;
     lp.Read("/home/shayan/Drive_D/data/test/laserpoints.laser");
-    LaserPoints_info(lp, 500000);
+    LaserPoints_info(lp, 50);
 
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;

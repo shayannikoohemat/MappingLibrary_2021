@@ -17,7 +17,7 @@ void TrajToPolyline (LaserPoints &traj_lp, int points_to_skip, LineTopologies &t
     LineTopology linesegments;
     int pointnumber=0;
     for (auto &p : traj_lp){
-
+        if (points_to_skip==0) points_to_skip =1;
         if( pointnumber % points_to_skip == 0){ /// skip every #points_to_skip number of points
             ObjectPoint vertex;
             vertex.X () = p.X ();

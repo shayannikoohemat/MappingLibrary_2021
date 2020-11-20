@@ -194,7 +194,7 @@ Plane offset_plane (const Plane &plane, double offset_distance){
 /// This function intersect two segments based on their given planes and add the points near each segment and on the
 /// intersection line to each segment. Later it is possible to calculate the min rectangle of the segment.
 /// This function doesn't calculate new planes and doesn't modify given planes.
-/// if "bool extension=false" means two planes intersect but they are not close enough to be extended.
+/// bool extension is an output bool. If "bool extension=false" means two planes intersect but they are not close enough to be extended.
 /// *** NOTE: after applying this function segments shouldn't be modified in another step
 bool Extend_Segments_to_Intersection (LaserPoints &segment1, LaserPoints &segment2,
                                       const Plane &plane1, const Plane &plane2, double max_intersection_dist,

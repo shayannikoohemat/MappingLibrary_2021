@@ -29,12 +29,12 @@ void PrintUsage()
     printf("      -maxDist_segments [max dist segments] <if MERGE_SURF true, define max seg. dist threshold to be merged, default is 1.0m>\n");
     printf("      -plDist2          [plane second dist] <if MERGE_SURF true, define max planes dist threshold to be merged, default is 0.80m>\n");
     printf("      -calc_midplane    [calc. mid plane] <if MERGE_SURF and calc_midplane true, then the middle plane of two faces are calculated.>\n");
-    printf("      -calc_wplane      [calc. weighted plane] <if MERGE_SURF and calc_wplane true, then the weighted plane basedon the size of segments is calculated.>\n");
-    printf("      -force_vertical   [force verticality] <if MERGE_SURF and force_vertical true, then for slightly slanted segmentes a vertical plane is calcualted, so define -ver_th.>\n");
+    printf("      -calc_wplane      [calc. weighted plane] <if MERGE_SURF and calc_wplane true, then the weighted plane based on the size of segments is calculated.>\n");
+    printf("      -force_vertical   [force verticality] <if MERGE_SURF and force_vertical true, then for slightly slanted segments a vertical plane is calculated, so define -ver_th.>\n");
     printf("      -ver_th           [verticality threshold] <if MERGE_SURF and force_vertical true, if a wall is slanted by -ver_th degrees a vertical plane is fitted, default 30 degrees.>\n");
-    printf("      -i_slabs          [slabs laser file] <if EXT_W_SL true, then define floor OR ceiling OR both as a laser file, ./slabs.laser> \n");
-    printf("      -ext_lpoints      [extended_laserpoints ] <if -MODEL_VolWall true, then define extended_walls as a laser file, ./extended_laserpoints.laser> \n");
-    printf("      -wall_fl_cl       [input wall_fl_cl file] <if WALLS_Modeling true, then define the input laserfile containing walls, floors and ceilings, ./wfc.laser> \n");
+    printf("      -i_slabs          [slabs laser file] <if EXT_W_SL true, then define floor OR ceiling as a laser file ./slabs.laser> \n");
+    printf("      -i                [extended_laserpoints ] <if -MODEL_VolWall true, then define extended_walls as a laser file, ./extended_laserpoints.laser> \n");
+    printf("      -i                [input wall_fl_cl file] <if WALLS_Modeling true, then define the input laserfile containing walls, floors and ceilings, ./wfc.laser> \n");
     printf("      -max_extDist      [max extension dist] <if WALLS_Modeling true, then this threshold is used to extend the segments.> \n");
     printf("      -lwth             [lower_wall_thickness] <if MODEL_VolWall is true, default 0 if residuals as wall thick is given in laserpoints, otherwise -lwth is used, default 0.20> \n");
     printf("      -uwth             [upper_wall_thickness] <if MODEL_VolWall is true, default 0 if residuals as wall thick is given in laserpoints, otherwise -uwth is used, default 0.40> \n");
@@ -97,12 +97,12 @@ int main(int argc, char *argv[]){
     //Mergesurfaces (laserpoints, planes_dist, planes_angle, segments_dist, min_segSize, root, planes_dist_second,true, false,true, verticality_angle_threshold, false);
     if(args->Contains("-MERGE_SURF")){
         printf("\n");
-        printf("*** Applying Extension MERGE_Surfaces method. Merges coplanar and adjacent surfaces ...\n");
+        printf("*** Applying MERGE_Surfaces method. Merging coplanar and adjacent surfaces ...\n");
         LaserPoints lp;
        // lp.Read("../../test_data/geometry_modeling/wall_fl_cl_labeled_segmented.laser");
        // char* root = (char*) "../../test_data/geometry_modeling/out/";
        lp.Read(args->String("-i"));
-        Mergesurfaces( lp,
+        Mergesurfaces(lp,
                       args->Double("-plDist", 0.5),
                       args->Double("-plAngle", 5),
                       args->Double("-maxDist_segments", 1.0), // threshold between two segments to be considered for merging, e.g., a door way normally is around 0.80m which separates two segments.
@@ -134,20 +134,20 @@ int main(int argc, char *argv[]){
         printf("\n");
         printf("*** Applying Extension Wall-Slabs method. Extension of walls to Fl or Cl ...\n");
         LaserPoints merged_walls; // generate by Mergesurfaces()
-        LaserPoints slabs; // it should be ceiling OR Floor. but we added them already into one file named it slab.laser
+        merged_walls.Read(args->String("-i"));
+        LaserPoints slabs; // it should be ceiling OR Floor.
         Planes wall_planes; // generated with Mergesurfaces() otherwise pass it empty.
-        /// read the merged_walls.laser from root-dir which should be created in the previous step
-        strcpy(str_root, root); /// making a string of the path
-        merged_walls.Read(strcat(str_root, "/merged_segments.laser")); // merged_segments.laser is the default name DON't rename it
         /// read the merged_planes.planes from the root_dir which should be created in the previous step
         strcpy(str_root, root);
-        wall_planes.Read(strcat(str_root, "/merged_planes.planes"));
+        wall_planes.Read(strcat(str_root, "/merged_planes.planes")); //merged_planes is the default output from merge_surfaces()
         printf("\n");
         if(wall_planes.empty())
             printf("!!!merged_planes is empty, a LeastSquare fitting plane is applied.\n");
 
         /// read slabs.laser
-        slabs.Read(args->String("-i_slabs")); // floor+ceilings.laser
+        slabs.Read(args->String("-i_slabs")); // floor OR ceilings.laser
+        if(slabs.size()<4)
+            printf("!!!slabs file is empty or the path is wrong.\n");
         /// calling the function from ModelingInteriorWalls.cpp
         Extend_Walls_Ceiling (merged_walls,
                 wall_planes,
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]){
         printf("*** Applying WALLS_Modeling method. Extension of segments and creating rectangles ...\n");
         LaserPoints lp;
         Planes wall_planes;
-        lp.Read(args->String("-wall_fl_cl")); // this is wall+fl+cl.laser file
+        lp.Read(args->String("-i")); // this is wall+fl+cl.laser file
         if(lp.empty()) printf("ERROR: input merged_segments or laserfile is empty! \n");
         strcpy(str_root, root);
         wall_planes.Read(strcat(str_root, "/merged_planes.planes")); // this is merged_planes from Mergesurfaces()
@@ -198,12 +198,11 @@ int main(int argc, char *argv[]){
         printf("\n");
         printf("*** Applying (MODEL_VolWall) GenerateVolumetricWalls method. Generating 3D boxes from rectangles ...\n");
         LaserPoints extended_wallflcl;
-        if(!args->Contains("-ext_lpoints")){
+        if(!args->Contains("-i")){
             strcpy(str_root, root);
             extended_wallflcl.Read(strcat(str_root, "/extended_laserpoints.laser"));
             if(extended_wallflcl.empty()) printf("ERROR: extended_laserpoints.laser is empty or path is wrong! \n");
-        }else
-            extended_wallflcl.Read(args->String("-ext_lpoints"));
+        }
         //extended_wallflcl.Read("../../test_data/geometry_modeling/out/extended_laserpoints.laser");
         std::map <int, double> offset_dist_map;
         /// input values should be the expected wall thickness. Inputs divided by 2 will be offset_distance

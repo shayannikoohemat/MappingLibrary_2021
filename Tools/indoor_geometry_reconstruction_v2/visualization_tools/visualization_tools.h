@@ -16,6 +16,9 @@ void VisualizePlanes(LaserPoints segmented_laserpoints, int minsizesegment, doub
 void VisualizePlanes(LaserPoints segmented_laserpoints, int minsizesegment,
                      ObjectPoints &corners, LineTopologies &polygons, char* root, bool verbose);
 
+void Visualize2DRectangles(vector< LaserPoints> &laserpoints_vec,ObjectPoints &rect_corners,
+                           LineTopologies &rect_edges, LaserPointTag tag);
+
 /// if min_z, max_z and height leave as dfault then the min and max would be extracted from the
 /// segment's bounds, otherwise, height should be defined OR minz and maxz
 void Minimum3DBox(ObjectPoints &corners, LineTopologies &polygon_lines, LaserPoints segmented_lp,

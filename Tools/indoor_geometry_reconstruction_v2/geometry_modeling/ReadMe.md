@@ -26,7 +26,7 @@ Now you can use this as a reference.
 #### B. How to perform geometry modeling
 
 ##### B1. First interactive refinement
-For following steps you need segments with `segment number` and `labels` as wall, fl, cl.
+For the following steps you need segments with `segment number` and `labels` as wall, floor, ceiling.
 
 In pcm or CloudCompare:
 1. correct walls, floor and ceilings by renaming the false labels to unknown 
@@ -34,7 +34,7 @@ In pcm or CloudCompare:
 
 ##### B2. Merge surfaces 
 Use `Mergesurfaces()` from **`MergeSurface.cpp`**
-   to generate `planes file` and `merged_segments.laser` where wall thickness is stored in
+   to generate `merged_planes.planes` and `merged_segments.laser` where wall thickness is stored in
  `residual tags`. You can use the FLAG `force_verticality` set to TRUE to make sure slightly
  inclined walls are modeled perfectly vertical. In that case,
   the algorithm generates vertical planes but point clouds remain unmodified.
@@ -50,8 +50,20 @@ Use `Mergesurfaces()` from **`MergeSurface.cpp`**
     There is a function for this to combine files and renumber segments in `utils/Mls_preprocessing.cpp`
     is called `merge_lp_segmented()` you can use this for merging laser files.
 
+**Function**
+- `void Mergesurfaces ()`  implemented in `MergeSurfaces.cpp`
+
+**inputs**
+- `walls.laser` as `-i`  >> should be segmented
+- `-root_dir` >> root directory always is necessary
+- `-force_vertical` >> (optional) default is true which is recommended
+- `max_dist_between_planes` or `-plDist` (optional) or leave the default
+- `max_angle_between_normals` or `-plAngle` (optional) or leave the default
+- `max_dist` or `-maxDist_segments` (optional) or leave the default
+
+
 **outputs**
-- `merged_surfaces.laser`
+- `merged_surfaces.laser` 
 - `merged_planes.plane`
 - `projected_merged_segments.laser` >> intermediate results
 - `merge_info.txt`  >> metadata
@@ -83,11 +95,23 @@ from the previous step as input for this step. Do this process separately once f
 `// code example//
 Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true)`
 
+**Function**
+- `Extend_Walls_Ceiling()`  implemented in `ModelingInteriorWalls.cpp`
+
+**inputs**
+- `walls.laser` as `-i` >> this is simply walls or merged_walls
+- `-root_dir`
+- `slabs.laser` as `-i_slab` >> ceiling.laser OR floor.ceiling
+- `merged_planes.planes` >> if MERGE_SURF=true you have already this in the root directory. It reads it by default.
+
 **outputs**
 - `extendedCeil_laserpoints.laser` if applied on floors DO NOT forget to rename it to floor.
 - `extendedWall_laserpoints.laser` >> main result
 - `rectanglesWalls_corners.objpts` >> intermediate result
 - `rectanglesWalls_edges.top`      >> >> intermediate result
+
+ > **Note** Repeat it again for walls+floor with the `extendedWall_laserpoints.laser` as
+> input `-i` and `floor.laser` as the slab
  
  ##### B3.1 Merge wall, floor and ceilings
 
@@ -120,7 +144,16 @@ Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true)`
  segment to the intersection line
  4. A minimum_enclosing_rectangle_3D will be generated for all segments (in 3D e.g. slanted walls, ramps)
  5. The plane for each segment should be an input from the merge surface step 
- otherwise a FitPlane method will be used in place. 
+ otherwise a FitPlane method will be used in place.
+ 
+ **Function**
+ - `ModelingInteriorWalls()`  implemented in `ModelingInteriorWalls.cpp` 
+ 
+ **inputs**
+ - `wall_fl_cl.laser` OR `extended_wall_Fl_cl.laser` as `-i` 
+ - `root_dir`
+ - `merged_planes.planes` >> if MERGE_SURF=true you have already this in the root directory. It reads it by default.
+ - `max_intersection_dist` as `-max_extDist` it has a default value.
  
  **outputs** 
  - `extended_laserpoints.laser` >> main result
@@ -135,8 +168,7 @@ Extend_Walls_Ceiling (merged_walls, wall_planes, slabs, 100, root, true)`
 ##### B5. Generating Volumetric Files and OFF Format
 Technically if everything is fine with previous step, you can directly apply steps B5.1 and B5.2 
 directly on the output of the `extended_laserpoints()` which is the output of B4.
-   > If you want to have separate OFF files at the end, after step4 separate walls, floors 
-    and ceilings (using the labels) and proceed with step B5.
+
 ##### B5.1 Generate Volumetric Walls (3D boxes)
  Modeling volumetric walls generates boxes from rectangles/polygons.
 The input of this function is the output of MergSurfaces() from utils
@@ -153,7 +185,26 @@ Similarly, walls without two sides, hence with a zero `wallthickness` attribute,
 then the argument `fix_offset_dist` for `GenerateVolumetricWalls()` multiplied by 2 is the thickness
   of the wall for such cases.
   
-  **outptus**
+   **Function**
+   
+   if `-MODEL_VolWall=true` both below functions run after each other.
+   - `Generate_offset_dist_map()` implemented in `ModelingInteriorWalls.cpp` 
+   - `GenerateVolumetricWalls()`  implemented in `ModelingInteriorWalls.cpp` 
+   
+   **inputs**
+   > If you want to have separate OFF files at the end, after step B4 separate walls, floors 
+       and ceilings (using the labels) and proceed with step B5.
+   - `wall_fl_cl.laser` OR `extended_wall_Fl_cl.laser` as `-i` 
+   - `-root_dir`
+   - `rectangle_corners.objpts` as `-corners` & `rectangle_edges.top` as`-edges` 
+   are the corners and edges of the rectangles of walls, floors and ceilings generated in the previous step
+   by `ModelingInteriorWalls()` in the directory.
+   if not defined the program looks in the directory for them. Each minimum-rectangle represents a
+    permanent structure.
+   - `-lwth` and `-uwth` >> optional for Generate_offset_dist_map()
+
+  
+  **outputs**
   
    - `walls_vertices.objpts` >> vertices of walls 3D boxes
    - `walls_faces.top`       >> faces of walls 3D boxes
@@ -163,9 +214,16 @@ Run `LineTopologies_to_OFFBoxes()` right after step B5.1. The inputs for LineTop
   are the outputs of `GenerateVolumetricWalls()`. 
  
  After this step the results can be imported into CloudCompare and exported as e.g., OBJ or PLy mesh.
+ 
+  **Function**
+  - `LineTopologies_to_OFFBoxes()`  implemented in `Min3DBox_OFF.cpp` 
    
-   **outptu**
+  **inputs**
+ - `-root_dir`
+ - `walls_vertices.objpts` >> it can be wall, floor or ceiling or all together in one file.
+ - `walls_faces.top` >> it can be wall, floor or ceiling or all together in one file.
    
+  **outputs**
    - `off_output.off` >> OFF files of 3D boxes
  
 #### C. How to visualise results in each step

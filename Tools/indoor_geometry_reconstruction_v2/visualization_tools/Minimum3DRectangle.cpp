@@ -404,6 +404,8 @@ void EnclosingRectangle_Rotation3D (const LaserPoints &laserPoints, Plane plane,
 
     /// Find the minimum enclosing rectangle for the segment in 2D
     rotated_lp.DeriveTIN();
+
+    // this line is to make sure when we use this function in a loop, then rectangle_edges becomes empty everytime
     if (!rectangle_edges.empty()) rectangle_edges.erase(rectangle_edges.begin(), rectangle_edges.end());
     /// generated corners have Z value at 0
     ObjectPoints temp_corners;

@@ -32,6 +32,6 @@ link_libraries(-lLaserScan -lPhotogrammetry -lBuildings -lEispack -lLinpack -lAN
 
 #set(SOURCE_FILES )
 
-set(SOURCE_FILES main.cpp utils.h MLS_preprocessing.cpp Directory_Processing.cpp GenerateWallPatches.cpp)
+set(SOURCE_FILES main.cpp utils.h MLS_preprocessing.cpp)
 add_executable(utils ${SOURCE_FILES})
 target_link_libraries(utils ${Boost_LIBRARIES})

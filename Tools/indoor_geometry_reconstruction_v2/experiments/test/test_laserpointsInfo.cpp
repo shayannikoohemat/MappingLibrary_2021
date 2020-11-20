@@ -6,7 +6,7 @@
 #include <iostream>
 #include <ctime>
 #include <LaserPoints.h>
-#include "utils.h"
+#include "../../utils/utils.h"
 
 using namespace std;
 
@@ -18,8 +18,9 @@ int main(){
     start = std::clock();
 
     LaserPoints lp;
-    lp.Read("/data/laserpoints.laser");
-    LaserPoints_info(lp, 500000);
+    //lp.Read("/data/laserpoints.laser");
+    lp.Read("/home/shayan/DataPartition/Paris_Lille/test/Lille-poles.laser");
+    LaserPoints_info(lp, 50);
 
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;

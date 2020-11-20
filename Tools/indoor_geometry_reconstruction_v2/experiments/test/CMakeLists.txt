@@ -24,12 +24,12 @@ include_directories(../../../../Library/Buildings/include)
 include_directories(../../../../Library/LaserScan/include)
 include_directories(../../../../Foreign/ANN/include/ANN)
 include_directories(../../../../Foreign/ANN/src)
-include_directories(../../../../Tools/visualization_tools)
+#include_directories(../../../../Tools/visualization_tools)
 #include_directories(../../../Tools/building_modelling/pcm/include)
 #link_directories(../../../Library/lib64)
 link_directories(${MAPPING_LIB_DIR})
 link_libraries(-lLaserScan -lPhotogrammetry -lBuildings -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 -llas)
 
 
-add_executable(mergeSegmentFiles test_mergeSegmentFiles.cpp)
-target_link_libraries(mergeSegmentFiles PRIVATE ${Boost_LIBRARIES} tools) #link tool_ exe to tools lib target
+add_executable(laserinfo  test_laserpointsInfo.cpp ../../utils/MLS_preprocessing.cpp ../../utils/utils.h)
+target_link_libraries(laserinfo PRIVATE ${Boost_LIBRARIES}) # tools) #link tool_ exe to tools lib target

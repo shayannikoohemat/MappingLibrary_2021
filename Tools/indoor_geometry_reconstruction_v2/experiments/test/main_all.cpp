@@ -264,7 +264,7 @@ int main() {
     /*  Modeling walls  */ /* extension of undershoot segments and generating the minimum_rectangle */
     //laserFile = (char*) "E:/publication_data/modeling/data/test/tudelft_wall_floor_.laser"; //intersection_slanted_4segments.laser"; //segments_17_44 //intersection_problem
     //laserFile = (char*)    "E:/publication_data/modeling/tudelft/modeling_walls/out/wall_fl_cl_renumbered.laser";
-    laserFile = (char*)    "E:/publication_data/modeling/tudelft/modeling_walls/files_for_modeling/wall_cl_renumbered.laser";
+/*    laserFile = (char*)    "E:/publication_data/modeling/tudelft/modeling_walls/files_for_modeling/wall_cl_renumbered.laser";
     //laserFile = (char*) "E:/publication_data/modeling/data/test/off_test.laser";
     //laserFile = (char*) "E:/publication_data/modeling/data/Haaksbergen/test/merged_segments_modified.laser";
     lp.Read(laserFile);
@@ -274,7 +274,7 @@ int main() {
     double max_intersection_dist = 4.0; // 3.0 meters for TUDelf wall-wall extension
     char *root = (char*) "E:/publication_data/modeling/tudelft/modeling_walls/out/";
     /////this generates extended.laser and rectangles.objpts and thickness of walls in residuals attribute.
-    ModelingInteriorWalls (lp, planes, max_intersection_dist, 500, root, false);
+    ModelingInteriorWalls (lp, planes, max_intersection_dist, 500, root, false);*/
 
 /***********************************************************************************************************************/
 /* MODELING WALLS STEP2 */
@@ -308,7 +308,7 @@ int main() {
 /**********************************************************************************************************************/
 
 /* Convert linetopolgies to OFF. */
-    ObjectPoints walls_vertices;
+/*    ObjectPoints walls_vertices;
     LineTopologies walls_faces;
     //walls_vertices.Read("E:/publication_data/Haaksbergen/test/out/pairlines.objpts");
     //walls_faces.Read("E:/publication_data/Haaksbergen/test/out/pairlines.top");
@@ -316,7 +316,7 @@ int main() {
     //walls_faces.Read("/home/shayan/Drive_D/data/test/out/poly_edges.top");
     //char *root = (char*) "/home/shayan/Drive_D/data/test/out/";
     char *root;
-    LineTopologies_to_OFF (walls_vertices, walls_faces, root);
+    LineTopologies_to_OFF (walls_vertices, walls_faces, root);*/
 
 
 /**********************************************************************************************************************/
@@ -353,9 +353,6 @@ int main() {
     lp_new.AddPoints (segment1);
     lp_new.AddPoints (segment2);
     lp_new.Write(strcat (str_root, "lp_new.laser"), false);*/
-
-
-
 
 /**********************************************************************************************************************/
 
