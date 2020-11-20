@@ -6,4 +6,4 @@
 #$root_dir /home/shayan/MappingLibrary/Tools/indoor_geometry_reconstruction_v2/test_data/geometry_modeling/out/
 #$planes_distances 0.40
 
-./bin/modeling -i /home/shayan/MappingLibrary/Tools/indoor_geometry_reconstruction_v2/test_data/geometry_modeling/wall_fl_cl_labeled_segmented_labeled.laser  -root_dir /home/shayan/MappingLibrary/Tools/indoor_geometry_reconstruction_v2/test_data/geometry_modeling/out/ -MERGE_SURF 
+./bin/modeling -i /data/wall_fl_cl.laser  -root_dir /data/out/ -MERGE_SURF 
