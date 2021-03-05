@@ -36,11 +36,11 @@ int main() {
 //    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
 //    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
 
-    /// test test_SplitPolygon3DByLineSegment3D()
+//    /// test test_SplitPolygon3DByLineSegment3D()
 //    ObjectPoints polygon_v; LineTopologies polygon_e;
 //    LaserPoints segment;
 //    ObjectPoints new_polygon_v; LineTopologies new_poly_e;
-//    segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment1.laser");
+//    segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment3.laser");
 //    Plane plane = segment.FitPlane(segment[0].SegmentNumber());
 //    polygon_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygon60_vertices.objpts");
 //    polygon_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygon60_edges.top", false);
@@ -71,7 +71,7 @@ int main() {
 //    vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_inclined_vertices.objpts");
 //    polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_inclined_edges.top", false);
 
-    /// split pairwise polygons
+//    /// split pairwise polygons
     LaserPoints segments;
     segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
     cout << segments.size() << endl;

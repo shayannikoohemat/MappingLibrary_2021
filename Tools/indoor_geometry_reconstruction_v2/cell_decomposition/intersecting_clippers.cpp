@@ -134,18 +134,25 @@ void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polyg
 
     polygons_e.Sort(); // sort by line number
     ObjectPoints updated_vertices;
-    for (auto &polygon : polygons_e){
-        cout << "for Polygon: " << polygon.Number() << endl; //DEBUG
+    cout << "Number of polygons:" << polygons_e.size() << endl;
+    //for (auto &polygon : polygons_e){
+    for (int i=0; i<polygons_e.size(); i++){
+        LineTopology polygon = polygons_e[i];
+        if(polygon.Number() !=3) continue; //DEBUG
+        cout << "Polygon: " << polygon.Number() << " X ("; //DEBUG
         Planes splitPlanes;
         //LineSegments3D splitLinesegments;
         ObjectPoints vertices = GetCorresponding_vertices(polygons_v, polygon);
         for (auto &plane : planes){
             LineSegment3D linesegment;
+            if (plane.Number() == polygon.Number()) continue;
             if(Intersect_Plane_3DRectnagle(polygon, vertices, plane, linesegment)){
+                cout  << plane.Number() << ", " ;
                 splitPlanes.push_back(plane);
                 //splitLinesegments.push_back(linesegment);
             }
         }
+        cout << ")" << endl;
         if(splitPlanes.empty())
             continue;
         LineTopologies polygons_to_be_cut;
@@ -154,30 +161,47 @@ void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polyg
         polygons_to_be_cut_vertices = vertices;
         Planes::iterator plane_it = splitPlanes.begin();
         int cnt=0;
+        int cnt2=0;
         while (plane_it != splitPlanes.end()){
             LineTopologies new_polygons; //children of polygon
             LineTopologies remained_polygons; // not intersected children
             Plane splitter = *plane_it;
-            cout << "   Plane: " << splitter.Number() << endl; //DEBUG
+            cout << "   Plane: " << splitter.Number() ;//<< endl; //DEBUG
             // split polygons inside polygons_to_be_cut vector
             for(auto &current_polygon : polygons_to_be_cut){
-                cout << "       is cutting:" << polygon.Number() << "-" << cnt << endl; //DEBUG
+                if(cnt==0)
+                    cout << " is splitting: " << polygon.Number() << endl;    //DEBUG
+                else
+                    cout << " is splitting: " << polygon.Number() << "-" << cnt << endl;    //DEBUG
                 LineSegment3D linesegment3d;
-               ObjectPoints current_vertices = GetCorresponding_vertices(polygons_to_be_cut_vertices, current_polygon);
+               ObjectPoints current_vertices =
+                       GetCorresponding_vertices(polygons_to_be_cut_vertices, current_polygon);
+               current_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/current_vertices.objpts");
+               LineTopologies curr_pol_tmp; curr_pol_tmp.push_back(current_polygon); //DEBUG
+               curr_pol_tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/current_polygon.top", false);
                 if(!Intersect_Plane_3DRectnagle(current_polygon, current_vertices, splitter, linesegment3d))
                     continue;
                 LineTopologies tmp;
+
                 if(SplitPolygon3DByLineSegment3D(current_vertices, current_polygon, linesegment3d, snap_dist, tmp)){
+                    current_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_vertices.objpts");
+                    tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_polygons.top", false);
+                    cnt2++;
+                    cout << "       --> " << polygon.Number() << "-" << cnt2 << " and "
+                                         << polygon.Number() << "-" << ++cnt2 << endl;
                     new_polygons.insert(new_polygons.end(), tmp.begin(), tmp.end());
                     polygons_to_be_cut_vertices = current_vertices;
                 }else{
+                    cout << "       -->" << "No split!";
                     remained_polygons.push_back(current_polygon);
                     polygons_to_be_cut_vertices = current_vertices;
                 }
                 cnt++; // DEBUG
-            }
+            } // end of polygons to be cut
             polygons_to_be_cut = new_polygons; // update polygons_to_be_cut
             polygons_to_be_cut.insert(polygons_to_be_cut.end(), remained_polygons.begin(), remained_polygons.end());
+            polygons_to_be_cut_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_to_be_cut_v.objpts");
+            polygons_to_be_cut.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_to_be_cut_e.top", false);
             plane_it++;
         } // end of while
     } // end of polygons
@@ -478,11 +502,12 @@ Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
 
 
 /// TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
+/// TODO: check if the polygon and plane are almost-prallel skip the intersection
 /// intersecting a plane with the edges of a clipping rectangle (or polygon)
 ///  to obtain the line segment that cuts the rectangle
 bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
                                  ObjectPoints clipperRectangle_vertices,
-                                 const Plane& plane, LineSegment3D &clipped_line){
+                                 const Plane& plane, LineSegment3D &clipped_line, bool verbose){
     // we intersect the plane with the edges of the clipping rectangle
     // get the edges as linesegments
     if(!clipperRectangle_edges.IsClosed()){
@@ -492,8 +517,11 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
     LineSegments3D rect_edges(clipperRectangle_vertices, clipperRectangle_edges);
 
     DataBounds3D bounds3D = clipperRectangle_vertices.Bounds();
-    cout << "bound Min:"  << bounds3D.Minimum();
-    cout << "bound Max:"  << bounds3D.Maximum() << endl;
+    if(verbose){
+        cout << "bound Min:"  << bounds3D.Minimum();
+        cout << "bound Max:"  << bounds3D.Maximum() << endl;
+    }
+
 
     // intersect the plane with the edges
     Positions3D intersected_poses;
@@ -501,7 +529,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
     // for each edge of the clipping rectangle find the intersection point with the plane
     int cnt=0;
     for (auto &e : rect_edges){
-        cout << "EDGE: " << ++cnt << endl; //DEBUG
+        if(verbose) cout << "EDGE: " << ++cnt << endl; //DEBUG
         // make a line3d from each edge
         Line3D edge_line(e.BeginPoint().Position3DRef(), e.EndPoint().Position3DRef());
         // intersect this edge_line to the plane
@@ -516,7 +544,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
             // TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 
             /// this doesn't work
-           cout << "intersection position:" << intersected_pos; // << endl later
+           if(verbose) cout << "intersection position:" << intersected_pos; // << endl later
 //           if(Point_Inside_3DLine(intersected_pos, e, 0.01)){
 //               cout << "point on the line segment" << endl;
 //              intersected_poses.push_back(intersected_pos);
@@ -524,30 +552,30 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
 //           }
              /// this checks with all 4 vertices, maybe a better way is just to check with the linesegment points
             if(bounds3D.Inside(intersected_pos, 0.01)){
-                 cout << " Inside!" << endl; //DEBUG
+                 if(verbose) cout << " Inside!" << endl; //DEBUG
                 intersected_poses.push_back(intersected_pos);
                 intersected_points.push_back(intersected_pos);
-            } else cout << " Outside!" << endl; //DEBUG
+            } else if(verbose) cout << " Outside!" << endl; //DEBUG
         } else
             return false; // edge-line and plane are parallel
     }
     if(intersected_points.size() == 0){
-       cout << "WARNINGS! NO INTERSECTION!!!" << endl;
+       if(verbose) cout << "WARNINGS! NO INTERSECTION!!!" << endl;
        return false;
     }
     if(intersected_points.size() == 1){
-       cout << "WARNINGS! intersected pose is just ONE!!!" << endl;
+       if(verbose) cout << "WARNINGS! intersected pose is just ONE!!!" << endl;
        return false;
     }
     clipped_line.Initialise();
     if(intersected_poses.size() == 2){
-        cout << "Successfull! intersected poses are TWO!!!" << endl;
+        if(verbose) cout << "Successfull! intersected poses are TWO!!!" << endl;
         LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[1]); // this is very error prone if 0 and 1 have wrong orders
         clipped_line = clipped_line_temp;
     }
 
     if(intersected_poses.size() > 2){
-        cout << "WARNINGS! intersected poses are more than TWO!!!" << endl;
+        if(verbose) cout << "WARNINGS! intersected poses are more than TWO!!!" << endl;
         LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[2]);// why 0 and 2 // this is very error prone if 0 and 2 have wrong orders
         clipped_line = clipped_line_temp;
     }
@@ -681,7 +709,7 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
     LineSegments3D clipped_polygon; //a triangle, rectangle, pentagon or a hexagon (3-6 vertices)
     int count=0;
     for(auto &face_edges : box3d_faces){ // cuboid has 6 faces and each face has 4 edges
-        cout << "Box Face: " << ++count << endl; //DEBUG
+        //cout << "Box Face: " << ++count << endl; //DEBUG
         // fetch the exact vertices for this face
         ObjectPoints face_vertices = GetCorresponding_vertices(box3d_vertices, face_edges);
         LineSegment3D linesegment;
@@ -693,10 +721,10 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
         }
     }
     clipped_polygon.PointsWithTopology(polygon_vertices, polygon_edges, true);
-    cout << "# polygon vertices:" << polygon_vertices.size() << endl;
+    //cout << "# polygon vertices:" << polygon_vertices.size() << endl;
     /// because linesegments have common vertices on the cuboid surface, the duplicates should be removed
     polygon_vertices.RemoveDoublePoints(polygon_edges, 0.01);
-    cout << "# polygon vertices after edit:" << polygon_vertices.size() << endl;
+    //cout << "# polygon vertices after edit:" << polygon_vertices.size() << endl;
 
     return intersection;
 }

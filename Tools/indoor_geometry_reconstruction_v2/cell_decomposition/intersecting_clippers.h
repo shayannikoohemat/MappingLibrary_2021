@@ -23,7 +23,7 @@ Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
 /// \return  the line segment which is inside the plane of the clipping rectangle and is bounded by the edges
 bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
                                  ObjectPoints clipperRectangle_vertices,
-                                 const Plane& plane, LineSegment3D &clipped_line);
+                                 const Plane& plane, LineSegment3D &clipped_line, bool verbose=false);
 
 
 /// intersecting a plane with 6 faces of a 3D box using Intersect_Plane_3DRectnagle() to obtain the polygon/face
