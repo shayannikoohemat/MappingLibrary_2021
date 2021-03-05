@@ -1,0 +1,6 @@
+#cmake
+
+#directories
+data/
+/test_data*
+bin/*

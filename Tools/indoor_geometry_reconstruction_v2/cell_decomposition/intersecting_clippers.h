@@ -11,13 +11,12 @@ void ExtractFaces_from_3DPolygonsIntersection(LaserPoints laserPoints, Planes pl
                                               ObjectPoints &vertices,  //output faces
                                               LineTopologies &faces);
 
-
 Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
         LineTopologies &lp_faces, std::map<int, Positions3D> &planes_pos_map) ;
 
-/// intersecting a plane with the edges of a clipping rectangle
+/// TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
+/// intersecting a plane with the edges of a clipping rectangle (or polygon)
 ///  to obtain the line segment that cuts the rectangle
-///
 /// \param clipperRectangle_edges  clipping rectangle
 /// \param clipperRectangle_vertices  clipping rectangle
 /// \param plane  target plane which intersects the edges of the rectangle
@@ -29,15 +28,34 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
 
 /// intersecting a plane with 6 faces of a 3D box using Intersect_Plane_3DRectnagle() to obtain the polygon/face
 /// intersection of a plane and a 3DBox can be a polygon: a triangle, rectangle, pentagon or a hexagon (6).
-/// NOTE: faces of the 3Dbox DONOT need to be a closed polygon (0-1-2-3)
+/// NOTE1: we drop very close vertices of the polygon <0.01m
+/// NOTE2: faces of the 3Dbox DONOT need to be a closed polygon (0-1-2-3)
 bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &box3d_vertices, //input
                            const Plane &plane, int polygon_number, //input
                            LineTopologies &polygon_edges, ObjectPoints &polygon_vertices);
 
+/// 1. fit planes to each segment in segments
+/// 2. use Intersect_Plane_3DBoxFaces() to intersect the plane to the 3DBox
+/// 3. get the extended polygons of each segment as a result of intersection with the bbox3d
+/// NOTE: later we use these polygons to intersect them to each other to obtain new polygons/faces
+/// this is tested, it works. use it for intersecting planes with the bounding box of the data
 void Intersect_Planes_3DBoxFaces(LaserPoints segments,int min_seg_size,
                                  LineTopologies box3d_faces,const ObjectPoints box3d_vertices,
                                  LineTopologies &polygons_edges, ObjectPoints &polygons_vertices,
+                                 bool close,
                                  bool verbose);
+
+bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
+                                   LineTopology &polygon_edges,
+                               const LineSegment3D &line_segment,
+                               double snap_dist,
+                               LineTopologies &new_polygons);
+
+/// we use two segments (which we know they intersect) to create the intersection line segment
+/// and use it to split segment1 with the plane of segment2
+void test_SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_v, LineTopologies &polygon_e,
+                                        LaserPoints segment,
+                                        ObjectPoints &new_polygon_v, LineTopologies &new_poly_e);
 
 
 /// test intersct a plane and a 3DBox
@@ -57,5 +75,14 @@ ObjectPoints GetCorresponding_vertices(const ObjectPoints &vertices, const LineT
 
 // checks if a point is inside the bounds of a linesegment
 bool Point_Inside_3DLineBounds(const Position3D &point, const LineSegment3D &lineseg3D, double margin);
+
+std::multimap<int, Plane> collect_intersectingPlanes(Planes planes,
+                        ObjectPoints polygons_v, LineTopologies polygons_e);
+
+void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polygons_e,
+                    double snap_dist, ObjectPoints new_polygons_v, LineTopologies new_polygons_e);
+
+void test_pairwise_split(LaserPoints segments, LineTopologies box3d_faces,
+                         ObjectPoints box3d_vertices, double snap_dist);
 
 

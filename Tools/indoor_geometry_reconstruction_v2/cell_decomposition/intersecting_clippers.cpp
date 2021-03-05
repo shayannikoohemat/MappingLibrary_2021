@@ -3,7 +3,7 @@
 #include <LaserPoints.h>
 #include <map>
 #include <Plane.h>
-#include <syslimits.h>
+//#include <syslimits.h>
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
 
@@ -17,7 +17,7 @@
  * 5. label which cells belong to the same room and which belong to the outside (not done)
  *
  * */
-
+/// NOT FINISHED
 void intersect_planes(char *laserfile, char *root_dir, int min_segment_size)
 {
     char str_root[500];
@@ -67,6 +67,223 @@ void intersect_planes(char *laserfile, char *root_dir, int min_segment_size)
 }
 
 
+
+// collect list of pair segments which intersect in the bound of the data
+/// a sweeping plane is more optimised to check the pair intersections but we do O(n2)
+std::multimap<int, Plane> collect_intersectingPlanes(Planes planes,
+                         ObjectPoints polygons_v, LineTopologies polygons_e)
+ {
+      vector< pair <int,int>> pair_polygons;
+      std::multimap<int, Plane> polygon_splitters_mmap;
+     /// make a map of planes
+     /// the assumption is that plane_number and segmentNumber and polygon_number are the same
+//     std::map<int, Plane> planes_map;
+//     if(!planes.empty ()){
+//         for(auto &plane : planes) {
+//             planes_map.insert (std::pair<int, Plane> (plane.Number(), plane));
+//         }
+//     }
+
+     polygons_e.Sort(); // sort by line number
+     for (auto &polygon : polygons_e){
+         ObjectPoints vertices = GetCorresponding_vertices(polygons_v, polygon);
+         for (auto &plane : planes){
+             LineSegment3D linesegment;
+             if(Intersect_Plane_3DRectnagle(polygon, vertices, plane, linesegment)){
+                 //pair_polygons.push_back(std::make_pair(polygon_num, plane_num));
+                 polygon_splitters_mmap.insert(std::pair<int, Plane> (polygon.Number(), plane));
+            }
+         }
+     }
+//     for (auto it1 = polygons_e.begin (); it1 != polygons_e.end (); it1++){
+//         // get the polygon here
+//         LineTopology polygon = *it1;
+//         int polygon_num = polygon.Number();
+//         ObjectPoints vertices = GetCorresponding_vertices(polygons_v, polygon);
+//         // get the second polygon and its plane
+//         auto it2 = std::next (it1);
+//         for(; it2 != polygons_e.end (); it2++){
+//             int plane_num = (*it2).Number();
+//             Plane plane;
+//             auto plane_it = planes_map.find (plane_num);
+//             if (plane_it != planes_map.end ()){
+//                 plane = plane_it->second;
+//             }
+//             /// now we have both the polygon and a plane to intersect
+//             //cout << "intersecting polygons: " << polygon_num << " and " << plane_num << endl; //DEBUG
+//             LineSegment3D linesegment;
+//             if(Intersect_Plane_3DRectnagle(polygon, vertices, plane, linesegment)){
+//                 pair_polygons.push_back(std::make_pair(polygon_num, plane_num));
+//             }
+//         } // end of 2nd for
+//     } // end of 1st for
+
+     // print list of pairs for double-check
+//     for (auto &p : pair_polygons){                                     //DEBUG
+//         cout << "pairs:" << p.first << "<>" << p.second << endl;
+//     }
+     for (auto &m :polygon_splitters_mmap){
+
+     }
+     return polygon_splitters_mmap;
+ }
+
+void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polygons_e,
+                    double snap_dist, ObjectPoints new_polygons_v, LineTopologies new_polygons_e)
+{
+
+    polygons_e.Sort(); // sort by line number
+    ObjectPoints updated_vertices;
+    for (auto &polygon : polygons_e){
+        cout << "for Polygon: " << polygon.Number() << endl; //DEBUG
+        Planes splitPlanes;
+        //LineSegments3D splitLinesegments;
+        ObjectPoints vertices = GetCorresponding_vertices(polygons_v, polygon);
+        for (auto &plane : planes){
+            LineSegment3D linesegment;
+            if(Intersect_Plane_3DRectnagle(polygon, vertices, plane, linesegment)){
+                splitPlanes.push_back(plane);
+                //splitLinesegments.push_back(linesegment);
+            }
+        }
+        if(splitPlanes.empty())
+            continue;
+        LineTopologies polygons_to_be_cut;
+        ObjectPoints polygons_to_be_cut_vertices;
+        polygons_to_be_cut.push_back(polygon);
+        polygons_to_be_cut_vertices = vertices;
+        Planes::iterator plane_it = splitPlanes.begin();
+        int cnt=0;
+        while (plane_it != splitPlanes.end()){
+            LineTopologies new_polygons; //children of polygon
+            LineTopologies remained_polygons; // not intersected children
+            Plane splitter = *plane_it;
+            cout << "   Plane: " << splitter.Number() << endl; //DEBUG
+            // split polygons inside polygons_to_be_cut vector
+            for(auto &current_polygon : polygons_to_be_cut){
+                cout << "       is cutting:" << polygon.Number() << "-" << cnt << endl; //DEBUG
+                LineSegment3D linesegment3d;
+               ObjectPoints current_vertices = GetCorresponding_vertices(polygons_to_be_cut_vertices, current_polygon);
+                if(!Intersect_Plane_3DRectnagle(current_polygon, current_vertices, splitter, linesegment3d))
+                    continue;
+                LineTopologies tmp;
+                if(SplitPolygon3DByLineSegment3D(current_vertices, current_polygon, linesegment3d, snap_dist, tmp)){
+                    new_polygons.insert(new_polygons.end(), tmp.begin(), tmp.end());
+                    polygons_to_be_cut_vertices = current_vertices;
+                }else{
+                    remained_polygons.push_back(current_polygon);
+                    polygons_to_be_cut_vertices = current_vertices;
+                }
+                cnt++; // DEBUG
+            }
+            polygons_to_be_cut = new_polygons; // update polygons_to_be_cut
+            polygons_to_be_cut.insert(polygons_to_be_cut.end(), remained_polygons.begin(), remained_polygons.end());
+            plane_it++;
+        } // end of while
+    } // end of polygons
+}
+
+void test_pairwise_split(LaserPoints segments, LineTopologies box3d_faces,
+                         ObjectPoints box3d_vertices, double snap_dist){
+    ObjectPoints vertices; LineTopologies polygons;
+    // intersect the segments with the bbox and get the polygons
+    Intersect_Planes_3DBoxFaces(segments, 5, box3d_faces, box3d_vertices, polygons, vertices, true, true);
+    vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
+    polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
+
+    Planes planes;
+    vector<LaserPoints> segments_vec;
+    char *root_dir;
+    segments_vec = PartitionLpByTag(segments, SegmentNumberTag, root_dir);
+    for (auto &s : segments_vec){
+        Plane plane;
+        plane = s.FitPlane(s[0].SegmentNumber());
+        plane.Number() = s[0].SegmentNumber();
+        planes.push_back(plane);
+    }
+    ObjectPoints new_polygons_v; LineTopologies new_polygons_e;
+    pairwise_split(planes, vertices, polygons, snap_dist, new_polygons_v, new_polygons_e);
+
+}
+
+
+/// NOT FINISHED
+ /// polygon=face, plane=spliter
+void pairwise_split_old(Planes planes, ObjectPoints polygons_v, LineTopologies polygons_e,
+                   map<int, int> pair_polygons, double snap_dist,
+                   ObjectPoints new_polygons_v, LineTopologies new_polygons_e)
+ {
+     /// make a map of planes
+     /// the assumption is that plane_number and segmentNumber and polygon_number are the same
+     std::map<int, Plane> planes_map;
+     if(!planes.empty ()){
+         for(auto &plane : planes) {
+             planes_map.insert (std::pair<int, Plane> (plane.Number(), plane));
+         }
+     }
+
+     /// make a map of polygons&vertices and numbers are keys.
+     /// These keys are the same in segment numbers and plane numbers
+     // later we update these multimaps with each split
+     std::multimap<int, LineTopology>  polygons_map;
+     std::multimap<int, ObjectPoints>  vertices_map;
+     polygons_e.Sort(); // sort by line number
+     for (auto & polygon : polygons_e){
+         int polygon_num = polygon.Number();
+         ObjectPoints vertices = GetCorresponding_vertices(polygons_v, polygon);
+         polygons_map.insert(std::pair<int, LineTopology> (polygon_num, polygon));
+         vertices_map.insert(std::pair<int, ObjectPoints> (polygon_num, vertices));
+     }
+
+     // this pair is just the numebrs (key) to the polygons which intersect
+     // for this operation it is important that pair polygon is sort/ordered by first values (this is taken care of when it was created)
+     for(auto &pair : pair_polygons){
+         // split the polygon (pair.first) with the plane (pair.second)
+         // keep a list of splits and update pair.first in the multimap
+         LineTopology polygon;
+         ObjectPoints vertices;
+         int polygon_num  = pair.first;
+         auto polygon_it  = polygons_map.find(polygon_num);
+         auto vertices_it = vertices_map.find(polygon_num);
+         if(polygon_it  != polygons_map.end()) polygon  = polygon_it->second;
+         if(vertices_it != vertices_map.end()) vertices = vertices_it->second;
+
+         typedef std::multimap<int, LineTopology>::iterator MmapIt_e;
+         typedef std::multimap<int, ObjectPoints>::iterator MmapIt_v;
+         std::pair <MmapIt_e, MmapIt_e> poly_range; // the range iterator to split polygons with the same key or parent polygon
+         poly_range = polygons_map.equal_range(polygon_num);
+         vector<LineTopology> child_polys;
+         vector<ObjectPoints> child_vertices;
+
+         // we take the plane from the second value of the pair
+         Plane plane;
+         int plane_num = pair.second;
+         auto plane_it = planes_map.find (plane_num);
+         if (plane_it != planes_map.end ()){
+             plane = plane_it->second;
+         }
+         // now we need the intersection segment of polygon/face and the pane
+         LineSegment3D linesegment;
+         LineTopologies new_polygons; // this is one or two (one if the polygon is cut in its edge it returns the same polygon)
+         ObjectPoints new_vertices;
+         LineTopologies remained_polygons; // not intersected
+         if(!Intersect_Plane_3DRectnagle(polygon, vertices, plane, linesegment))
+             continue; // this can't happen because pairs should already have intersection
+         // split the polygon
+         if(SplitPolygon3DByLineSegment3D(vertices, polygon, linesegment, snap_dist, new_polygons)){
+         // update pair.first polygon in the map
+             for (auto &child_poly : new_polygons){
+                 child_polys.push_back(child_poly);
+                 ObjectPoints child_v=GetCorresponding_vertices(vertices, child_poly);
+                 child_vertices.push_back(child_v);
+             }
+         } // if split happens
+     } // for of pairs
+
+ }
+
+
+/// NOT FINISHED
 /// 1.intersect two polygons/planes in 3D space
 /// 2. get the intersection linesegment: Intersect_Plane_3DRectnagle()
 /// 3. from the vertices of this linessegment with vertices of polygons create new faces (1 to 4 new faces)
@@ -145,6 +362,8 @@ void ExtractFaces_from_3DPolygonsIntersection(LaserPoints laserPoints, Planes pl
     //TODO: loop through each segment and other segment/polygon/plane, intersect them, and collect list of created polygons.
 }
 
+
+/// NOT FINISHED
 void ExtractFaces_from_TwoPolygons_Intersection(LineTopology polygon1, ObjectPoints vertices1, Plane plane1,
                                                 LineTopology polygon2, ObjectPoints vertices2, Plane plane2,
                                                 LineTopologies &faces, ObjectPoints &vertices)
@@ -199,6 +418,7 @@ Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
     lp_noSeg.SetAttribute(SegmentNumberTag, 0); // for Min3DBox_OFF() all points should have one segment number
     char *OFFout;
     OFFout = strcat(str_root, "/cube_global.off");
+    /// create a cuboid from lp_noSeg: (lp_vertices, lp_faces)
     Min3DBox_OFF(lp_vertices, lp_faces, lp_noSeg, 20, OFFout,
                  dataBoundsLaser.Minimum().Z(), dataBoundsLaser.Maximum().Z(), 0);
 
@@ -257,18 +477,9 @@ Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
    4<---------7            */
 
 
-//TODO: maybe a safer solution is to project the 3D polygon to 2D, then intersect it
-// with the 2D projection of the plane bounds (which is another polygon) and then project it back on
-// the edges which there was an intersection with. Use: polygon.IntersectPolygonByLine()
-// However, this can go worng based on how to project the plane on XY plane? becasue the
-//intersection of polygons in 2D is a polygon not a line.
-/// TODOL look at Use: polygon.IntersectPolygonByLine() for a better implementation
+/// TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 /// intersecting a plane with the edges of a clipping rectangle (or polygon)
 ///  to obtain the line segment that cuts the rectangle
-/// \param clipperRectangle_edges  clipping rectangle
-/// \param clipperRectangle_vertices  clipping rectangle
-/// \param plane  target plane which intersects the edges of the rectangle
-/// \return  the line segment which is inside the plane of the clipping rectangle and is bounded by the edges
 bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
                                  ObjectPoints clipperRectangle_vertices,
                                  const Plane& plane, LineSegment3D &clipped_line){
@@ -281,14 +492,16 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
     LineSegments3D rect_edges(clipperRectangle_vertices, clipperRectangle_edges);
 
     DataBounds3D bounds3D = clipperRectangle_vertices.Bounds();
-    //cout << "bound Min:"  << bounds3D.Minimum() << endl;
-    //cout << "bound Max:"  << bounds3D.Maximum() << endl;
+    cout << "bound Min:"  << bounds3D.Minimum();
+    cout << "bound Max:"  << bounds3D.Maximum() << endl;
 
     // intersect the plane with the edges
     Positions3D intersected_poses;
     LaserPoints intersected_points;
     // for each edge of the clipping rectangle find the intersection point with the plane
+    int cnt=0;
     for (auto &e : rect_edges){
+        cout << "EDGE: " << ++cnt << endl; //DEBUG
         // make a line3d from each edge
         Line3D edge_line(e.BeginPoint().Position3DRef(), e.EndPoint().Position3DRef());
         // intersect this edge_line to the plane
@@ -300,10 +513,10 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
             /// take the middle point and check if it is inside the polygon
             /// check if the intersected_pos is between the vertices of
             /// the linesegment and not outside of the clipping polygon
-            // TODOL look at Use: polygon.IntersectPolygonByLine() for a better implementation
+            // TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 
             /// this doesn't work
-           //cout << "intersection position:" << intersected_pos << endl;
+           cout << "intersection position:" << intersected_pos; // << endl later
 //           if(Point_Inside_3DLine(intersected_pos, e, 0.01)){
 //               cout << "point on the line segment" << endl;
 //              intersected_poses.push_back(intersected_pos);
@@ -311,37 +524,42 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
 //           }
              /// this checks with all 4 vertices, maybe a better way is just to check with the linesegment points
             if(bounds3D.Inside(intersected_pos, 0.01)){
+                 cout << " Inside!" << endl; //DEBUG
                 intersected_poses.push_back(intersected_pos);
                 intersected_points.push_back(intersected_pos);
-            }
+            } else cout << " Outside!" << endl; //DEBUG
         } else
             return false; // edge-line and plane are parallel
     }
-    if(intersected_points.size() < 2){
-       cout << "WARNINGS! intersected pose is just one!!!" << endl;
+    if(intersected_points.size() == 0){
+       cout << "WARNINGS! NO INTERSECTION!!!" << endl;
+       return false;
+    }
+    if(intersected_points.size() == 1){
+       cout << "WARNINGS! intersected pose is just ONE!!!" << endl;
        return false;
     }
     clipped_line.Initialise();
     if(intersected_poses.size() == 2){
+        cout << "Successfull! intersected poses are TWO!!!" << endl;
         LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[1]); // this is very error prone if 0 and 1 have wrong orders
         clipped_line = clipped_line_temp;
     }
 
     if(intersected_poses.size() > 2){
-        cout << "WARNINGS! intersected poses are more than two!!!" << endl;
+        cout << "WARNINGS! intersected poses are more than TWO!!!" << endl;
         LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[2]);// why 0 and 2 // this is very error prone if 0 and 2 have wrong orders
         clipped_line = clipped_line_temp;
     }
-
-    /// instead of checking the number of intersections check which intersected points
-    ///  are closer to the centroid of the polygon, select two closest one.
-
-
     //intersected_points.Write("intersected_points.laserpoints", false);
 
     return true;
 }
 
+
+/// the input polygon is split to two new_polygons with a given line_segment in 3D space)
+/// look at void test_SplitPolygon3DByLineSegment3D() for test
+/// this function updates the list of polygon_points()
 bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
                                    LineTopology &polygon_edges,
                                const LineSegment3D &line_segment,
@@ -419,9 +637,25 @@ bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
                        polygon_points[end_index].NumberRef(), new_polygons);
 }
 
+/// we use two segments (which we know they intersect) to create the intersection line segment
+/// and use it to split segment1 with the plane of segment2
+void test_SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_v, LineTopologies &polygon_e,
+                                        LaserPoints segment,
+                                        ObjectPoints &new_polygon_v, LineTopologies &new_poly_e)
+{
+    Plane plane = segment.FitPlane(segment[0].SegmentNumber());
+    plane.Number() = segment[0].SegmentNumber(); // this is necessary
+    LineSegment3D linesegment;
+    LineTopology polygon_top;
+    polygon_top = polygon_e[0];
+    if(Intersect_Plane_3DRectnagle(polygon_top, polygon_v, plane, linesegment))
+    {
+        SplitPolygon3DByLineSegment3D(polygon_v, polygon_top, linesegment, 0.01, new_poly_e);
+    } else cout << "polygons don't intersect!" << endl;
+}
+
 /// intersecting a plane with the 12edges of a 3DBox to obtain the polygon/face
 /// intersection of a plane and a 3DBox can be a polygon: a triangle, rectangle, pentagon or a hexagon (6).
-///
 /// \param clipper_edges_topo  clipping 3DBox
 /// \param clipper_vertices  clipping 3DBox
 /// \param plane  target plane which intersects the edges of the 3DBox
@@ -438,6 +672,7 @@ bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
 /// intersection of a plane and a 3DBox can be a polygon: a triangle, rectangle, pentagon or a hexagon (6).
 /// NOTE1: we drop very close vertices of the polygon <0.01m
 /// NOTE2: faces of the 3Dbox DONOT need to be a closed polygon (0-1-2-3)
+// WHY int polygon_number is required?
 bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &box3d_vertices, //input
                            const Plane &plane, int polygon_number, //input
                            LineTopologies &polygon_edges, ObjectPoints &polygon_vertices) //output
@@ -446,6 +681,7 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
     LineSegments3D clipped_polygon; //a triangle, rectangle, pentagon or a hexagon (3-6 vertices)
     int count=0;
     for(auto &face_edges : box3d_faces){ // cuboid has 6 faces and each face has 4 edges
+        cout << "Box Face: " << ++count << endl; //DEBUG
         // fetch the exact vertices for this face
         ObjectPoints face_vertices = GetCorresponding_vertices(box3d_vertices, face_edges);
         LineSegment3D linesegment;
@@ -453,22 +689,6 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
             /// create new vertices and new topology,
             /// check if vertices are the same(within an epsilon dist) use one of them (later RemoveDoublePoints())
             clipped_polygon.push_back(linesegment);
-//            PointNumber pn1, pn2;
-//            Covariance3D cov3d;
-//            cov3d = Covariance3D(0, 0, 0, 0, 0, 0);
-//            /// convert begin and end-point of line intersect to objpoint
-//            count++;
-//            pn1 = PointNumber(count);
-//            ObjectPoint beginp = ObjectPoint(linesegment.BeginPoint(), pn1, cov3d);
-//            count++;
-//            pn2 = PointNumber(count);
-//            ObjectPoint endp = ObjectPoint(linesegment.EndPoint(), pn2, cov3d);
-//            polygon_vertices.push_back(beginp);
-//            polygon_vertices.push_back(endp);
-//            /// create the line_topology
-//            LineTopology edge_topo;
-//            edge_topo = LineTopology(polygon_number, 1, pn1, pn2);
-//            polygon_edges.push_back(edge_topo);
             intersection = true;
         }
     }
@@ -477,13 +697,6 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
     /// because linesegments have common vertices on the cuboid surface, the duplicates should be removed
     polygon_vertices.RemoveDoublePoints(polygon_edges, 0.01);
     cout << "# polygon vertices after edit:" << polygon_vertices.size() << endl;
-    //polygon_edges.ReturnClosedPolygon(polygon_vertices);
-    /// make it clockwise
-//    if (polygon_edges.IsClockWise(polygon_vertices)){ //polygon_edges this should be LineTopology
-//        polygon_edges.MakeCounterClockWise(polygon_vertices);
-//    }else{
-//        polygon_edges.MakeClockWise(polygon_vertices);
-//    }
 
     return intersection;
 }
@@ -496,7 +709,7 @@ bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &
 void Intersect_Planes_3DBoxFaces(LaserPoints segments, int min_seg_size,
                                  LineTopologies box3d_faces,const ObjectPoints box3d_vertices,
                                  LineTopologies &polygons_edges, ObjectPoints &polygons_vertices,
-                                 bool verbose)
+                                 bool close, bool verbose)
 {
     char* root_dir;
     root_dir = (char*) "/mnt/DataPartition/CGI_UT/cell_decomposition/out/";
@@ -505,6 +718,7 @@ void Intersect_Planes_3DBoxFaces(LaserPoints segments, int min_seg_size,
     int next_number; // initialized later
     vector<LaserPoints> segments_vec;
     segments_vec = PartitionLpByTag(segments, SegmentNumberTag, root_dir);
+    sort(segments_vec.begin(), segments_vec.end(), compare_lp_segmenttag);
     cout << "Number of segments: " << segments_vec.size() << endl;
     for (auto &segment : segments_vec){
         if(segment.size() < min_seg_size) continue; // to skip very small segments
@@ -538,7 +752,7 @@ void Intersect_Planes_3DBoxFaces(LaserPoints segments, int min_seg_size,
                 polygons_vertices.push_back(polygon_vertices[i]);
                 poly_tmp_edges.push_back(pnumber);  // making the linetopology
             }
-            poly_tmp_edges.push_back(PointNumber(next_number)); // Close the polygon (for visualisation in pcm)
+            if(close) poly_tmp_edges.push_back(PointNumber(next_number)); // Close the polygon (for visualisation in pcm)
             if (poly_tmp_edges.IsClockWise(polygons_vertices)){
                 poly_tmp_edges.MakeCounterClockWise(polygons_vertices);
             }else{
@@ -643,8 +857,6 @@ ObjectPoints GetCorresponding_vertices(const ObjectPoints &vertices, const LineT
         ObjectPoint vertex = vertices.GetPoint(pnumlist[p].NumberRef())->ObjectPointRef();
         vertices_points.push_back(vertex);
     }
-    //LineTopologies topos;
-    //vertices_points.RemoveDoublePoints(topos, 0.00001); // this is not safe
     return vertices_points;
 }
 

@@ -245,7 +245,7 @@ void poles(char *long_filter, char *infile,
 
         // Do not go ahead if the point file and meta file already exists and 
         // overwriting these files is not permitted.
-        if (overwrite || !FileExists(newsubunit.MetaDataFile()) ||
+        if (overwrite) || !FileExists(newsubunit.MetaDataFile()) ||
             !FileExists(newsubunit.PointFile())) {
         
           // Read the point data

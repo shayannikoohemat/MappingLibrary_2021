@@ -602,7 +602,7 @@ void GenerateVolumetricWalls (const ObjectPoints &wall_rectangles_vertices, Line
         /// remove the last pointnumber of the polygon,
         /// we don't need a closed polygon as a face
         rectangle.pop_back ();
-        //rectangle.Sort ();   /// not needed becasue we renumber the the pointnumbers
+        //rectangle.Sort ();   /// not needed because we renumber the the pointnumbers
         for (int i=0; i < rectangle.size (); i++){
             ObjectPoint vertex;
             vertex = *wall_rectangles_vertices.GetPoint (rectangle[i]);
@@ -655,8 +655,8 @@ void GenerateVolumetricWalls (const ObjectPoints &wall_rectangles_vertices, Line
 }
 
 
-///
-/*
+/*///
+*//*
  * This function gets the permanent structure (walls, floor and ceiling) point clouds as input and fit a box to each segment.
  * Each permanent-structure layer has a label (wall=4, floor=5 and ceiling=6) and it is processed based on segments.
  * The function by default, fit a box to the segment and extract the width and height from the segment, if there is no given parameter.
@@ -670,7 +670,7 @@ void GenerateVolumetricWalls (const ObjectPoints &wall_rectangles_vertices, Line
  * should be merged to one patch.
  * The function doesn't decide on the class of the segment based on the normal vector angle (vertical or horizontal).
  * Therefore, everything that is as wall, floor or ceiling can have arbitrary normal angle.
- * */
+ * *//*
 
 
 /// not a complete function
@@ -707,7 +707,7 @@ void ModelingInteriorWalls(const LaserPoints &segmented_walls, const LaserPoints
         exit(0);
     }
 
-/*    /// remove duplicate points because it affects the enclosingrectangle function
+*//*    /// remove duplicate points because it affects the enclosingrectangle function
     segmented_lp.RemoveDoublePoints();
     cout << "nr of points after RemoveDoublePoints: " << segmented_lp.size() << endl;
     /// remove duplicate points because it affects the enclosingrectangle function
@@ -715,5 +715,5 @@ void ModelingInteriorWalls(const LaserPoints &segmented_walls, const LaserPoints
     cout << "nr of points after RemoveDoublePoints: " << segmented_lp.size() << endl;
     /// remove duplicate points because it affects the enclosingrectangle function
     segmented_lp.RemoveDoublePoints();
-    cout << "nr of points after RemoveDoublePoints: " << segmented_lp.size() << endl;*/
-}
+    cout << "nr of points after RemoveDoublePoints: " << segmented_lp.size() << endl;*//*
+}*/

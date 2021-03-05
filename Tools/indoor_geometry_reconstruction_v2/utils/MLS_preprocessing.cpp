@@ -67,7 +67,7 @@ std::vector<LaserPoints> PartitionLpByTag(LaserPoints const& lp, LaserPointTag i
         LaserPoints tmp;
         tmp.reserve(std::distance(range.first, range.second));
 
-        /// loop through the iterators of range and collect points with similar tag number
+        /// loop through the iterators of range and collect values (points with similar tag number)
         for (auto i = range.first; i != range.second; ++i) {
             //std::move(i->second);
             boost::move(i->second);

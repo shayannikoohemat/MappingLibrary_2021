@@ -57,3 +57,4 @@ set(SOURCE_FILES main_modeling.cpp
 
 add_executable(modeling ${SOURCE_FILES})
 target_link_libraries(modeling ${Boost_LIBRARIES})
+target_link_options(modeling PRIVATE -no-pie)

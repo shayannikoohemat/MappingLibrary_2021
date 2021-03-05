@@ -97,7 +97,7 @@ DataBoundsLaser ShrinkDBounds(const DataBoundsLaser &bounds, double shrinking_si
     return shrinkedbounds;
 }
 
-/// shirnk or enlarge the minimum enclosing rectangle or any other polygon
+/// shrink or enlarge the minimum enclosing rectangle or any other polygon
 /// the scalefactor is the percentage of original size: e.g. 0.98, e.g. 1.02
 ObjectPoints ScaleRectangle (ObjectPoints &corners, LineTopology &edges, double scalefactor){
 

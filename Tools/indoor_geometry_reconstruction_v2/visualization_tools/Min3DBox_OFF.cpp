@@ -18,7 +18,7 @@
 /// This function calculates a 3Dbox around each segment of the laserpoints, **NOT an oriented bbox**
 /// by extruding the 2D minimum rectangle in the z-direction.
 /// The height of the box is user defined or extracted from the height of the segment.
-/// conrners and polygon_lines are the output and the result is written to a OFF format file.
+/// conrners and polygon_lines are the outputs and the result is written to a OFF format file.
 void Min3DBox_OFF(ObjectPoints &corners, LineTopologies &polygon_lines, LaserPoints segmented_lpoints,
                   int min_segment_size, char *OFFfile, double min_z, double max_z, double height){
 
@@ -152,7 +152,7 @@ void Min3DBox_OFF(ObjectPoints &corners, LineTopologies &polygon_lines, LaserPoi
         }*/
 
     /// sketch of the 6 faces, all the normals should point outside the cube,
-    /// we use right-hand rule to order the vertices for each face, while the thumb always pointing out
+    /// we use right-hand rule to order the vertices for each face, while the thumb always pointing outside
         /*     1<---------2
               /|		 /|
             /  |  top	/ |
