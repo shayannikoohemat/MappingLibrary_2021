@@ -27,28 +27,31 @@ int main() {
     box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_vertices.objpts");
 
     /// test Intersect_Planes_3DBoxFaces
-//    LaserPoints segments;
-//    LineTopologies polygons_edges;
-//    ObjectPoints polygons_vertices;
-//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/lp_inclined.laser");
-//    Intersect_Planes_3DBoxFaces(segments, 5, box3d_faces, box3d_vertices,
-//                                polygons_edges, polygons_vertices, true, true);
-//    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
-//    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
+    LaserPoints segments;
+    LineTopologies polygons_edges;
+    ObjectPoints polygons_vertices;
+    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
+    Intersect_Planes_3DBoxFaces(segments, 5, box3d_faces, box3d_vertices,
+                                polygons_edges, polygons_vertices, true, true);
+    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
+    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
 
-//    /// test test_SplitPolygon3DByLineSegment3D()
-//    ObjectPoints polygon_v; LineTopologies polygon_e;
+    /// test SplitPolygons3DByPlane3D()
 //    LaserPoints segment;
-//    ObjectPoints new_polygon_v; LineTopologies new_poly_e;
-//    segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment3.laser");
-//    Plane plane = segment.FitPlane(segment[0].SegmentNumber());
-//    polygon_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygon60_vertices.objpts");
-//    polygon_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygon60_edges.top", false);
+//    ObjectPoints new_polys_v; LineTopologies new_polys_e;
+//    segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment3.laser"); // for the spliting plane
+//    // input polygons are created by Intersect_Planes_3DBoxFaces()
+//    SplitPolygons3DByPlane3D(polygons_vertices, polygons_edges, segment, new_polys_v, new_polys_e);
+//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+//    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 
-//    test_SplitPolygon3DByLineSegment3D(polygon_v, polygon_e, segment, new_polygon_v, new_poly_e);
-
-//    polygon_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon60_new_vertices.objpts");
-//    new_poly_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon60_new_edges.top", false);
+    /// test SplitPolygon3DByPlanes3D()
+    ObjectPoints new_polys_v; LineTopologies new_polys_e;
+    //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
+    // input polygons are created by Intersect_Planes_3DBoxFaces()
+    SplitPolygon3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e);
+    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 
     /// test  vector< pair <int,int>> Collect_IntersectingPLanes ()
 //    LaserPoints lp;
@@ -71,11 +74,11 @@ int main() {
 //    vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_inclined_vertices.objpts");
 //    polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_inclined_edges.top", false);
 
-//    /// split pairwise polygons
-    LaserPoints segments;
-    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
-    cout << segments.size() << endl;
-    test_pairwise_split(segments, box3d_faces, box3d_vertices, 0.01);
+    /// split pairwise polygons
+//    LaserPoints segments;
+//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
+//    cout << segments.size() << endl;
+//    test_pairwise_split(segments, box3d_faces, box3d_vertices, 0.01);
 
 
     return 0;

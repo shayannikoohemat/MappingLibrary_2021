@@ -51,11 +51,14 @@ bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
                                double snap_dist,
                                LineTopologies &new_polygons);
 
-/// we use two segments (which we know they intersect) to create the intersection line segment
-/// and use it to split segment1 with the plane of segment2
-void test_SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_v, LineTopologies &polygon_e,
+/// splitting several polygons with one segment/plane
+void SplitPolygons3DByPlane3D(ObjectPoints &polygon_v, LineTopologies &polygon_e,
                                         LaserPoints segment,
                                         ObjectPoints &new_polygon_v, LineTopologies &new_poly_e);
+
+/// splitting one polygon incrementally by several segments/planes
+void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+                                        ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e);
 
 
 /// test intersct a plane and a 3DBox

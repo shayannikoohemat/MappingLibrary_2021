@@ -167,22 +167,21 @@ void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polyg
             LineTopologies remained_polygons; // not intersected children
             Plane splitter = *plane_it;
             cout << "   Plane: " << splitter.Number() ;//<< endl; //DEBUG
-            // split polygons inside polygons_to_be_cut vector
+            // split polygons of polygons_to_be_cut
             for(auto &current_polygon : polygons_to_be_cut){
                 if(cnt==0)
                     cout << " is splitting: " << polygon.Number() << endl;    //DEBUG
                 else
                     cout << " is splitting: " << polygon.Number() << "-" << cnt << endl;    //DEBUG
-                LineSegment3D linesegment3d;
+               LineSegment3D linesegment3d;
                ObjectPoints current_vertices =
                        GetCorresponding_vertices(polygons_to_be_cut_vertices, current_polygon);
                current_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/current_vertices.objpts");
                LineTopologies curr_pol_tmp; curr_pol_tmp.push_back(current_polygon); //DEBUG
                curr_pol_tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/current_polygon.top", false);
                 if(!Intersect_Plane_3DRectnagle(current_polygon, current_vertices, splitter, linesegment3d))
-                    continue;
+                    continue; // go to the next child
                 LineTopologies tmp;
-
                 if(SplitPolygon3DByLineSegment3D(current_vertices, current_polygon, linesegment3d, snap_dist, tmp)){
                     current_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_vertices.objpts");
                     tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_polygons.top", false);
@@ -665,21 +664,87 @@ bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
                        polygon_points[end_index].NumberRef(), new_polygons);
 }
 
-/// we use two segments (which we know they intersect) to create the intersection line segment
-/// and use it to split segment1 with the plane of segment2
-void test_SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_v, LineTopologies &polygon_e,
-                                        LaserPoints segment,
-                                        ObjectPoints &new_polygon_v, LineTopologies &new_poly_e)
+/// splitting several polygons by one segment/plane
+void SplitPolygons3DByPlane3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segment,
+                                        ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e)
 {
+    /// we assume segment has only one segment
     Plane plane = segment.FitPlane(segment[0].SegmentNumber());
     plane.Number() = segment[0].SegmentNumber(); // this is necessary
-    LineSegment3D linesegment;
-    LineTopology polygon_top;
-    polygon_top = polygon_e[0];
-    if(Intersect_Plane_3DRectnagle(polygon_top, polygon_v, plane, linesegment))
-    {
-        SplitPolygon3DByLineSegment3D(polygon_v, polygon_top, linesegment, 0.01, new_poly_e);
-    } else cout << "polygons don't intersect!" << endl;
+    /// try for several polygons and one plane
+    for (auto &polygon : polygons_e){
+        if(polygon.Number() == plane.Number()) continue;
+        LineSegment3D linesegment;
+        if(Intersect_Plane_3DRectnagle(polygon, polygons_v, plane, linesegment))
+        {
+            LineTopologies new_poly_e;
+            SplitPolygon3DByLineSegment3D(polygons_v, polygon, linesegment, 0.01, new_poly_e);
+            new_polygons_e.insert(new_polygons_e.end(), new_poly_e.begin(), new_poly_e.end());
+        } else
+        {
+            cout << "polygon " << polygon.Number() <<
+                       " is not intersected by the plane!" << endl;
+            new_polygons_e.push_back(polygon);
+        }
+    }
+    new_polygons_v = polygons_v;
+}
+
+/// splitting one polygon incrementally by several segments/planes
+void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+                                        ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e)
+{
+    /// create a list of planes from segments
+    char* root_dir;
+    vector<LaserPoints> segments_vec;
+    segments_vec = PartitionLpByTag(segments, SegmentNumberTag, root_dir);
+    sort(segments_vec.begin(), segments_vec.end(), compare_lp_segmenttag);
+    Planes planes;
+    for (auto &segment : segments_vec){
+        int seg_num = segment[0].SegmentNumber();
+        if(seg_num < 0) continue; // to skip non valid segments
+        // fit a plane
+        Plane plane;
+        plane = segment.FitPlane(seg_num);
+        plane.Number() = seg_num;
+        planes.push_back(plane);
+    }
+    /// try for several polygons and one plane
+    /// we assume all planes intersect the polygon
+    //for (auto &polygon : polygons_e){
+    LineTopology polygon = polygons_e[1];
+    cout << "polygon:" << polygon.Number() << endl;
+    LineTopologies polygons_to_be_cut;
+    polygons_to_be_cut.push_back(polygon);
+    while(!planes.empty()){
+        LineTopologies new_polygons, remained_polygons;
+        Plane plane = *(planes.begin());
+        for (auto &poly_child : polygons_to_be_cut){
+            if(poly_child.Number() == plane.Number()) continue;
+            LineSegment3D linesegment;
+            if(Intersect_Plane_3DRectnagle(poly_child, polygons_v, plane, linesegment))
+            {
+                LineTopologies new_poly_e;
+                SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
+                new_polygons = new_poly_e;
+                //new_polygons_e.insert(new_polygons_e.end(), new_poly_e.begin(), new_poly_e.end());
+            } else
+            {
+                cout << "polygon " << poly_child.Number() <<
+                           " is not intersected by the plane!" << plane.Number() << endl;
+                remained_polygons.push_back(polygon);
+                //new_polygons_e.push_back(poly_child);
+            }
+            polygons_to_be_cut = new_polygons;
+            polygons_to_be_cut.insert(polygons_to_be_cut.end(),
+                                      remained_polygons.begin(), remained_polygons.end());
+            new_polygons_e.insert(new_polygons.end(),
+                                  polygons_to_be_cut.begin(), polygons_to_be_cut.end());
+        }
+        planes.erase(planes.begin());
+    } // end while
+    //} //end for for several polygons
+    new_polygons_v = polygons_v;
 }
 
 /// intersecting a plane with the 12edges of a 3DBox to obtain the polygon/face
@@ -998,5 +1063,46 @@ bool Point_Inside_3DLineBounds(const Position3D &point, const LineSegment3D &lin
 //    int_points.erase(pos1);
 //  }
 //  return(intersections.size() - old_num_intersections);
+//}
+
+///*
+//--------------------------------------------------------------------------------
+//                  Split a closed polygon into two closed polygons
+//--------------------------------------------------------------------------------
+//*/
+
+//bool LineTopology::Split(const PointNumber &number1, const PointNumber &number2,
+//                         LineTopologies &new_polygons) const
+//{
+//  int                    index1, index2, index_swap;
+//  LineTopology           new_polygon;
+//  LineTopology::iterator node;
+
+//  if (!IsClosed()) return false;         // Closed polygon needed
+//  if (number1 == number2) return false;  // Two different node numbers needed
+
+//  index1 = FindPoint(number1);
+//  index2 = FindPoint(number2);
+//  if (index1 == -1 || index2 == -1) return false; // Node number not in polygon
+//  if (index1 > index2)
+//    {index_swap = index1;  index1 = index2;  index2 = index_swap;}
+
+//// Create the first new polygon
+//  new_polygon.Number() = 0;
+//  new_polygon.Label()  = Label();
+//  new_polygon.insert(new_polygon.begin(), begin() + index2, end());
+//  if (index1 > 0) new_polygon.insert(new_polygon.end(), begin() + 1,
+//                                     begin() + 1 + index1);
+//  new_polygon.push_back(*new_polygon.begin()); // Close polygon
+//  new_polygons.push_back(new_polygon);
+
+//// Create the second new polygon
+//  new_polygon.erase(new_polygon.begin(), new_polygon.end());
+//  new_polygon.Number() = 1;
+//  new_polygon.insert(new_polygon.end(), begin() + index1, begin() + index2 + 1);
+//  new_polygon.push_back(*new_polygon.begin()); // Close polygon
+//  new_polygons.push_back(new_polygon);
+
+//  return true;
 //}
 
