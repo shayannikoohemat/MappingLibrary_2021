@@ -3,6 +3,7 @@
 #include <map>
 #include <Plane.h>
 #include "intersecting_clippers.h"
+#include "face_selection.h"
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
 
@@ -49,7 +50,7 @@ int main() {
     ObjectPoints new_polys_v; LineTopologies new_polys_e;
     //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
     // input polygons are created by Intersect_Planes_3DBoxFaces()
-    SplitPolygon3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e);
+    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e);
     new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
     new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 

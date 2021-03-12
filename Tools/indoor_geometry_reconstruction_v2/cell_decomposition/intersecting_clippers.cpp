@@ -1,4 +1,5 @@
 #include "intersecting_clippers.h"
+#include "face_selection.h"
 #include <iostream>
 #include <LaserPoints.h>
 #include <map>
@@ -22,6 +23,8 @@ void intersect_planes(char *laserfile, char *root_dir, int min_segment_size)
 {
     char str_root[500];
     strcpy (str_root, root_dir);
+    FaceSelection fs;
+    fs.faceSelection()
 
     LaserPoints lp;
     lp.Read(laserfile);
@@ -690,8 +693,8 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygons_v, LineTopologies &polygons
     new_polygons_v = polygons_v;
 }
 
-/// splitting one polygon incrementally by several segments/planes
-void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+/// splitting polygons incrementally by several segments/planes
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e)
 {
     bool verbose=false;

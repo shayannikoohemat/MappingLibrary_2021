@@ -40,6 +40,7 @@ file(GLOB utils_Sources
 
 set(SOURCE_FILES main.cpp
         intersecting_clippers.cpp
+        face_selection.cpp
         ../utils/utils.h
         ../visualization_tools/visualization_tools.h
         ${visualisation_Sources}

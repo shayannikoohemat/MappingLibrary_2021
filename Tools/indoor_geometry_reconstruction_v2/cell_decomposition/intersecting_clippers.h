@@ -57,7 +57,7 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygon_v, LineTopologies &polygon_e
                                         ObjectPoints &new_polygon_v, LineTopologies &new_poly_e);
 
 /// splitting one polygon incrementally by several segments/planes
-void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e);
 
 
