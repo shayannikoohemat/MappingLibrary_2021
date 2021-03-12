@@ -556,7 +556,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
                 intersected_points.push_back(intersected_pos);
             } else if(verbose) cout << " Outside!" << endl; //DEBUG
         } else
-            return false; // edge-line and plane are parallel
+            continue;    //return false; // edge-line and plane are parallel
     }
     if(intersected_points.size() == 0){
        if(verbose) cout << "WARNINGS! NO INTERSECTION!!!" << endl;
@@ -694,6 +694,7 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygons_v, LineTopologies &polygons
 void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e)
 {
+    bool verbose=false;
     /// create a list of planes from segments
     char* root_dir;
     vector<LaserPoints> segments_vec;
@@ -711,39 +712,62 @@ void SplitPolygon3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons
     }
     /// try for several polygons and one plane
     /// we assume all planes intersect the polygon
-    //for (auto &polygon : polygons_e){
-    LineTopology polygon = polygons_e[1];
-    cout << "polygon:" << polygon.Number() << endl;
-    LineTopologies polygons_to_be_cut;
-    polygons_to_be_cut.push_back(polygon);
-    while(!planes.empty()){
-        LineTopologies new_polygons, remained_polygons;
-        Plane plane = *(planes.begin());
-        for (auto &poly_child : polygons_to_be_cut){
-            if(poly_child.Number() == plane.Number()) continue;
-            LineSegment3D linesegment;
-            if(Intersect_Plane_3DRectnagle(poly_child, polygons_v, plane, linesegment))
-            {
-                LineTopologies new_poly_e;
-                SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
-                new_polygons = new_poly_e;
-                //new_polygons_e.insert(new_polygons_e.end(), new_poly_e.begin(), new_poly_e.end());
-            } else
-            {
-                cout << "polygon " << poly_child.Number() <<
-                           " is not intersected by the plane!" << plane.Number() << endl;
-                remained_polygons.push_back(polygon);
-                //new_polygons_e.push_back(poly_child);
+    for (auto &polygon : polygons_e){
+        //LineTopology polygon = polygons_e[3]; //inx0=1, inx1=2, inx2=3, inx3=60
+        cout << "polygon:" << polygon.Number() << " ----------------------------------------------" << endl;
+        LineTopologies polygons_to_be_cut;
+        polygons_to_be_cut.push_back(polygon);
+        Planes cutting_planes = planes;
+        while(!cutting_planes.empty()){
+            LineTopologies new_polygons, remained_polygons;
+            Plane plane = *(cutting_planes.begin());
+            if(polygon.Number() == plane.Number()) {
+                cutting_planes.erase(cutting_planes.begin());
+                cout << "  !X plane: " << plane.Number() << " //self spliting!" << endl;
+                continue;
+            }
+            for (auto &poly_child : polygons_to_be_cut){
+                cout << "   X plane:" << plane.Number() << endl;
+                LineSegment3D linesegment;
+                //if(verbose) cout << "Poly child: "; poly_child.Print(); cout << endl;
+                if(Intersect_Plane_3DRectnagle(poly_child, polygons_v, plane, linesegment))
+                {
+                    LineTopologies new_poly_e;
+                    SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
+                    //new_polygons = new_poly_e;
+                    new_polygons.insert(new_polygons.end(), new_poly_e.begin(), new_poly_e.end());
+                    polygons_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_vertices.objpts");
+                    new_poly_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_edges.top", false);
+                    //if(verbose) cout << "new polygons:" ; new_polygons.Print(); cout << endl;
+                    if(new_poly_e.empty()){ // this is a hack if SplitPolygon3DByLineSegment3D() returns empty
+                        remained_polygons.push_back(poly_child);
+                        cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
+                             <<" !X plane " << plane.Number()<< endl;
+                        //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
+                    }
+                } else
+                {
+                    cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
+                         <<" !X plane " << plane.Number()<< endl;
+                    remained_polygons.push_back(poly_child);
+                    //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
+                }
             }
             polygons_to_be_cut = new_polygons;
             polygons_to_be_cut.insert(polygons_to_be_cut.end(),
                                       remained_polygons.begin(), remained_polygons.end());
-            new_polygons_e.insert(new_polygons.end(),
-                                  polygons_to_be_cut.begin(), polygons_to_be_cut.end());
-        }
-        planes.erase(planes.begin());
-    } // end while
-    //} //end for for several polygons
+            //cout << "polygons_to_be_cut:" ; polygons_to_be_cut.Print(); cout << endl;
+            polygons_to_be_cut.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_to_be_cut.top", false);
+            //new_polygons_e = polygons_to_be_cut;
+            cutting_planes.erase(cutting_planes.begin());
+        } // end while
+        new_polygons_e.insert(new_polygons_e.end(), polygons_to_be_cut.begin(), polygons_to_be_cut.end());
+    } //end for for several polygons
+    /// renumber polygons from 0 to n
+    for (int i=0; i<new_polygons_e.size();i++)
+    {
+        new_polygons_e[i].Number()=i;
+    }
     new_polygons_v = polygons_v;
 }
 

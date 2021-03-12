@@ -30,7 +30,7 @@ int main() {
     LaserPoints segments;
     LineTopologies polygons_edges;
     ObjectPoints polygons_vertices;
-    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
+    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/lp2_noFurn_noCl.laser");
     Intersect_Planes_3DBoxFaces(segments, 5, box3d_faces, box3d_vertices,
                                 polygons_edges, polygons_vertices, true, true);
     polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
