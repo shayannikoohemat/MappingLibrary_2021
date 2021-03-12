@@ -147,6 +147,7 @@ indoorTopology(char *laserFile, char *root_dir, int minSegmentSize, bool verbose
  *  *** Important function for generating bigger segments as wall patch that is called buffer ***
      *  // time consuming operation, is not recommended for large files or many segments
      *  // generate wallpatches includes segment refinement
+     *  generate wall patches later is handled by /utils/MergeSurfaces.cpp
  * */
     if(generate_wallpatches){
         printf ("\n Generate wall-patch segments ... (Martin-Kada's generalisation approach) \n");
