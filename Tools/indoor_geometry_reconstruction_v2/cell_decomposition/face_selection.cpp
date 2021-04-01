@@ -90,7 +90,8 @@ int FaceSelection::faceSelection(LaserPoints segments, int min_segsize, double d
 }
 
 // for given segment(s) of laserpoints and several faces/polygons associate points to each face
-int FaceSelection::associatePointsToFace3D()
-{
+//int FaceSelection::associatePointsToFace3D()
+//{
 
-}
+//}
+

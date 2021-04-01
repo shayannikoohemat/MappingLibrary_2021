@@ -249,6 +249,241 @@ bool Extend_Segments_to_Intersection (LaserPoints &segment1, LaserPoints &segmen
     }
 }
 
+/// Some override function of LaserPoints class to be used in PointsInsidePolygon3D()
+void SwapYZ(ObjectPoint &point){
+    double coord;
+    coord = point.Z(); point.Z() = point.Y(); point.Y() = coord;
+}
+
+void SwapXZ(ObjectPoint &point){
+    double coord;
+    coord = point.Z(); point.Z() = point.X(); point.X() = coord;
+}
+
+void SwapYZ(ObjectPoints &objpoints)
+{
+  for (ObjectPoints::iterator point=objpoints.begin();
+       point!=objpoints.end(); point++){
+    SwapYZ(*point);
+  }
+}
+
+void SwapXZ(ObjectPoints &objpoints)
+{
+  for (ObjectPoints::iterator point=objpoints.begin();
+       point!=objpoints.end(); point++){
+    SwapXZ(*point);
+  }
+}
+
+void swap(LaserPoint &p, bool ver, bool xalign)
+{
+    if(ver){
+        if(xalign)
+            //SwapYZ(p);
+            p.SwapYZ();
+        else
+            //SwapXZ(p);
+            p.SwapXZ();
+    }
+}
+
+LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
+                                  ObjectPoints polygon_vertices, LineTopology polygon){
+    //LaserPoints polygon_points;
+    //polygon_points.AddPoints(polygon_vertices);
+    DataBounds3D polygon_bounds = polygon_vertices.Bounds();
+
+    //cout << "#vertices: " << polygon_points.size() << endl;
+    /// reconstruct a plane with 4 vertices
+    Plane plane;
+    plane = Plane(polygon_vertices[0].Position3DRef (),
+            polygon_vertices[1].Position3DRef (),polygon_vertices[2].Position3DRef ());
+    plane.AddPoint (polygon_vertices[3].Position3DRef (), true); // true means recalculate the plane
+
+    Vector3D normal;
+    normal = plane.Normal ();
+    normal.PrintVector();
+    /// check if the plane is axis-aligend then we project/swap to opposit plane xz or yz
+    double angle_Xaxis = Angle(normal, Vector3D(0,1,0));
+    if (angle_Xaxis > M_PI/2) angle_Xaxis = M_PI - angle_Xaxis;
+
+    bool plane_is_Xaligend=false;
+    if(angle_Xaxis < 0.17) plane_is_Xaligend = true; // 0.17 radian ~= 10 degress
+
+    /// check if plane is vertical
+    double productZ = normal.DotProduct(Vector3D(0,0,1));
+    bool plane_vertical = false;
+    if(plane.IsVertical(0.17) || productZ ==0) plane_vertical=true; // 0.17 radian ~= 10 degress
+    //plane_vertical=false;
+    if(plane_vertical){
+        if(plane_is_Xaligend){ // is xz aligend
+            /// we swap y with z, actually we want to ignore y for insidepolygon calculation
+            //polygon_points.SwapYZ();// ignore Y-axis
+            SwapYZ(polygon_vertices);
+        } else { // if not Xaligend then project it to YZ
+            /// we swap x with z, so we ignore x for insidepolygon calculation
+            //polygon_points.SwapXZ(); // ignore X-axis
+            SwapXZ(polygon_vertices);
+        }
+        cout << "plane is vertical!" << endl;
+    }
+
+    LaserPoints updated_points;
+    LaserPoints swap_points;
+    for (auto &p : lpoints){
+        cout << p << endl;
+        double dist = plane.Distance(p);
+        cout << "dist:" << abs(dist) << endl;
+        if(abs(dist) > dist_threshold){
+            p.SetAttribute(LabelTag, 0);
+            updated_points.push_back(p);
+            //cout << "ouside by dist: " << p << endl;
+            continue;
+        }
+//        for (auto &v:polygon_vertices){
+//            cout << "vertice:" << v << endl;
+//        }
+
+        /// quick check if the point is inside the polygon bounds
+        /// Warning!!! this returns false if the point is slightly away from a
+        /// vertical plane but yet for us is considered inside
+        if(polygon_bounds.Inside(p.Position3DRef()))
+            cout << "inside bounds3d!" << endl;
+        else cout << "outside bounds3d!" << endl;
+
+        /// this swap should be after calcuating the dist of point to the plane
+        swap(p, plane_vertical, plane_is_Xaligend);
+        cout << p << endl;
+        swap_points.push_back(p);
+        const PointNumberList &pnlist = polygon.PointNumberListReference();
+        //const LaserPoints &polygon_lp = polygon_points.LaserPointsReference();
+        if(InsidePolygon(p, polygon_vertices, pnlist)){
+            swap(p, plane_vertical, plane_is_Xaligend);
+            p.SetAttribute(LabelTag, 1);
+            updated_points.push_back(p);
+            cout << "inside: " << p << endl;
+        } else{
+            p.SetAttribute(LabelTag, 0);
+            swap(p, plane_vertical, plane_is_Xaligend);
+            updated_points.push_back(p);
+            cout << "ouside: " << p << endl;
+        }
+    }
+    /// swap back the points if it was swapped
+//    if(plane_vertical){ // not safe!!! this swaps even those which were skipped and not swapped
+//        if(plane_is_Xaligend)
+//            updated_points.SwapYZ();
+//        else
+//            updated_points.SwapXZ();
+//    }
+    //cout << "# pnts inside polygons: " << cnt << endl;
+    swap_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/swap_points.laser", false);
+    return updated_points;
+}
+
+/// not tested
+bool PointInsidePolygon3D(LaserPoint p, double dist_threshold,
+                                  ObjectPoints polygon_vertices, LineTopology polygon){
+    if(polygon_vertices.size() < 4) return false; // 4 since begin and end point are the same
+    LaserPoints polygon_points;
+    polygon_points.AddPoints(polygon_vertices);
+    //cout << "#vertices: " << polygon_points.size() << endl;
+    /// reconstruct a plane with 4 vertices
+    Plane plane;
+    plane = Plane(polygon_vertices[0].Position3DRef (),
+            polygon_vertices[1].Position3DRef (),polygon_vertices[2].Position3DRef ());
+    plane.AddPoint (polygon_vertices[3].Position3DRef (), true); // true means recalculate the plane
+
+    Vector3D normal;
+    normal = plane.Normal ();
+    //normal.PrintVector();
+    /// check if the plane is axis-aligend then we project/swap to opposit plane xz or yz
+    double angle_Xaxis = Angle(normal, Vector3D(0,1,0));
+    if (angle_Xaxis > M_PI/2) angle_Xaxis = M_PI - angle_Xaxis;
+
+    bool plane_is_Xaligend=false;
+    if(angle_Xaxis < 0.17) plane_is_Xaligend = true; // 0.17 radian ~= 10 degress
+
+    /// check if plane is vertical
+    double productZ = normal.DotProduct(Vector3D(0,0,1));
+    bool plane_vertical = false;
+    if(plane.IsVertical(0.17) || productZ ==0) plane_vertical=true; // 0.17 radian ~= 10 degress
+
+    if(plane_vertical){
+        if(plane_is_Xaligend){ // is xz aligend
+            /// we swap y with z, actually we want to ignore y for insidepolygon calculation
+            polygon_points.SwapYZ();// ignore Y-axis
+        } else { // if not Xaligend then project it to YZ
+            /// we swap x with z, so we ignore x for insidepolygon calculation
+            polygon_points.SwapXZ(); // ignore X-axis
+        }
+        //cout << "plane is vertical!" << endl;
+    }
+
+    double dist = plane.Distance(p);
+    if(abs(dist) > dist_threshold){
+        return false;
+    }
+
+    /// this swap should be after calcuating the dist of point to the plane
+    swap(p, plane_vertical, plane_is_Xaligend); // swap if necessary
+    if(p.InsidePolygon(polygon_points, polygon.PointNumberListReference())){
+        swap(p, plane_vertical, plane_is_Xaligend); // if we return p this is necessary
+        cout << "inside: " << p << endl;
+        return true;
+    } else{
+        swap(p, plane_vertical, plane_is_Xaligend); // if we return p this is necessary
+        cout << "ouside: " << p << endl;
+        return false;
+    }
+    return true;
+}
+
+// borrowed and modified from laserpoints class
+bool InsidePolygon(LaserPoint p, const ObjectPoints &pts,
+                              const PointNumberList &top, bool skip_polygon_check)
+{
+  ObjectPoint     pt0, pt1;
+  PointNumberList::const_iterator node;
+  int                             num_intersections;
+  double                          Y_test;
+
+// Check if the polygon is closed and has at least three points
+  if (!skip_polygon_check) {
+    if (top.begin()->Number() != (top.end()-1)->Number()) return(0);
+    if (top.size() < 4) return(0); // 4 since begin and end point are the same
+  }
+
+// Get the first polygon point
+  //pt0 = pts.begin() + top.begin()->Number();
+   pt0 = pts.GetPoint(top[0].NumberRef())->ObjectPointRef();
+
+// Count the number of intersections of polygon edges with the line from the
+// point (X, Y) to (X, inf).
+
+  num_intersections = 0;
+  for (node=top.begin()+1; node!=top.end(); node++) {
+
+// Get the next polygon point
+    pt1 = pts.GetPoint(node->Number())->ObjectPointRef();
+    //pt1 = pts.begin() + node->Number();
+
+// Check whether the lines intersect
+    if ((pt0.X() - p.X()) * (pt1.X() - p.X()) <= 0 && pt1.X() != p.X()) {
+      Y_test = ((pt1.X() - p.X()) * pt0.Y() +
+                (p.X() - pt0.X()) * pt1.Y()) / (pt1.X() - pt0.X());
+      if (Y_test > p.Y()) num_intersections++;
+    }
+// Get ready for the next edge
+    pt0 = pt1;
+  }
+// Return 1 for an odd number of intersections
+
+  if ((num_intersections/2)*2 == num_intersections) return(0);
+  else return(1);
+}
+
 
 
 

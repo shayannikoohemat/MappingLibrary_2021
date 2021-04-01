@@ -96,3 +96,12 @@ bool Extend_Segments_to_Intersection (LaserPoints &segment1, LaserPoints &segmen
                                       const Plane &plane1, const Plane &plane2, double max_intersection_dist,
                                       LaserPoints &extended_segment1, LaserPoints &extended_segment2,
                                       bool &extension);
+
+LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
+                                  ObjectPoints polygon_vertices, LineTopology polygon);
+
+bool PointInsidePolygon3D(LaserPoint p, double dist_threshold,
+                                  ObjectPoints polygon_vertices, LineTopology polygon);
+
+bool InsidePolygon(LaserPoint p, const ObjectPoints &pts,
+                              const PointNumberList &top,bool skip_polygon_check=false);

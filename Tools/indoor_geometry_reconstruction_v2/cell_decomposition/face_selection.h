@@ -8,9 +8,9 @@ class FaceSelection
 {
 public:
     //FaceSelection();
-    faceSelection(LaserPoints segments, int min_segsize, double dist_threshold,
+    int faceSelection(LaserPoints segments, int min_segsize, double dist_threshold,
                                      double area_threshld,
-                                     ObjectPoints faces_v,LineTopologies faces_e)
+                                     ObjectPoints faces_v,LineTopologies faces_e);
 
 private:
     const double PI = 3.14159;

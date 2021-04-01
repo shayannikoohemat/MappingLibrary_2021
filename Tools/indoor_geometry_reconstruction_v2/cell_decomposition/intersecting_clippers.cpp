@@ -23,8 +23,6 @@ void intersect_planes(char *laserfile, char *root_dir, int min_segment_size)
 {
     char str_root[500];
     strcpy (str_root, root_dir);
-    FaceSelection fs;
-    fs.faceSelection()
 
     LaserPoints lp;
     lp.Read(laserfile);
@@ -546,6 +544,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
             // TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 
             /// this doesn't work
+            /// /// TODO: check this again the code is modified
            if(verbose) cout << "intersection position:" << intersected_pos; // << endl later
 //           if(Point_Inside_3DLine(intersected_pos, e, 0.01)){
 //               cout << "point on the line segment" << endl;
@@ -576,7 +575,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
         clipped_line = clipped_line_temp;
     }
 
-    if(intersected_poses.size() > 2){
+    if(intersected_poses.size() > 2){ /// this case shouldn't happen if function Point_Inside_3DLine() works properly
         if(verbose) cout << "WARNINGS! intersected poses are more than TWO!!!" << endl;
         LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[2]);// why 0 and 2 // this is very error prone if 0 and 2 have wrong orders
         clipped_line = clipped_line_temp;
@@ -983,13 +982,20 @@ ObjectPoints GetCorresponding_vertices(const ObjectPoints &vertices, const LineT
 /// needs a test
 bool Point_Inside_3DLineBounds(const Position3D &point, const LineSegment3D &lineseg3D, double margin)
 {
-  Position3D minimum, maximum, beginPoint, endPoint;
-  beginPoint = minimum = lineseg3D.BeginPoint().Position3DRef();
-  endPoint   = maximum = lineseg3D.EndPoint().Position3DRef();
-  // switch the value of minimum and max if the end point has smaller x,y,z
-  if(beginPoint.X() > endPoint.X()) minimum.X() = endPoint.X(); maximum.X() = beginPoint.X();
-  if(beginPoint.Y() > endPoint.Y()) minimum.Y() = endPoint.Y(); maximum.Y() = beginPoint.Y();
-  if(beginPoint.Z() > endPoint.Z()) minimum.Z() = endPoint.Z(); maximum.Z() = beginPoint.Z();
+  //Position3D minimum, maximum;
+  Position3D beginPoint, endPoint;
+  beginPoint = lineseg3D.BeginPoint().Position3DRef();
+  endPoint   = lineseg3D.EndPoint().Position3DRef();
+
+  double min_x = min(beginPoint.X(), endPoint.X());
+  double min_y = min(beginPoint.Y(), endPoint.Y());
+  double min_z = min(beginPoint.Z(), endPoint.Z());
+  Position3D minimum (min_x, min_y, min_z);
+
+  double max_x = max(beginPoint.X(), endPoint.X());
+  double max_y = max(beginPoint.Y(), endPoint.Y());
+  double max_z = max(beginPoint.Z(), endPoint.Z());
+  Position3D maximum (max_x, max_y, max_z);
 
     // now check if the point is in the bounds of the linesegment
   if (point.X() < minimum.X() - margin) return(false);
