@@ -738,8 +738,8 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
                     SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
                     //new_polygons = new_poly_e;
                     new_polygons.insert(new_polygons.end(), new_poly_e.begin(), new_poly_e.end());
-                    polygons_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_vertices.objpts");
-                    new_poly_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_edges.top", false);
+                    //polygons_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_vertices.objpts");
+                    //new_poly_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_edges.top", false);
                     //if(verbose) cout << "new polygons:" ; new_polygons.Print(); cout << endl;
                     if(new_poly_e.empty()){ // this is a hack if SplitPolygon3DByLineSegment3D() returns empty
                         remained_polygons.push_back(poly_child);
@@ -759,7 +759,7 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
             polygons_to_be_cut.insert(polygons_to_be_cut.end(),
                                       remained_polygons.begin(), remained_polygons.end());
             //cout << "polygons_to_be_cut:" ; polygons_to_be_cut.Print(); cout << endl;
-            polygons_to_be_cut.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_to_be_cut.top", false);
+            //polygons_to_be_cut.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_to_be_cut.top", false);
             //new_polygons_e = polygons_to_be_cut;
             cutting_planes.erase(cutting_planes.begin());
         } // end while

@@ -292,9 +292,8 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
                                   ObjectPoints polygon_vertices, LineTopology polygon){
     //LaserPoints polygon_points;
     //polygon_points.AddPoints(polygon_vertices);
-    DataBounds3D polygon_bounds = polygon_vertices.Bounds();
+    //DataBounds3D polygon_bounds = polygon_vertices.Bounds();
 
-    //cout << "#vertices: " << polygon_points.size() << endl;
     /// reconstruct a plane with 4 vertices
     Plane plane;
     plane = Plane(polygon_vertices[0].Position3DRef (),
@@ -332,11 +331,11 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
     LaserPoints updated_points;
     LaserPoints swap_points;
     for (auto &p : lpoints){
-        cout << p << endl;
+        //cout << p << endl;
         double dist = plane.Distance(p);
-        cout << "dist:" << abs(dist) << endl;
+        //cout << "dist:" << abs(dist) << endl;
         if(abs(dist) > dist_threshold){
-            p.SetAttribute(LabelTag, 0);
+            p.SetAttribute(LabelTag, 10000);
             updated_points.push_back(p);
             //cout << "ouside by dist: " << p << endl;
             continue;
@@ -348,26 +347,26 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
         /// quick check if the point is inside the polygon bounds
         /// Warning!!! this returns false if the point is slightly away from a
         /// vertical plane but yet for us is considered inside
-        if(polygon_bounds.Inside(p.Position3DRef()))
-            cout << "inside bounds3d!" << endl;
-        else cout << "outside bounds3d!" << endl;
+//        if(polygon_bounds.Inside(p.Position3DRef()))
+//            cout << "inside bounds3d!" << endl;
+//        else cout << "outside bounds3d!" << endl;
 
-        /// this swap should be after calcuating the dist of point to the plane
+        /// this swap should be after calculating the dist of point to the plane
         swap(p, plane_vertical, plane_is_Xaligend);
-        cout << p << endl;
+        //cout << p << endl;
         swap_points.push_back(p);
         const PointNumberList &pnlist = polygon.PointNumberListReference();
         //const LaserPoints &polygon_lp = polygon_points.LaserPointsReference();
         if(InsidePolygon(p, polygon_vertices, pnlist)){
             swap(p, plane_vertical, plane_is_Xaligend);
-            p.SetAttribute(LabelTag, 1);
+            p.SetAttribute(LabelTag, polygon.Number());
             updated_points.push_back(p);
-            cout << "inside: " << p << endl;
+            //cout << "inside: " << p << endl;
         } else{
-            p.SetAttribute(LabelTag, 0);
+            p.SetAttribute(LabelTag, 20000);
             swap(p, plane_vertical, plane_is_Xaligend);
             updated_points.push_back(p);
-            cout << "ouside: " << p << endl;
+            //cout << "ouside: " << p << endl;
         }
     }
     /// swap back the points if it was swapped
@@ -378,7 +377,7 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
 //            updated_points.SwapXZ();
 //    }
     //cout << "# pnts inside polygons: " << cnt << endl;
-    swap_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/swap_points.laser", false);
+    //swap_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/swap_points.laser", false);
     return updated_points;
 }
 

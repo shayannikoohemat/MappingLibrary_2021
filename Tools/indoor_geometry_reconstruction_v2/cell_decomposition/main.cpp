@@ -36,14 +36,14 @@ int main() {
     box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_vertices.objpts");
 
     /// test Intersect_Planes_3DBoxFaces
-//    LaserPoints segments;
-//    LineTopologies polygons_edges;
-//    ObjectPoints polygons_vertices;
-//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
-//    Intersect_Planes_3DBoxFaces(segments, 100, box3d_faces, box3d_vertices,
-//                                polygons_edges, polygons_vertices, true, true);
-//    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
-//    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
+    LaserPoints segments;
+    LineTopologies polygons_edges;
+    ObjectPoints polygons_vertices;
+    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/four_segments.laser");
+    Intersect_Planes_3DBoxFaces(segments, 100, box3d_faces, box3d_vertices,
+                                polygons_edges, polygons_vertices, true, true);
+    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
+    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
 
     /// test SplitPolygons3DByPlane3D()
 //    LaserPoints segment;
@@ -58,9 +58,9 @@ int main() {
     ObjectPoints new_polys_v; LineTopologies new_polys_e;
 //    //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
 //    ///input polygons are created by Intersect_Planes_3DBoxFaces()
-    //SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e);
-   // new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
-    //new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
+    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e);
+    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 
     /// test  vector< pair <int,int>> Collect_IntersectingPlanes ()
 //    LaserPoints lp;
@@ -90,8 +90,8 @@ int main() {
 //    test_pairwise_split(segments, box3d_faces, box3d_vertices, 0.01);
 
     /// test if points inside polygon3D
-    LaserPoints segments;
-    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment60.laser");
+    //LaserPoints segments;
+    //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/four_segments.laser");
     //segments.push_back(LaserPoint(108.0, 109.0, 5.0)); // inside for horizontal
     //segments.push_back(LaserPoint(108.0, 116.0, 10.0)); // outside for horizontal
     //segments.push_back(LaserPoint(99.22, 102.86, 10.84)); // slightly outside
@@ -99,14 +99,14 @@ int main() {
     //segments.push_back(LaserPoint(99.19, 103.13, 8.48));
     //ObjectPoints new_polys_v;
     //LineTopologies new_polys_e;
-    new_polys_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
-    new_polys_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges60-5.top", false);
+    //new_polys_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+    //new_polys_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges60-5.top", false);
+    segments.SetAttribute(LabelTag, 10000); //WARNING!!! Change 10000 later to a not repeated number
     vector<LaserPoints> segments_vec;
     segments_vec = PartitionLpByTag(segments, SegmentNumberTag, root_dir);
     LaserPoints updated_labels, points_inside, points_outside;
-    segments.SetAttribute(LabelTag, 0);
+    LineTopologies valid_polygons;
     for (auto &segment : segments_vec){
-        //??? Why points from segment 60 are not inside the polygon?? current example
         cout << "Segment: " << segment[0].SegmentNumber() << endl;
         //if(segment[0].SegmentNumber() != 60) continue;
         Plane splane;
@@ -119,9 +119,10 @@ int main() {
         //for (auto &polygon : new_polys_e){ // crashes in debug mode ??!!
         for (poly_it=new_polys_e.begin(); poly_it!=new_polys_e.end(); poly_it++){
             LineTopology polygon = *poly_it;
-            cout << polygon.Number();
+            cout << "polygon.Number: " << polygon.Number() << endl;
             ObjectPoints vertices = GetCorresponding_vertices(new_polys_v, polygon);
             /// reconstruct a plane with 4 vertices
+            /// to make sure points of a segment are not associated to an adjacent polygon with different orientation/normal
             Plane plane;
             plane = Plane(vertices[0].Position3DRef (),
                     vertices[1].Position3DRef (),vertices[2].Position3DRef ());
@@ -132,21 +133,30 @@ int main() {
             bool parallel=false;
             double angle_radian = Angle(plane.Normal(), splane.Normal()); // this can have negative values as well
             if (angle_radian > M_PI/2.0) angle_radian -= M_PI;
+            //////TODO: later shorten this block by changing the "<" to ">"
             if (fabs(angle_radian) < 0.017) {
                 parallel = true;
-                cout << " ... par/ ";
-            } else cout << " ... Notpar/ ";
-            //if(!parallel) continue; // if not prallel skip this plane
+                //cout << " ... par/ ";
+            } //else cout << " ... Notpar/ ";
+            if(!parallel) continue; // if not prallel skip this plane
+            //////
             updated_tmp = PointsInsidePolygon3D(segment, 0.10, vertices, polygon);
-            updated_labels.AddPoints(updated_tmp.SelectTagValue(LabelTag, 1));
-            updated_tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_tmp.laser", false);
+            updated_labels.AddPoints(updated_tmp.SelectTagValue(LabelTag, polygon.Number()));
+            //updated_tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_tmp.laser", false);
+            /// make a new set of polygons of those with points
+            LaserPoints inside_points;
+            inside_points = updated_tmp.SelectTagValue(LabelTag, polygon.Number());
+            auto lasersize = inside_points.size();
+            if(lasersize>1000) // why this throws unexpected errors?? double free or corruption (out) or
+            {
+                valid_polygons.push_back(polygon);
+            }
         }
         cout << endl;
     }
 
     updated_labels.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser", false);
-
-
+    valid_polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/valid_polygons.top", false);
     return 0;
 }
 
