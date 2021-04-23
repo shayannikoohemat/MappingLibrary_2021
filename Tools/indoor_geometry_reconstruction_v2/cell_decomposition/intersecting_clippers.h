@@ -12,7 +12,7 @@ void ExtractFaces_from_3DPolygonsIntersection(LaserPoints laserPoints, Planes pl
                                               LineTopologies &faces);
 
 Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
-        LineTopologies &lp_faces, std::map<int, Positions3D> &planes_pos_map) ;
+        LineTopologies &lp_faces, double enlarge_size, std::map<int, Positions3D> &planes_pos_map) ;
 
 /// TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 /// intersecting a plane with the edges of a clipping rectangle (or polygon)
@@ -32,7 +32,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
 /// NOTE2: faces of the 3Dbox DONOT need to be a closed polygon (0-1-2-3)
 bool Intersect_Plane_3DBoxFaces(LineTopologies box3d_faces, const ObjectPoints &box3d_vertices, //input
                            const Plane &plane, int polygon_number, //input
-                           LineTopologies &polygon_edges, ObjectPoints &polygon_vertices);
+                           LineTopologies &polygon_edges, ObjectPoints &polygon_vertices, bool verbose=false);
 
 /// 1. fit planes to each segment in segments
 /// 2. use Intersect_Plane_3DBoxFaces() to intersect the plane to the 3DBox
@@ -58,7 +58,8 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygon_v, LineTopologies &polygon_e
 
 /// splitting one polygon incrementally by several segments/planes
 void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
-                                        ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e);
+                                        ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e,
+                               bool verbose=false);
 
 
 /// test intersct a plane and a 3DBox
@@ -79,13 +80,9 @@ ObjectPoints GetCorresponding_vertices(const ObjectPoints &vertices, const LineT
 // checks if a point is inside the bounds of a linesegment
 bool Point_Inside_3DLineBounds(const Position3D &point, const LineSegment3D &lineseg3D, double margin);
 
-std::multimap<int, Plane> collect_intersectingPlanes(Planes planes,
-                        ObjectPoints polygons_v, LineTopologies polygons_e);
+LineTopology ReOrderTopology(LineTopologies edges);
 
-void pairwise_split(Planes planes, ObjectPoints polygons_v, LineTopologies polygons_e,
-                    double snap_dist, ObjectPoints new_polygons_v, LineTopologies new_polygons_e);
-
-void test_pairwise_split(LaserPoints segments, LineTopologies box3d_faces,
-                         ObjectPoints box3d_vertices, double snap_dist);
+void RenumberTopology_and_Vertices(LineTopology edges, ObjectPoints vertices,
+                                   LineTopologies &new_edges, ObjectPoints &new_vertices);
 
 

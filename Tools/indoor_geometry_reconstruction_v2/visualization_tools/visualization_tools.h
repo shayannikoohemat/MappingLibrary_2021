@@ -103,5 +103,5 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
 bool PointInsidePolygon3D(LaserPoint p, double dist_threshold,
                                   ObjectPoints polygon_vertices, LineTopology polygon);
 
-bool InsidePolygon(LaserPoint p, const ObjectPoints &pts,
+bool InsideUnorderedPolygon(LaserPoint p, const ObjectPoints &pts,
                               const PointNumberList &top,bool skip_polygon_check=false);

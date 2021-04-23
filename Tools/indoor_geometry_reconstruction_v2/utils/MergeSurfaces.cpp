@@ -402,9 +402,9 @@ void Mergesurfaces ( LaserPoints &segmented_lp,
 Plane
 forceVerticality(double verticality_angle_threshold, Vector3D &normal, LaserPoints &s, Plane &plane, bool verbose) {
 
-    char str_root[500];
-    auto *root = (char*) "/home/shayan/Drive_D/data/test/out/";
-    strcpy (str_root, root);
+    //char str_root[500];
+    //auto *root = (char*) "/home/shayan/Drive_D/data/test/out/";
+    //strcpy (str_root, root);
     if(verbose){
         Vector3D vecZ = Vector3D(0,0,1);
         double segment_angle = Angle (normal, vecZ) ; /// this gives the rotation angle respecting Z-axis
@@ -427,11 +427,11 @@ forceVerticality(double verticality_angle_threshold, Vector3D &normal, LaserPoin
         vertPlane.Distance() = (newNormal/sqrt(len)).DotProduct( s.Mean() );   // set the dist from origin
         vertPlane.Number () = s[0].SegmentNumber ();            // set plane number
       /// DEBUG /// export the projected points on the new plane
-        LaserPoints projected_segment;
-        for (auto &p : s) /// for each point in segment
-            projected_segment.push_back (vertPlane.Project (p.Position3DRef ()));
-        strcpy (str_root, root);
-        projected_segment.Write(strcat (str_root, "proj_segment1.laser"), false);
+//        LaserPoints projected_segment;
+//        for (auto &p : s) /// for each point in segment
+//            projected_segment.push_back (vertPlane.Project (p.Position3DRef ()));
+//        strcpy (str_root, root);
+//        projected_segment.Write(strcat (str_root, "proj_segment1.laser"), false);
         /// End of DEBUG
     }
     return vertPlane;

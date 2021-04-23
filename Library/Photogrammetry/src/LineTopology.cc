@@ -1358,6 +1358,8 @@ bool LineTopology::SplitPolygonByLineSegment(ObjectPoints &points,
                    new_point.NumberRef());
   }
 
+  /// WHY end_segment_index is not initialized?? throws error if numbers are not ordered
+
   if (end_index == -1) {      // New node needed for end of line segment
     // Add the new point
     new_point.X() = edge_segment.EndPoint().X();

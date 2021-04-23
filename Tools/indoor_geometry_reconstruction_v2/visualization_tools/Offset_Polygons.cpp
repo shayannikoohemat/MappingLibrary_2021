@@ -357,7 +357,7 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
         swap_points.push_back(p);
         const PointNumberList &pnlist = polygon.PointNumberListReference();
         //const LaserPoints &polygon_lp = polygon_points.LaserPointsReference();
-        if(InsidePolygon(p, polygon_vertices, pnlist)){
+        if(InsideUnorderedPolygon(p, polygon_vertices, pnlist)){
             swap(p, plane_vertical, plane_is_Xaligend);
             p.SetAttribute(LabelTag, polygon.Number());
             updated_points.push_back(p);
@@ -439,8 +439,9 @@ bool PointInsidePolygon3D(LaserPoint p, double dist_threshold,
     return true;
 }
 
-// borrowed and modified from laserpoints class
-bool InsidePolygon(LaserPoint p, const ObjectPoints &pts,
+// borrowed and modified from laserpoints class/
+/// unorder here means points in the linetopologies/PointNumberList can have unsorted arbitrary numbers
+bool InsideUnorderedPolygon(LaserPoint p, const ObjectPoints &pts,
                               const PointNumberList &top, bool skip_polygon_check)
 {
   ObjectPoint     pt0, pt1;
@@ -455,8 +456,8 @@ bool InsidePolygon(LaserPoint p, const ObjectPoints &pts,
   }
 
 // Get the first polygon point
-  //pt0 = pts.begin() + top.begin()->Number();
-   pt0 = pts.GetPoint(top[0].NumberRef())->ObjectPointRef();
+  //pt0 = pts.begin() + top.begin()->Number(); // here the order/numbering of points matters
+   pt0 = pts.GetPoint(top[0].NumberRef())->ObjectPointRef(); // here the numbering doesnt matter
 
 // Count the number of intersections of polygon edges with the line from the
 // point (X, Y) to (X, inf).

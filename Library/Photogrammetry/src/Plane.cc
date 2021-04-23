@@ -401,6 +401,7 @@ bool Plane::IsVertical(double err_angle) const
   else return 0;  
 
 }
+
 /*
 --------------------------------------------------------------------------------
                             Add or remove a point to the plane
