@@ -68,12 +68,17 @@ void GenerateConvexPolygon(ObjectPoints &corners, LineTopologies &polygons,
 void Min3DBox_OFF(ObjectPoints &corners, LineTopologies &polygon_lines, LaserPoints segmented_lp,
                   int min_segment_size, char *OFFfile, double min_z, double max_z, double height);
 
+void Min3DBox_OFF_withscale(ObjectPoints &corners, LineTopologies &faces, LaserPoints lpoints,
+                    double scalefactor, char *OFFfile);
+
 void Min3DRectangle_to_3DFaces (const ObjectPoints &rectangle_vertices, double offset_distance,
                                 ObjectPoints &threeDbox_vertices, LineTopologies &threeDbox_faces);
 
 void LineTopologies_to_OFF (const ObjectPoints &vertices, const LineTopologies &faces, char*root, bool verbose=false);
 
 void LineTopologies_to_OFFBoxes (const ObjectPoints &vertices, const LineTopologies &faces, char *root, bool verbose=false);
+
+ObjectPoints ScalePolygon (ObjectPoints &corners, LineTopology &edges, double scalefactor);
 
 void offset_polygon(const ObjectPoints &vertices, double offset_dist,
                     ObjectPoints &left_corners, ObjectPoints &right_corners,

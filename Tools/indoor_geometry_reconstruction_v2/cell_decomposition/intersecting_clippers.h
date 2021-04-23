@@ -11,6 +11,9 @@ void ExtractFaces_from_3DPolygonsIntersection(LaserPoints laserPoints, Planes pl
                                               ObjectPoints &vertices,  //output faces
                                               LineTopologies &faces);
 
+void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
+                   ObjectPoints &lp_vertices, LineTopologies &lp_faces);
+
 Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
         LineTopologies &lp_faces, double enlarge_size, std::map<int, Positions3D> &planes_pos_map) ;
 
@@ -57,7 +60,8 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygon_v, LineTopologies &polygon_e
                                         ObjectPoints &new_polygon_v, LineTopologies &new_poly_e);
 
 /// splitting one polygon incrementally by several segments/planes
-void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+/// CELL DECOMPOSITION
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int seg_size,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e,
                                bool verbose=false);
 

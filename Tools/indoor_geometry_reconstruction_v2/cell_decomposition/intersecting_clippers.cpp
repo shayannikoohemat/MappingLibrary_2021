@@ -8,6 +8,21 @@
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
 
+// TODO: add cgal ransac shape detection for segmentation
+// TODO: forceverticality to planes near vertical and also for horzontal planes
+// TDOO: enlarge the bbox by a percetage so it is not very tight to the data
+// TODO: select faces belong to the same cell
+
+void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
+                   ObjectPoints &lp_vertices, LineTopologies &lp_faces){
+    char str_root[500];
+    strcpy (str_root, root_dir);
+    char *OFFout;
+    OFFout = strcat(str_root, "/cube_global.off");
+    /// create a cuboid from lp_noSeg: (lp_vertices, lp_faces)
+    Min3DBox_OFF_withscale(lp_vertices, lp_faces, lp, scalefactor, OFFout);
+}
+
 
 /// TODO: better to create a class for bounding_cube which should have:
 /// 6faces, 6 planes, 12edges/3Dlinesegments, 8 vertices, centroid
@@ -15,26 +30,29 @@
 // because planes are infinite, we want to bound them with the bound of the input laser
 // create a cuboid with 6 faces around the input data as the bound planes
 Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
-        LineTopologies &lp_faces, double enlarge_size,std::map<int, Positions3D> &planes_pos_map) {
+        LineTopologies &lp_faces, double enlarge_size, std::map<int, Positions3D> &planes_pos_map) {
     char str_root[500];
     strcpy (str_root, root_dir);
 
     DataBoundsLaser dataBoundsLaser;
     dataBoundsLaser = lp.DeriveDataBounds(0);
-    /// enlarge the databounds
-//    LaserPoint new_boundMin;
-//    new_boundMin.X() = dataBoundsLaser.Minimum().X() - enlarge_size;
-//    new_boundMin.Y() = dataBoundsLaser.Minimum().Y() - enlarge_size;
-//    new_boundMin.Z() = dataBoundsLaser.Minimum().Z() - enlarge_size;
-//    LaserPoint new_boundMax;
-//    new_boundMax.X() = dataBoundsLaser.Maximum().X() + enlarge_size;
-//    new_boundMax.Y() = dataBoundsLaser.Maximum().Y() + enlarge_size;
-//    new_boundMax.Z() = dataBoundsLaser.Maximum().Z() + enlarge_size;
-    /// add new bounds to the laserpoints to enlarge it // this is not a good approach becasue it creates a axis-aligend bbox
-    //lp.push_back(new_boundMin);
-    //lp.push_back(new_boundMax);
-    //lp.DeriveTIN(); is taken care of in Min3DBox_OFF()
-    //lp.EnclosingRectangle(0.10, lp_vertices, lp_faces);
+
+/*  /// enlarge the databounds
+    LaserPoint new_boundMin;
+    new_boundMin.X() = dataBoundsLaser.Minimum().X() - enlarge_size;
+    new_boundMin.Y() = dataBoundsLaser.Minimum().Y() - enlarge_size;
+    new_boundMin.Z() = dataBoundsLaser.Minimum().Z() - enlarge_size;
+    LaserPoint new_boundMax;
+    new_boundMax.X() = dataBoundsLaser.Maximum().X() + enlarge_size;
+    new_boundMax.Y() = dataBoundsLaser.Maximum().Y() + enlarge_size;
+    new_boundMax.Z() = dataBoundsLaser.Maximum().Z() + enlarge_size;
+    /// add new bounds to the laserpoints to enlarge it // this is not a good approach because it creates an axis-aligend bbox
+    lp.push_back(new_boundMin);
+    lp.push_back(new_boundMax);
+    */
+
+    ////lp.DeriveTIN(); is taken care of in Min3DBox_OFF()
+    ////lp.EnclosingRectangle(0.10, lp_vertices, lp_faces);
     LaserPoints lp_noSeg;
     lp_noSeg = lp;
     lp_noSeg.RemoveAttributes();
@@ -127,7 +145,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
 
     // intersect the plane with the edges
     Positions3D intersected_poses;
-    LaserPoints intersected_points;
+    //LaserPoints intersected_points;
     // for each edge of the clipping rectangle find the intersection point with the plane
     int cnt=0;
     for (auto &e : rect_edges){
@@ -137,43 +155,38 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
         // intersect this edge_line with the plane
         Position3D intersected_pos;
         if(IntersectLine3DPlane(edge_line, plane, intersected_pos)){
-            /// alternative solution to slect the line segment:
-            /// add all points to the ObjPoints or LaserPoints and sort them on coords
-            /// Then from the most left one or lowest one pair them as line segments,
-            /// take the middle point and check if it is inside the polygon
-            /// check if the intersected_pos is between the vertices of
-            /// the linesegment and not outside of the clipping polygon
             // TODO look at Use: polygon.IntersectPolygonByLine() for a better implementation
 
-            /// this doesn't work
-            /// /// TODO: check this again the code is modified
+            /// check if the intersecte point is within the bound of the edge
            //if(verbose) cout << "intersection position:" << intersected_pos; // << endl later
-//           if(Point_Inside_3DLine(intersected_pos, e, 0.01)){
-//               cout << "point on the line segment" << endl;
-//              intersected_poses.push_back(intersected_pos);
-//              intersected_points.push_back(intersected_pos);
-//           }
+           if(Point_Inside_3DLineBounds(intersected_pos, e, 0.01)){
+               //cout << "point on the line segment" << endl;
+              intersected_poses.push_back(intersected_pos);
+              //intersected_points.push_back(intersected_pos);
+           }
              /// this checks with all 4 vertices, maybe a better way is just to check with the linesegment points
-            if(bounds3D.Inside(intersected_pos, 0.01)){
+             ///  this one if the cuboid of the data is almost axis-aligend, it results in some polygons overpass the boundary
+ /*           if(bounds3D.Inside(intersected_pos, 0.01)){
                  //if(verbose) cout << " Inside!" << endl; //DEBUG
                 intersected_poses.push_back(intersected_pos);
                 intersected_points.push_back(intersected_pos);
             } //else if(verbose) cout << " Outside!" << endl; //DEBUG
+            */
         } else
             continue;    //return false; // edge-line and plane are parallel
     }
-    if(intersected_points.size() == 0){
+    if(intersected_poses.size() == 0){
        //if(verbose) cout << "WARNINGS! NO INTERSECTION!!!" << endl;
        return false;
     }
-    if(intersected_points.size() == 1){
+    if(intersected_poses.size() == 1){
        //if(verbose) cout << "WARNINGS! intersected pose is just ONE!!!" << endl;
        return false;
     }
     clipped_line.Initialise();
     if(intersected_poses.size() == 2){
         //if(verbose) cout << "Successfull! intersected poses are TWO!!!" << endl;
-        LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[1]); // this is very error prone if 0 and 1 have wrong orders
+        LineSegment3D clipped_line_temp(intersected_poses[0], intersected_poses[1]);
         clipped_line = clipped_line_temp;
     }
 
@@ -244,7 +257,7 @@ bool SplitPolygon3DByLineSegment3D(ObjectPoints &polygon_points,
     polygon.insert(polygon.begin() + begin_segment_index + 1, new_point.NumberRef());
   }
 
-  int end_segment_index=-1; // not sure if -1 is correct to initialize it
+  int end_segment_index=-1;
   if (end_index == -1) {      // New node needed for end of line segment
     // Add the new point
     ObjectPoint new_point;
@@ -305,7 +318,7 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygons_v, LineTopologies &polygons
 /// splitting polygons incrementally by several segments/planes
 /// Also look at void HypothesisGenerator::pairwise_cut(Map* mesh) at https://github.com/LiangliangNan/PolyFit/blob/main/method/hypothesis_generator.cpp
 /// USAGE: use this for cell decomposition
-void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments,
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int seg_size,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e, bool verbose)
 {
     /// create a list of planes from segments
@@ -315,6 +328,7 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
     sort(segments_vec.begin(), segments_vec.end(), compare_lp_segmenttag);
     Planes planes;
     for (auto &segment : segments_vec){
+        if(segment.size() < seg_size) continue;
         int seg_num = segment[0].SegmentNumber();
         if(seg_num < 0) continue; // to skip non valid segments
         // fit a plane
@@ -345,8 +359,8 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
                 cout << "  !X plane: " << plane.Number() << " //self spliting!" << endl;
                 continue;
             }
-            //if(polygon.Number() == 25 && plane.Number() == 23)
-             //   cout << "DEBUG!" << endl;
+            if(polygon.Number() == 25 && plane.Number() == 23)
+                cout << "DEBUG!" << endl;
             for (auto &poly_child : polygons_to_be_cut){
                 if(poly_child.empty()){
                     //cout << "Warning: polygon_child is empty. Nothing to split!" << endl;
@@ -363,9 +377,11 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
                     SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
                     //new_polygons = new_poly_e; // not '=' becasue it replaces the content
                     new_polygons.insert(new_polygons.end(), new_poly_e.begin(), new_poly_e.end());
+
                     //polygons_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_vertices.objpts");
                     //new_poly_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_edges.top", false);
                     //if(verbose) cout << "new polygons:" ; new_polygons.Print(); cout << endl;
+
                     if(new_poly_e.empty()){ // this is a hack if SplitPolygon3DByLineSegment3D() returns empty
                         remained_polygons.push_back(poly_child);
                         cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
@@ -547,7 +563,7 @@ void Intersect_Planes_3DBoxFaces(LaserPoints segments, int min_seg_size,
         ObjectPoints polygon_vertices;
         plane = segment.FitPlane(seg_num);
         plane.Number() = seg_num;
-        cout << "plane number: " << plane.Number() << endl;
+        if(verbose) cout << "plane number: " << plane.Number() << endl;
         if(Intersect_Plane_3DBoxFaces(box3d_faces, box3d_vertices, plane, seg_num,
                                            polygon_edges, polygon_vertices, verbose)){
             //polygon_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices_tmp.objpts");

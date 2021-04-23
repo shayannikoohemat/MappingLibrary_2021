@@ -19,28 +19,31 @@ int main() {
     strcpy (str_root, root_dir);
 
     /// create and read the bounding box of the data
-//    char* inputlaser = (char*) "/mnt/DataPartition/CGI_UT/cell_decomposition/haaksbergen/walls_hksb_2ndfloor2.laser";
-//    LaserPoints lp;
-//    lp.Read(inputlaser);
-//    /// create a cuboid with 6 faces around the input data as the bound planes
-//    ObjectPoints cube_global_vertices; // output
-//    LineTopologies cube_global_faces; // output
-//    Planes cube_planes; // output
-//    std::map<int, Positions3D> planes_pos_map; // output
-//    double enlarge_size = 0.0; //meter, currently has no effect
-//    cube_planes = bounding_cube(root_dir, lp, cube_global_vertices, cube_global_faces, enlarge_size , planes_pos_map);
-//    cube_global_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/cube_global_vertices.objpts");
-//    cube_global_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/cube_global_faces.top", false);
+    char* inputlaser = (char*) "/mnt/DataPartition/CGI_UT/cell_decomposition/four_segments.laser";
+    LaserPoints lp;
+    lp.Read(inputlaser);
+    /// create a cuboid with 6 faces around the input data as the bound planes
+    ObjectPoints cube_global_vertices; // output
+    LineTopologies cube_global_faces; // output
+    ///Planes cube_planes; // output
+    ///std::map<int, Positions3D> planes_pos_map; // output
+    ///double enlarge_size = 0.5; //meter, currently has no effect
+    ///cube_planes = bounding_cube(root_dir, lp, cube_global_vertices, cube_global_faces, enlarge_size , planes_pos_map);
+    bounding_cube(root_dir, lp, 1.1, cube_global_vertices, cube_global_faces);
+    cube_global_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/cube_global_vertices.objpts");
+    cube_global_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/cube_global_faces.top", false);
     LineTopologies box3d_faces;
     ObjectPoints box3d_vertices;
-    box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_edges.top", false);
-    box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_vertices.objpts");
+    //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_edges.top", false);
+    //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_vertices.objpts");
+    //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/haaksbergen/cube_global_edges.top", false);
+    //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/haaksbergen/cube_global_vertices.objpts");
 
     /// test Intersect_Planes_3DBoxFaces
     LaserPoints segments;
     LineTopologies polygons_edges;
     ObjectPoints polygons_vertices;
-//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/triple_segments.laser");
+//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/walls_hksb_2ndfloor2.laser");
 //    Intersect_Planes_3DBoxFaces(segments, 50, box3d_faces, box3d_vertices,
 //                                polygons_edges, polygons_vertices, true, true);
 //    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
@@ -49,20 +52,18 @@ int main() {
     /// test SplitPolygons3DByPlane3D()
     LaserPoints segment;
     ObjectPoints new_polys_v; LineTopologies new_polys_e;
-    segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment60.laser"); // for the spliting plane
-    // input polygons are created by Intersect_Planes_3DBoxFaces()
-    polygons_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygons_edges_unordered.top", false);
-    polygons_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/polygons_vertices_unordered.objpts");
-    SplitPolygons3DByPlane3D(polygons_vertices, polygons_edges, segment, new_polys_v, new_polys_e);
-    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
-    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
+    //segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment60.laser"); // for the spliting plane
+    /// input polygons are created by Intersect_Planes_3DBoxFaces()
+//    SplitPolygons3DByPlane3D(polygons_vertices, polygons_edges, segment, new_polys_v, new_polys_e);
+//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+//    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 
     //////////// CELL DECOMPOSITION ///////////////////
     /// Use this with output of Intersect_Planes_3DBoxFaces() for CELL DECOMPOSITION
     //ObjectPoints new_polys_v; LineTopologies new_polys_e;
     //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
     ///input polygons are created by Intersect_Planes_3DBoxFaces()
-//    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, new_polys_v, new_polys_e, false);
+//    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, 100, new_polys_v, new_polys_e, false);
 //    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
 //    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
 
