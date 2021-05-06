@@ -9,10 +9,12 @@
 #include "../visualization_tools/visualization_tools.h"
 
 // TODO: add cgal ransac shape detection for segmentation
+// TODO: add a int=nextnumber routine to cell decomposition to store the relation between segments and children faces
 // TODO: forceverticality to planes near vertical and also for horzontal planes
-// TDOO: enlarge the bbox by a percetage so it is not very tight to the data
+// TDOO: enlarge the bbox by a percetage so it is not very tight to the data (done)
 // TODO: select faces belong to the same cell
 
+/// we use this instead of Planes bounding_cube() so we can scale the boundingbox
 void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
                    ObjectPoints &lp_vertices, LineTopologies &lp_faces){
     char str_root[500];
@@ -196,7 +198,7 @@ bool Intersect_Plane_3DRectnagle(LineTopology clipperRectangle_edges,
         clipped_line = clipped_line_temp;
         //return false;
     }
-    //intersected_points.Write("intersected_points.laserpoints", false);
+    //intersected_points.Write("intersected_points.laser", false);
 
     return true;
 }

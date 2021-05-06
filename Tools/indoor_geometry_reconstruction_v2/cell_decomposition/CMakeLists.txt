@@ -13,6 +13,9 @@ find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
+## CGAL
+find_package(CGAL)
+
 include_directories(../../../Library/Photogrammetry/include)
 include_directories(../../../Library/Buildings/include)
 include_directories(../../../Library/LaserScan/include)
@@ -20,7 +23,8 @@ include_directories(../../../Foreign/ANN/include/ANN)
 
 link_directories(${MAPPING_LIB_DIR})
 link_libraries(-lLaserScan -lPhotogrammetry -lBuildings -lEispack
-        -lLinpack -lANN -lnewmat -lgfortran -g3 -llas)
+        -lLinpack -lANN -lnewmat -lgfortran -g3 -llas
+        -lboost_system -lboost_filesystem)
 
 file(GLOB visualisation_Sources
         ../visualization_tools/VisualizePlanes.cpp
@@ -41,11 +45,12 @@ file(GLOB utils_Sources
 set(SOURCE_FILES main.cpp
         intersecting_clippers.cpp
         face_selection.cpp
+        planar_segmentation.cpp
         ../utils/utils.h
         ../visualization_tools/visualization_tools.h
         ${visualisation_Sources}
         ${utils_Sources})
 
 add_executable(cell_decomposition ${SOURCE_FILES})
-target_link_libraries(cell_decomposition ${Boost_LIBRARIES})
+target_link_libraries(cell_decomposition ${Boost_LIBRARIES} CGAL::CGAL)
 target_link_options(cell_decomposition PRIVATE -no-pie)
