@@ -103,7 +103,7 @@ bool Extend_Segments_to_Intersection (LaserPoints &segment1, LaserPoints &segmen
                                       bool &extension);
 
 LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
-                                  ObjectPoints polygon_vertices, LineTopology polygon);
+                                  ObjectPoints polygon_vertices, LineTopology polygon, LaserPointTag tag);
 
 bool PointInsidePolygon3D(LaserPoint p, double dist_threshold,
                                   ObjectPoints polygon_vertices, LineTopology polygon);

@@ -288,8 +288,9 @@ void swap(LaserPoint &p, bool ver, bool xalign)
     }
 }
 
+/// returns points inside a 3D polygon and within a distance with the polygon's plane
 LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
-                                  ObjectPoints polygon_vertices, LineTopology polygon){
+                                  ObjectPoints polygon_vertices, LineTopology polygon, LaserPointTag tag){
     //LaserPoints polygon_points;
     //polygon_points.AddPoints(polygon_vertices);
     //DataBounds3D polygon_bounds = polygon_vertices.Bounds();
@@ -335,7 +336,7 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
         double dist = plane.Distance(p);
         //cout << "dist:" << abs(dist) << endl;
         if(abs(dist) > dist_threshold){
-            p.SetAttribute(LabelTag, 10000);
+            p.SetAttribute(tag, 10000000);
             updated_points.push_back(p);
             //cout << "ouside by dist: " << p << endl;
             continue;
@@ -359,11 +360,11 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
         //const LaserPoints &polygon_lp = polygon_points.LaserPointsReference();
         if(InsideUnorderedPolygon(p, polygon_vertices, pnlist)){
             swap(p, plane_vertical, plane_is_Xaligend);
-            p.SetAttribute(LabelTag, polygon.Number());
+            p.SetAttribute(tag, polygon.Number());
             updated_points.push_back(p);
             //cout << "inside: " << p << endl;
         } else{
-            p.SetAttribute(LabelTag, 20000);
+            p.SetAttribute(tag, 20000000);
             swap(p, plane_vertical, plane_is_Xaligend);
             updated_points.push_back(p);
             //cout << "ouside: " << p << endl;

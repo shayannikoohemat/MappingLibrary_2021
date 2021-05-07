@@ -79,7 +79,7 @@ void Min3DBox_OFF_withscale(ObjectPoints &corners, LineTopologies &faces, LaserP
 
     /// get the amount of change in one of the axis (X or Y) after scaling and apply it to Z
     double offset = abs(corners.begin()->X() - rect_corners.begin()->X());
-    cout << "scale size:" << offset << endl;
+    cout << "scale size per axis:" << offset << " meter" << endl;
 
     /// change z based on the scalfactor, offset is always a positive number
     for(int i=0; i < corners.size(); i++){

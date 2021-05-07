@@ -8,11 +8,12 @@
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
 
-// TODO: add cgal ransac shape detection for segmentation
-// TODO: add a int=nextnumber routine to cell decomposition to store the relation between segments and children faces
+// TODO: add cgal ransac shape detection for segmentation (done)
+// TODO: add an int=nextnumber routine to cell decomposition to store the relation between segments and children faces (done, by linelabeltag)
 // TODO: forceverticality to planes near vertical and also for horzontal planes
 // TDOO: enlarge the bbox by a percetage so it is not very tight to the data (done)
 // TODO: select faces belong to the same cell
+// TODO: export cell decomposition to off or obj
 
 /// we use this instead of Planes bounding_cube() so we can scale the boundingbox
 void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
@@ -320,7 +321,7 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygons_v, LineTopologies &polygons
 /// splitting polygons incrementally by several segments/planes
 /// Also look at void HypothesisGenerator::pairwise_cut(Map* mesh) at https://github.com/LiangliangNan/PolyFit/blob/main/method/hypothesis_generator.cpp
 /// USAGE: use this for cell decomposition
-void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int seg_size,
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int min_seg_size,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e, bool verbose)
 {
     /// create a list of planes from segments
@@ -330,7 +331,7 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
     sort(segments_vec.begin(), segments_vec.end(), compare_lp_segmenttag);
     Planes planes;
     for (auto &segment : segments_vec){
-        if(segment.size() < seg_size) continue;
+        if(segment.size() < min_seg_size) continue;
         int seg_num = segment[0].SegmentNumber();
         if(seg_num < 0) continue; // to skip non valid segments
         // fit a plane
@@ -350,6 +351,8 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
         }
         //LineTopology polygon = polygons_e[3]; //inx0=1, inx1=2, inx2=3, inx3=60
         cout << "polygon:" << polygon.Number() << " ----------------------------------------------" << endl;
+        /// set the polygon number=segment number to the attribute tags
+        polygon.SetAttribute(LineLabelTag, polygon.Number());
         LineTopologies polygons_to_be_cut;
         polygons_to_be_cut.push_back(polygon);
         Planes cutting_planes = planes;
@@ -358,11 +361,9 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
             Plane plane = *(cutting_planes.begin());
             if(polygon.Number() == plane.Number()) {
                 cutting_planes.erase(cutting_planes.begin());
-                cout << "  !X plane: " << plane.Number() << " //self spliting!" << endl;
+                cout << "  !X plane: " << plane.Number() << " //skip self spliting!" << endl;
                 continue;
             }
-            if(polygon.Number() == 25 && plane.Number() == 23)
-                cout << "DEBUG!" << endl;
             for (auto &poly_child : polygons_to_be_cut){
                 if(poly_child.empty()){
                     //cout << "Warning: polygon_child is empty. Nothing to split!" << endl;
@@ -377,7 +378,10 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
                     /// use the linesegment to split the poly_child to new_poly
                     LineTopologies new_poly_e;
                     SplitPolygon3DByLineSegment3D(polygons_v, poly_child, linesegment, 0.01, new_poly_e);
-                    //new_polygons = new_poly_e; // not '=' becasue it replaces the content
+
+                    /// set the parent polygon number to children as a labeltag
+                    new_poly_e.SetAttribute(LineLabelTag, polygon.Number());
+                    //new_polygons = new_poly_e; // not '=' because it replaces the content
                     new_polygons.insert(new_polygons.end(), new_poly_e.begin(), new_poly_e.end());
 
                     //polygons_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_tmp_vertices.objpts");
@@ -409,6 +413,7 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
         new_polygons_e.insert(new_polygons_e.end(), polygons_to_be_cut.begin(), polygons_to_be_cut.end());
     } //end for for several polygons
     /// renumber polygons from 0 to n
+    /// polygons should already have the attribute of parent polygon as a LineLabelTag
     for (int i=0; i<new_polygons_e.size();i++)
     {
         new_polygons_e[i].Number()=i;

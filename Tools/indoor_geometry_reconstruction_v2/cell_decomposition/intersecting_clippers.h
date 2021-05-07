@@ -61,7 +61,7 @@ void SplitPolygons3DByPlane3D(ObjectPoints &polygon_v, LineTopologies &polygon_e
 
 /// splitting one polygon incrementally by several segments/planes
 /// CELL DECOMPOSITION
-void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int seg_size,
+void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygons_e, LaserPoints segments, int min_seg_size,
                                         ObjectPoints &new_polygons_v, LineTopologies &new_polygons_e,
                                bool verbose=false);
 
