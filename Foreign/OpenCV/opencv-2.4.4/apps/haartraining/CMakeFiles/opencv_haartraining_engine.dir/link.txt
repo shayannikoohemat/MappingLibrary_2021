@@ -1,2 +1,0 @@
-C:\Dev-Cpp\MinGW64\bin\ar.exe cr ..\..\lib\libopencv_haartraining_engine.a  CMakeFiles/opencv_haartraining_engine.dir/cvboost.cpp.obj CMakeFiles/opencv_haartraining_engine.dir/cvcommon.cpp.obj CMakeFiles/opencv_haartraining_engine.dir/cvhaarclassifier.cpp.obj CMakeFiles/opencv_haartraining_engine.dir/cvhaartraining.cpp.obj CMakeFiles/opencv_haartraining_engine.dir/cvsamples.cpp.obj
-C:\Dev-Cpp\MinGW64\bin\ranlib.exe ..\..\lib\libopencv_haartraining_engine.a

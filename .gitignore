@@ -30,6 +30,7 @@ DS_Store/
 Debug/
 Release/
 #Foreign/
+Foreign/OpenCV
 
 # log files
 *.log
