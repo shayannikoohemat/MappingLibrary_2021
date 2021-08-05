@@ -47,7 +47,7 @@ int basic_efficient_ransac (const char *filename, std::string outdir,
 
 int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
-                                       int nb_neighbors, bool estimate_normals);
+                                       int nb_neighbors, LaserPoints lp_seg_out, bool estimate_normals);
 
 
 int pca_normal_estimation(const char* fname, std::list<PointVectorPair> &points, double r);

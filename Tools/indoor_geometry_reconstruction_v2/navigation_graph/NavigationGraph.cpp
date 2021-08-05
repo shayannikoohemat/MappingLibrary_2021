@@ -310,7 +310,7 @@ TIN Create_Constrained_Delaunay (LaserPoints &segmented_lp, int bound_segmentNum
     //bounds_holes_vertices.RemoveDoublePoints(bounds_holes_edges, 0.01);
     //bounds_holes_edges.ReNumber(bounds_holes_vertices, 0, 0); /// this may change the order of numbering
 
-    /* VERY importnat function*/
+    /* VERY important function*/
     TIN tin;
     tin = bounds_holes_vertices.Triangulate (bounds_holes_edges, holes_centers); /// The main function
     printf ("TIN size: %d\n", static_cast<int>(tin.size ()));

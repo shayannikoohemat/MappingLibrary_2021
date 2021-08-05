@@ -14,6 +14,7 @@
 // TDOO: enlarge the bbox by a percetage so it is not very tight to the data (done)
 // TODO: select faces belong to the same cell
 // TODO: export cell decomposition to off or obj
+// TODO: put the pipeline together
 
 /// we use this instead of Planes bounding_cube() so we can scale the boundingbox
 void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
@@ -61,7 +62,7 @@ Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,
     lp_noSeg.RemoveAttributes();
     lp_noSeg.SetAttribute(SegmentNumberTag, 0); // for Min3DBox_OFF() all points should have one segment number
     char *OFFout;
-    OFFout = strcat(str_root, "/cube_global.off");
+    OFFout = strcat(str_root, "/threedbox.off");
     /// create a cuboid from lp_noSeg: (lp_vertices, lp_faces)
     Min3DBox_OFF(lp_vertices, lp_faces, lp_noSeg, 20, OFFout,
                  dataBoundsLaser.Minimum().Z(), dataBoundsLaser.Maximum().Z(), 0);

@@ -75,6 +75,7 @@ void Min3DRectangle_to_3DFaces (const ObjectPoints &rectangle_vertices, double o
                                 ObjectPoints &threeDbox_vertices, LineTopologies &threeDbox_faces);
 
 void LineTopologies_to_OFF (const ObjectPoints &vertices, const LineTopologies &faces, char*root, bool verbose=false);
+void LineTopologies_withAttr_to_OFF(const ObjectPoints &vertices, const LineTopologies &faces, LineTopologyTag tag, char *root, bool verbose);
 
 void LineTopologies_to_OFFBoxes (const ObjectPoints &vertices, const LineTopologies &faces, char *root, bool verbose=false);
 

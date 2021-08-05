@@ -79,9 +79,10 @@ int set_parameters (Efficient_ransac::Parameters &parameters,
     return EXIT_SUCCESS;
 }
 
+/// use this function for planar segmentation
 int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
-                                       int nb_neighbors, bool estimate_normals) {
+                                       int nb_neighbors, LaserPoints lp_seg_out, bool estimate_normals) {
     std::cout << "Efficient RANSAC" << std::endl;
 
     // Points with normals.
@@ -170,7 +171,6 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
       shapes = ransac.shapes();
     }
   }
-  LaserPoints lp_segmented;
   Efficient_ransac::Shape_range::iterator it = shapes.begin();
   int shape_counter=0;
   while (it != shapes.end()) {
@@ -193,7 +193,7 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
       //point.Z() = p.first.z();
       point.SetNormal(Vector3D(p.second.x(), p.second.y(), p.second.z()));
       point.SetAttribute(SegmentNumberTag, shape_counter);
-      lp_segmented.push_back(point);
+      lp_seg_out.push_back(point);
       //point.Print();
 
       /// Adds Euclidean distance between point and shape.
@@ -209,12 +209,13 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
     shape_counter++;
   }
     std::string output_seg_laser = outdir + "/lp_segmented.laser";
-    lp_segmented.Write(output_seg_laser.c_str(), false);
+    lp_seg_out.Write(output_seg_laser.c_str(), false);
 
   return EXIT_SUCCESS;
 }
 
 
+/// this has a bug in populating points into a point_set in store_shapes()
 int basic_efficient_ransac (const char *filename, std::string outdir,
                             Efficient_ransac::Parameters ransac_parameters,
                             int nb_neighbors, bool estimate_normals) {

@@ -12,14 +12,15 @@
 /// polygons and faces are created by  Intersect_Planes_3DBoxFaces() and
 /// SplitPolygons3DByPlanes3D(), respectively;
 /// This function uses LineNumberTag in linetopology to identify faces belong to the same segment
-/// NOTE: this function overrides the point labels
-LaserPoints FaceSelection::associatePointsToFace3D_withTag(LaserPoints segments, int min_segsize,
+/// NOTE: this function saves the face number in ScanLineNumberTag
+LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsize,
                                                    double dist_threshold,
                                                    double area_threshld,
                                                    int min_points_for_face_selection,
                                                    ObjectPoints faces_v,
                                                    LineTopologies faces_e,
-                                                   LineTopologies &selected_faces)
+                                                   LineTopologies &faces_with_points,
+                                                    LineTopologies &faces_without_points)
 {
     char* root_dir; //= (char*) "/mnt/DataPartition/CGI_UT/cell_decomposition/out/";
     //char str_root[500];
@@ -31,6 +32,7 @@ LaserPoints FaceSelection::associatePointsToFace3D_withTag(LaserPoints segments,
     segments_vec = PartitionLpByTag(segments, SegmentNumberTag, root_dir);
 
     LaserPoints updated_labels;
+
     for (auto &segment : segments_vec){
         if(segment.size() < min_segsize) continue;
         int segment_num = segment[0].SegmentNumber();
@@ -55,6 +57,7 @@ LaserPoints FaceSelection::associatePointsToFace3D_withTag(LaserPoints segments,
             }
 
             /// *** important function PointsInsidePolygon3D() ***
+            /// here we assign the face-number to points inside each face. We use ScanLineNumberTag for this tag.
             ObjectPoints vertices = GetCorresponding_vertices(faces_v, polygon);
             updated_tmp = PointsInsidePolygon3D(segment, dist_threshold, vertices, polygon, ScanLineNumberTag);
             updated_labels.AddPoints(updated_tmp.SelectTagValue(ScanLineNumberTag, polygon.Number()));
@@ -67,7 +70,13 @@ LaserPoints FaceSelection::associatePointsToFace3D_withTag(LaserPoints segments,
             auto lasersize = inside_points.size();
             if(lasersize > min_points_for_face_selection) // why this throws unexpected errors??
             {
-                selected_faces.push_back(polygon);
+                //TODO: if LineNumberTag works use it to label the face as valid or invalid and make one *.top file instead of two
+                polygon.SetAttribute(LineNumberTag, 100); //valid (not tested)
+                faces_with_points.push_back(polygon);
+            } else
+            {
+                polygon.SetAttribute(LineNumberTag, 101); // invalid (not tested)
+                faces_without_points.push_back(polygon);
             }
         }
         cout << endl;
@@ -82,7 +91,7 @@ LaserPoints FaceSelection::associatePointsToFace3D_withTag(LaserPoints segments,
 /// This function instead of LineNumberTag uses coplanarity of segment's plane and face's plane to
 ///  identify faces belonging to the same segment
 /// NOTE: this function overrides the point labels
-LaserPoints FaceSelection::associatePointsToFace3D(LaserPoints segments, int min_segsize,
+LaserPoints associatePointsToFace3D(LaserPoints segments, int min_segsize,
                                                    double dist_threshold,
                                                    double area_threshld,
                                                    int min_points_for_face_selection,

@@ -7,7 +7,10 @@
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
 #include "planar_segmentation.h"
+#include "sample_laserpoints.h"
+#include "main_pipeline.h"
 
+LaserPoints read_ascii(char *ascii_file);
 
 int main() {
 
@@ -59,12 +62,12 @@ int main() {
     LaserPoints segments;
     LineTopologies polygons_edges;
     ObjectPoints polygons_vertices;
-    int min_seg_size = 500;
-    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/room_segmented.laser");
-    Intersect_Planes_3DBoxFaces(segments, min_seg_size, box3d_faces, box3d_vertices,
-                                polygons_edges, polygons_vertices, true, true);
-    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
-    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
+//    int min_seg_size = 500;
+//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/room_segmented.laser");
+//    Intersect_Planes_3DBoxFaces(segments, min_seg_size, box3d_faces, box3d_vertices,
+//                                polygons_edges, polygons_vertices, true, true);
+//    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
+//    polygons_edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_edges.top", false);
 
     /// test SplitPolygons3DByPlane3D()
 //    LaserPoints segment;
@@ -72,28 +75,27 @@ int main() {
     //segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segment60.laser"); // for the spliting plane
     /// input polygons are created by Intersect_Planes_3DBoxFaces()
 //    SplitPolygons3DByPlane3D(polygons_vertices, polygons_edges, segment, new_polys_v, new_polys_e);
-//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
-//    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
+//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_vertices.objpts");
+//    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_edges.top", false);
 
     //////////// CELL DECOMPOSITION ///////////////////
     /// Use this with output of Intersect_Planes_3DBoxFaces() for CELL DECOMPOSITION
     ObjectPoints new_polys_v; LineTopologies new_polys_e;
     //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
     ///input polygons are created by Intersect_Planes_3DBoxFaces()
-    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, min_seg_size, new_polys_v, new_polys_e, false);
-    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
-    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
+//    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, min_seg_size, new_polys_v, new_polys_e, false);
+//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_vertices.objpts");
+//    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_edges.top", false);
 
 
     /// test associating points to faces
     /// USE this with the results of cell decomposition: SplitPolygons3DByPlanes3D()
     LineTopologies valid_polygons;
     LaserPoints updated_labels;
-    FaceSelection fs;
-    //updated_labels = fs.associatePointsToFace3D(segments, min_seg_size, 0.12, 0.5, 50, new_polys_v, new_polys_e, valid_polygons); // s3dis: 500, 0.08, 0.5, 500,
-    updated_labels = fs.associatePointsToFace3D_withTag(segments, min_seg_size, 0.08, 0.5, 1000, new_polys_v, new_polys_e, valid_polygons);
-    updated_labels.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser", false);
-    valid_polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/valid_polygons.top", false);
+    //updated_labels = associatePointsToFace3D(segments, min_seg_size, 0.12, 0.5, 50, new_polys_v, new_polys_e, valid_polygons); // s3dis: 500, 0.08, 0.5, 500,
+//    updated_labels = associatePointsToFace3D_withTag(segments, min_seg_size, 0.08, 0.5, 1000, new_polys_v, new_polys_e, valid_polygons);
+//    updated_labels.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser", false);
+//    valid_polygons.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/valid_polygons.top", false);
 
     /// test plane intersection with the bbox of the data
 //    Plane plane;
@@ -130,6 +132,46 @@ int main() {
     ///set_parameters(parameters, 0.05, 500, 0.02, 0.08, 0.087); // parameters for S3DIS
     //set_parameters(parameters, 0.05, 200, 0.02, 0.08, 0.087);
     ///basic_efficient_ransac0
+    // LaserPoints lp_seg_out;
+    //efficient_RANSAC_with_point_access(filename, outdir, parameters, nb_neighbors, lp_seg_out, estimate_normals);
+
+    /// linetopology to off format
+    ObjectPoints vertices;
+    LineTopologies faces;
+    //vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_vertices.objpts");
+    //faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_new_edges.top", false);
+    //LineTopologies_withAttr_to_OFF(vertices, faces, LineLabelTag, root_dir, true);
+
+//    LaserPoints lp;
+//    lp.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser");
+//    lp.SetAttribute(ScanNumberTag, lp.GetAttribute(ScanLineNumberTag));
+//    lp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels2.laser", false);
+
+    /// sample points in faces
+    LineTopologies faces_edges;
+    ObjectPoints faces_vertices;
+    LaserPoints sampled_points;
+    //faces_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_vertices.objpts");
+    //faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
+    //sampled_points = Sample_Laserpoints_3D (faces_vertices, faces_edges, root_dir);
+    //sampled_points = Face_to_Voxel(faces_vertices, faces_edges, root_dir, 0.2);
+    //sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025);
+//    sampled_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points.laser", false);
+//    LaserPoints sampled_points_noise, sampled_points_noiseG;
+//    sampled_points_noise = sampled_points.AddNoise(0.1);
+//    sampled_points_noise.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noise.laser", false);
+//    sampled_points_noiseG = sampled_points.AddNoiseG(0.2, 0.1);
+//    sampled_points_noiseG.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noiseG.laser", false);
+
+    char* proj_dir = (char*) "/mnt/DataPartition/project_cd";
+    //pipeline_v0(proj_dir);
+
+    /// ascii to laserpoints
+    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";
+    LaserPoints lp;
+    lp = read_ascii(input_ascii);
+    lp.Write("/mnt/DataPartition/threed_modeling/input_data/office_1.laser", false);
+
 
     return 0;
 }

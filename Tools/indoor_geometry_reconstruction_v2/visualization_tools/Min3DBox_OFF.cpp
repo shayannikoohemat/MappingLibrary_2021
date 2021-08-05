@@ -523,6 +523,58 @@ void LineTopologies_to_OFF (const ObjectPoints &vertices, const LineTopologies &
     fclose(OFF);
 }
 
+void LineTopologies_withAttr_to_OFF(const ObjectPoints &vertices, const LineTopologies &faces,
+                                    LineTopologyTag tag, char *root, bool verbose){
+
+    char str_root[500];
+    strcpy (str_root, root);
+
+    /// open an empty off_file
+    char * OFFfile = strcat (str_root, "off_output.off");
+    FILE *OFF;
+    OFF = fopen(OFFfile, "w");
+    if (!OFF){
+        fprintf(stderr, "Error opening output file %s\n", OFFfile);
+        exit(0);
+    }
+    fprintf(OFF, "OFF \n");
+
+    /// #vertices, #faces, #edges
+    fprintf(OFF, "%d %d %d \n", vertices.size(), faces.size(), 0);
+
+    /// write points or vertices
+    ObjectPoints::const_iterator points_it;
+    for(points_it = vertices.begin(); points_it != vertices.end(); points_it++){
+        fprintf(OFF, "%.3f ", points_it -> X());
+        fprintf(OFF, "%.3f ", points_it -> Y());
+        fprintf(OFF, "%.3f",  points_it -> Z());
+        fprintf(OFF, "\n");
+    }
+
+    /// write faces from polygon_lines
+    LineTopologies::const_iterator face_it;
+    for(face_it = faces.begin(); face_it !=faces.end(); face_it++){
+        auto face = *face_it;
+        if(face.IsClosed()) face.pop_back(); // remove the last repeated vertex for off format
+        //if(face.IsClockWise(vertices)) face.MakeCounterClockWise(vertices);
+        int num_of_points;
+        num_of_points = (int) face.size(); // face_it ->size(); /// for box faces should be always 4
+        fprintf(OFF, "%d ", num_of_points); /// print number of vertices
+        /// print vertices of the face
+        for(int m=0; m < num_of_points; m++){
+            fprintf(OFF,"%d " ,face[m].Number());
+        }
+        /// print the tag
+        if(face.HasAttribute(tag)){
+           int tag_value = face.Attribute(tag); //face_it->Attribute(tag);
+           fprintf(OFF, "%d %d %d", tag_value, tag_value, tag_value); /// print tag value in color attribute (no mapping to color range is done)
+        }
+
+        fprintf(OFF, "\n");
+    }
+    fclose(OFF);
+}
+
 
 void LineTopologies_to_OFFBoxes (const ObjectPoints &vertices, const LineTopologies &faces, char *root, bool verbose){
 

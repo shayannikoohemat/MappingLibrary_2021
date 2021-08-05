@@ -43,6 +43,10 @@ file(GLOB utils_Sources
         ../utils/MergeSurfaces.cpp)
 
 set(SOURCE_FILES main.cpp
+        main_pipeline.cpp
+        Laservoxel.cpp
+        ReadAscii.cpp
+        sample_laserpoints.cpp
         intersecting_clippers.cpp
         face_selection.cpp
         planar_segmentation.cpp
