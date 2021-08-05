@@ -1,0 +1,2 @@
+C:\Dev-Cpp\MinGW64\bin\ar.exe cr ..\..\lib\libopencv_ts244.a  CMakeFiles/opencv_ts.dir/src/precomp.cpp.obj CMakeFiles/opencv_ts.dir/src/ts.cpp.obj CMakeFiles/opencv_ts.dir/src/ts_arrtest.cpp.obj CMakeFiles/opencv_ts.dir/src/ts_func.cpp.obj CMakeFiles/opencv_ts.dir/src/ts_gtest.cpp.obj CMakeFiles/opencv_ts.dir/src/ts_perf.cpp.obj
+C:\Dev-Cpp\MinGW64\bin\ranlib.exe ..\..\lib\libopencv_ts244.a

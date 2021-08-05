@@ -1,0 +1,2 @@
+C:\Dev-Cpp\MinGW64\bin\ar.exe cr ..\..\lib\libopencv_perf_highgui_pch_dephelp.a  CMakeFiles/opencv_perf_highgui_pch_dephelp.dir/opencv_perf_highgui_pch_dephelp.cxx.obj
+C:\Dev-Cpp\MinGW64\bin\ranlib.exe ..\..\lib\libopencv_perf_highgui_pch_dephelp.a

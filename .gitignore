@@ -29,7 +29,7 @@ DS_Store/
 .idea/
 Debug/
 Release/
-Foreign/
+#Foreign/
 
 # log files
 *.log
