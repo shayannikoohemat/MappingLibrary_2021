@@ -65,17 +65,20 @@ void room2cellsdecomposition(char *input_ascii, char* dump_dir, LaserPoints lp_o
     // outputs are new faces created by intersection with eachother
     SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, lp_segmented, min_seg_size, new_polys_v, new_polys_e, false);
 
-    /// 5 associating points to faces, this returns points with label of the faces
+    /// 5 associating points to faces, this returns points with label of the faces and
+    /// also valid faces (containing points) vs invalid faces (no points)
     LaserPoints updated_labels;
-    LineTopologies faces_with_points, faces_without_points;
+    LineTopologies faces_with_points, faces_without_points, all_faces;
     // for s3dis: 500, 0.08, 0.5, 500
     double dist_threshold = 0.08; //meter
     double area_threshld = 0.5; //is not used in the function
     int min_points_for_face_selection = 500;
     // NOTE: check ScanLineNumberTag for updated labels of points
-    //TODO: if LineNumberTag works use it to label the face as valid or invalid and make one *.top file instead of two in face_selection.cpp
+    //LineNumberTag(id=16) is used it to label the faces as valid(=100) or invalid(101) and also make one *.Top file (all_faces)
+    //LineLabelTag(id=0) is used to transfer segment number of points to faces
     updated_labels = associatePointsToFace3D_withTag(lp_segmented, min_seg_size, dist_threshold, area_threshld, min_points_for_face_selection,
-                                                     new_polys_v, new_polys_e, faces_with_points, faces_without_points);
+                                                     new_polys_v, new_polys_e, faces_with_points, faces_without_points, all_faces);
+
 
 
 }
@@ -134,6 +137,7 @@ void pipeline_v0(char* project_dir, std::string proj_dir_str){
 
 
     /// 2. efficinet ransac
+    LaserPoints lp_seg_out;
     if(do_planar_segmentation){
         char str_input[500];
         Efficient_ransac::Parameters ransac_parameters;

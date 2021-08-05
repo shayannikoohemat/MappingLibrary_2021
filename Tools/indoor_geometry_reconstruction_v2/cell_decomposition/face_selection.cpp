@@ -11,7 +11,10 @@
 // for given segment(s) of laserpoints and several faces/polygons associate points to each face
 /// polygons and faces are created by  Intersect_Planes_3DBoxFaces() and
 /// SplitPolygons3DByPlanes3D(), respectively;
-/// This function uses LineNumberTag in linetopology to identify faces belong to the same segment
+/// This function uses LineLabelTag in linetopology to identify faces belong to the same segment
+/// and then set the points inside a face the same tag (ScanLineNumberTag)
+/// faces without points or few points get an invalid tag(linenumbertag=101) and
+/// faces with points are valid so get (linenumbertag=100)
 /// NOTE: this function saves the face number in ScanLineNumberTag
 LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsize,
                                                    double dist_threshold,
@@ -20,7 +23,8 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
                                                    ObjectPoints faces_v,
                                                    LineTopologies faces_e,
                                                    LineTopologies &faces_with_points,
-                                                    LineTopologies &faces_without_points)
+                                                    LineTopologies &faces_without_points,
+                                                    LineTopologies &all_faces)
 {
     char* root_dir; //= (char*) "/mnt/DataPartition/CGI_UT/cell_decomposition/out/";
     //char str_root[500];
@@ -73,10 +77,12 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
                 //TODO: if LineNumberTag works use it to label the face as valid or invalid and make one *.top file instead of two
                 polygon.SetAttribute(LineNumberTag, 100); //valid (not tested)
                 faces_with_points.push_back(polygon);
+                all_faces.push_back(polygon);
             } else
             {
                 polygon.SetAttribute(LineNumberTag, 101); // invalid (not tested)
                 faces_without_points.push_back(polygon);
+                all_faces.push_back(polygon);
             }
         }
         cout << endl;

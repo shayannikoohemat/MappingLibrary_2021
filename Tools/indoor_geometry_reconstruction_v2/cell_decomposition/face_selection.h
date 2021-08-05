@@ -17,7 +17,8 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
                                                        ObjectPoints faces_v,
                                                        LineTopologies faces_e,
                                                        LineTopologies &selected_faces,
-                                                       LineTopologies &faces_without_points);
+                                                       LineTopologies &faces_without_points,
+                                                        LineTopologies &all_faces);
 
 
 

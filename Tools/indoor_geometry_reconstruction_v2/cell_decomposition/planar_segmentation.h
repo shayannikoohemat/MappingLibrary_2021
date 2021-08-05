@@ -9,6 +9,8 @@
 #include <CGAL/Point_set_3.h>
 #include <CGAL/Shape_detection/Efficient_RANSAC.h>
 
+#include <LaserPoints.h>
+
 
 // Type declarations.
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  Kernel;
