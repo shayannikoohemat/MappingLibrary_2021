@@ -9,8 +9,11 @@
 #include "planar_segmentation.h"
 #include "sample_laserpoints.h"
 #include "main_pipeline.h"
+#include <boost/filesystem.hpp>
 
 LaserPoints read_ascii(char *ascii_file);
+void room2cellsdecomposition(char *input_ascii, std::string data_dir);
+
 
 int main() {
 
@@ -90,20 +93,20 @@ int main() {
 
     /// test associating points to faces
     /// USE this with the results of cell decomposition: SplitPolygons3DByPlanes3D()
-    LineTopologies all_faces, valid_faces, invalid_faces;
-    LaserPoints updated_labels;
-    int min_seg_size = 500;
-    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/room_segmented.laser");
-    new_polys_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/out_cells/polygon_new_edges.top", false);
-    new_polys_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/out_cells/polygon_new_vertices.objpts");
-    //updated_labels = associatePointsToFace3D(segments, min_seg_size, 0.12, 0.5, 50, new_polys_v, new_polys_e, valid_polygons);
-    updated_labels = associatePointsToFace3D_withTag(segments, min_seg_size, 0.08, 0.5, 1000, new_polys_v,
-                                                     new_polys_e, valid_faces, invalid_faces, all_faces); // s3dis: 500, 0.08, 0.5, 500,
-    updated_labels.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser", false);
-    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_vertices.objpts"); // vertices are the same
-    valid_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/valid_faces.top", false);
-    invalid_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/invalid_faces.top", false);
-    all_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/all_faces.top", false);
+//    LineTopologies all_faces, valid_faces, invalid_faces;
+//    LaserPoints updated_labels;
+//    int min_seg_size = 500;
+//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/room_segmented.laser");
+//    new_polys_e.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/out_cells/polygon_new_edges.top", false);
+//    new_polys_v.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/out_cells/polygon_new_vertices.objpts");
+//    //updated_labels = associatePointsToFace3D(segments, min_seg_size, 0.12, 0.5, 50, new_polys_v, new_polys_e, valid_polygons);
+//    updated_labels = associatePointsToFace3D_withTag(segments, min_seg_size, 0.08, 0.5, 1000, new_polys_v,
+//                                                     new_polys_e, valid_faces, invalid_faces, all_faces); // s3dis: 500, 0.08, 0.5, 500,
+//    updated_labels.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_labels.laser", false);
+//    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_vertices.objpts"); // vertices are the same
+//    valid_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/valid_faces.top", false);
+//    invalid_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/invalid_faces.top", false);
+//    all_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/all_faces.top", false);
 
     /// test plane intersection with the bbox of the data
 //    Plane plane;
@@ -171,8 +174,26 @@ int main() {
 //    sampled_points_noiseG = sampled_points.AddNoiseG(0.2, 0.1);
 //    sampled_points_noiseG.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noiseG.laser", false);
 
-    char* proj_dir = (char*) "/mnt/DataPartition/project_cd";
-    //pipeline_v0(proj_dir);
+
+    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";
+    std::string data_dir = "/mnt/DataPartition/threed_modeling/data";
+    std::string filename, filestem;
+    boost::filesystem::path p(input_ascii);
+    filename = p.filename().c_str();    // office1.txt
+    filestem = p.stem().c_str();        // office1
+
+    /// write segmented laser file
+    std::string lp_seg_dir = "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir";
+    std::string lp_seg_path = lp_seg_dir + "/laser/" + filestem + ".laser" ; // "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir/laser"
+    cout << lp_seg_path << endl;
+    LaserPoints lp_segmented;
+    lp_segmented.Read("/mnt/DataPartition/threed_modeling/out_lpoints/lp_segmented.laser");
+    char char_arr[500];
+    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
+    lp_seg_path = lp_seg_dir + "/laser/" + filestem + "_2.laser" ;
+    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
+
+    //room2cellsdecomposition(input_ascii, data_dir);
 
     /// ascii to laserpoints
 //    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";
@@ -181,8 +202,11 @@ int main() {
 //    lp.Write("/mnt/DataPartition/threed_modeling/input_data/office_1.laser", false);
 
 
+
     return 0;
 }
+
+
 
 
 

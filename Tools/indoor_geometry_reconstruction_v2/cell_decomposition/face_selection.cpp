@@ -74,13 +74,13 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
             auto lasersize = inside_points.size();
             if(lasersize > min_points_for_face_selection) // why this throws unexpected errors??
             {
-                //TODO: if LineNumberTag works use it to label the face as valid or invalid and make one *.top file instead of two
-                polygon.SetAttribute(LineNumberTag, 100); //valid (not tested)
+                // LineNumberTag unique code in Top files is 16.
+                polygon.SetAttribute(LineNumberTag, 100); //valid
                 faces_with_points.push_back(polygon);
                 all_faces.push_back(polygon);
             } else
             {
-                polygon.SetAttribute(LineNumberTag, 101); // invalid (not tested)
+                polygon.SetAttribute(LineNumberTag, 101); // invalid
                 faces_without_points.push_back(polygon);
                 all_faces.push_back(polygon);
             }
