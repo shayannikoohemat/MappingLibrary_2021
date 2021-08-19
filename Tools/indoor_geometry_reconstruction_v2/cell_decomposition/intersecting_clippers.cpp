@@ -17,14 +17,14 @@
 // TODO: put the pipeline together
 
 /// we use this instead of Planes bounding_cube() so we can scale the boundingbox
-void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
+void bounding_cube(char *off_threedbox_out, LaserPoints lp, double scalefactor,
                    ObjectPoints &lp_vertices, LineTopologies &lp_faces){
-    char str_root[500];
-    strcpy (str_root, root_dir);
-    char *OFFout;
-    OFFout = strcat(str_root, "/cube_global.off");
+//    char str_root[500];
+//    strcpy (str_root, root_dir);
+//    char *OFFout;
+//    OFFout = strcat(str_root, "/cube_global.off");
     /// create a cuboid from lp_noSeg: (lp_vertices, lp_faces)
-    Min3DBox_OFF_withscale(lp_vertices, lp_faces, lp, scalefactor, OFFout);
+    Min3DBox_OFF_withscale(lp_vertices, lp_faces, lp, scalefactor, off_threedbox_out);
 }
 
 

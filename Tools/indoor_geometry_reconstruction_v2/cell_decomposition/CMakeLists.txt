@@ -9,11 +9,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${dir}) # to make a customized build director
 set (MAPPING_LIB_DIR "/usr/local/lib/MappingLibrary/Library/lib64_linux")
 set (MAPPING_INCLUDE_DIR "/usr/local/lib/MappingLibrary/Library")
 
+## boost 1.65
 find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
-## CGAL
+## CGAL 5.3
 find_package(CGAL)
 
 include_directories(../../../Library/Photogrammetry/include)
@@ -50,6 +51,8 @@ set(SOURCE_FILES main.cpp
         intersecting_clippers.cpp
         face_selection.cpp
         planar_segmentation.cpp
+        alpha_shape.cpp
+        occupancy_grid.cpp
         ../utils/utils.h
         ../visualization_tools/visualization_tools.h
         ${visualisation_Sources}

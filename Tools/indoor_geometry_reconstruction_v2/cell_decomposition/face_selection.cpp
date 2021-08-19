@@ -67,7 +67,8 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
             updated_labels.AddPoints(updated_tmp.SelectTagValue(ScanLineNumberTag, polygon.Number()));
             //updated_tmp.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/updated_tmp.laser", false);
             /// make a new set of polygons of those with points
-            //polygon.CalculateArea(vertices);
+            //double face_area = polygon.CalculateArea(vertices); // this should give the area of a single face
+
             LaserPoints inside_points;
             inside_points = updated_tmp.SelectTagValue(ScanLineNumberTag, polygon.Number());
             //TODO: fit a polygon to inside points and calculate the area of the coverage for valid face selection

@@ -10,9 +10,12 @@
 #include "sample_laserpoints.h"
 #include "main_pipeline.h"
 #include <boost/filesystem.hpp>
+#include "alpha_shape.h"
+
 
 LaserPoints read_ascii(char *ascii_file);
 void room2cellsdecomposition(char *input_ascii, std::string data_dir);
+void occup_grid(LaserPoints lp, double vox_size, char *out_dir);
 
 
 int main() {
@@ -175,23 +178,28 @@ int main() {
 //    sampled_points_noiseG.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noiseG.laser", false);
 
 
-    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";
-    std::string data_dir = "/mnt/DataPartition/threed_modeling/data";
-    std::string filename, filestem;
-    boost::filesystem::path p(input_ascii);
-    filename = p.filename().c_str();    // office1.txt
-    filestem = p.stem().c_str();        // office1
+//    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office1_crop.txt";
+//    //std::string data_dir = "/mnt/DataPartition/threed_modeling/data";
+//    std::string filename, file_ext;
+//    boost::filesystem::path p(input_ascii);
+//    file_ext = p.filename().c_str();    // office1.txt
+//    filename = p.stem().c_str();        // office1
 
-    /// write segmented laser file
-    std::string lp_seg_dir = "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir";
-    std::string lp_seg_path = lp_seg_dir + "/laser/" + filestem + ".laser" ; // "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir/laser"
-    cout << lp_seg_path << endl;
-    LaserPoints lp_segmented;
-    lp_segmented.Read("/mnt/DataPartition/threed_modeling/out_lpoints/lp_segmented.laser");
-    char char_arr[500];
-    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
-    lp_seg_path = lp_seg_dir + "/laser/" + filestem + "_2.laser" ;
-    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
+//    /// write segmented laser file
+//    std::string lp_seg_dir = "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir";
+//    std::string lp_seg_path = lp_seg_dir + "/laser/" + filename + ".laser" ; // "/mnt/DataPartition/threed_modeling/data/out_data/lp_seg_dir/laser"
+//    cout << lp_seg_path << endl;
+//    LaserPoints lp_segmented;
+//    lp_segmented.Read("/mnt/DataPartition/threed_modeling/out_lpoints/lp_segmented.laser");
+//    char char_arr[500];
+//    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
+//    lp_seg_path = lp_seg_dir + "/laser/" + filename + "_2.laser" ;
+//    lp_segmented.Write(strcpy (char_arr, lp_seg_path.c_str()), false);
+//    ObjectPoints threedbox_vertices; //output
+//    LineTopologies threedbox_faces; // output
+//    std::string out_dir = "/mnt/DataPartition/threed_modeling/out_dir";
+//    std::string off_outfile_str = out_dir + "/off/" + filename + ".off" ;
+//    bounding_cube(strcpy(char_arr ,off_outfile_str.c_str()), lp_segmented, 1.1, threedbox_vertices, threedbox_faces);
 
     //room2cellsdecomposition(input_ascii, data_dir);
 
@@ -200,6 +208,38 @@ int main() {
 //    LaserPoints lp;
 //    lp = read_ascii(input_ascii);
 //    lp.Write("/mnt/DataPartition/threed_modeling/input_data/office_1.laser", false);
+
+    /// calcualte area, get the convex hull, get the countour of points
+    LaserPoints one_segment;
+    one_segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/wall_crop.laser");
+//    ObjectPoints conv_hull_v, contour_v;
+//    LineTopology conv_hull_e, contour_e;
+//    LineTopologies conv_hull_es, contour_es;
+//    one_segment.DeriveTIN();
+//    one_segment.ConvexHull(conv_hull_v, conv_hull_es, 0.1);
+//    conv_hull_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/conv_hull.objpts");
+//    conv_hull_es.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/conv_hull.top", false);
+    //one_segment.DeriveConvexhull();
+    //one_segment.DeriveContour3D(contour_v, contour_e, 0.1);
+//    PointNumberList pnumlist;
+//    TINEdges tinedges;
+//    contour_e = one_segment.DeriveContour(2, pnumlist, tinedges);
+//    contour_es.push_back(contour_e);
+//    contour_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/contour_v.objpts");
+//    contour_es.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/contour_es.top", false);
+//    TIN tin;
+//    //covert laserpoints to objpoints
+//    ObjectPoints segment_objpoints;
+//    cout << one_segment.size() << endl;
+//    segment_objpoints = one_segment.ConstructObjectPoints();
+//    cout << segment_objpoints.size() << endl;
+//    LineTopologies edges;
+//    ObjectPoints centers;
+//    segment_objpoints.Triangulate(edges, centers);
+//    centers.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/centers.objpts");
+//    edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/edges.top", false);
+
+    alphashape_w_fastlocation(one_segment, "/mnt/DataPartition/CGI_UT/cell_decomposition/alpha_sh.off");
 
 
 
