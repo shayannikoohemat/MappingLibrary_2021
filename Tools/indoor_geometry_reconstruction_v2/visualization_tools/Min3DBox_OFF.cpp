@@ -524,13 +524,13 @@ void LineTopologies_to_OFF (const ObjectPoints &vertices, const LineTopologies &
 }
 
 void LineTopologies_withAttr_to_OFF(const ObjectPoints &vertices, const LineTopologies &faces,
-                                    LineTopologyTag tag, char *root, bool verbose){
+                                    LineTopologyTag tag, char *OFFfile, bool verbose){
 
-    char str_root[500];
-    strcpy (str_root, root);
+    //char str_root[500];
+    //strcpy (str_root, root);
 
     /// open an empty off_file
-    char * OFFfile = strcat (str_root, "off_output.off");
+    //char * OFFfile = strcat (str_root, "off_output.off");
     FILE *OFF;
     OFF = fopen(OFFfile, "w");
     if (!OFF){
