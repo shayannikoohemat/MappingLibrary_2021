@@ -25,7 +25,7 @@ void SetColor(enum Color);
  * Hint: to test parameters, and see whether passing true for some bool operations (e.g., generalize walls), we suggest after
  * surface growing segmentation, downsample point clouds to less than 1 million points and run the algorithm
  * with different settings to make sure the results are acceptable. Then you can run it on a denser point clouds with the
- * same arguments.
+ * same arguments. *  generate wall patches later is handled by /utils/MergeSurfaces.cpp
  * Hint 2: always make an output directory and pass it to char* root_dir, so you dont mix the output files with input.
  * important parameters:
  * flat_angle=10.0 , vertical_angle=10.0: are the angle between the normal and positive direction of z-axis

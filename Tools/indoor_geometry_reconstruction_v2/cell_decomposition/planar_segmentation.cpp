@@ -82,7 +82,7 @@ int set_parameters (Efficient_ransac::Parameters &parameters,
 /// use this function for planar segmentation
 int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
-                                       int nb_neighbors, LaserPoints lp_seg_out, bool estimate_normals) {
+                                       int nb_neighbors, LaserPoints &lp_seg_out, bool estimate_normals) {
     std::cout << "Efficient RANSAC" << std::endl;
 
     // Points with normals.

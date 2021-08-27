@@ -19,7 +19,7 @@
  *  5. associating points to faces, this returns points with label of the faces --> updated_labels = associatePointsToFace3D_withTag()
  *  6. sample points on faces without points using Face_to_Voxel_with_noise()
  *  7. convert faces to OFF format --> LineTopologies_withAttr_to_OFF()
- *      in this step, the relation between faces and associated points should be preserved (either in a separate file or in OFF file)
+ *      in this step, the relation between faces and associated points is preserved in points in ScanLineNumber Tag and in faces as face number
  *  8. (semi-auto) label associated points of each face into valid (part of the structure) and
  *      invalid (not structured objects or points outside of the room)
  *  9.  write lp_segmented as ascii
@@ -133,7 +133,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 
     /// 5 associating points to faces, this returns points with label of the faces and
     /// also valid faces (containing points) vs invalid faces (no points)
-    LaserPoints updated_labels;
+    LaserPoints points_with_face_num; // formerly was updated_labels.laser
     LineTopologies faces_with_points, faces_without_points, all_faces;
     // for s3dis: 500, 0.08, 0.5, 500
     double dist_threshold = 0.08; //meter
@@ -142,11 +142,11 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     // NOTE: check ScanLineNumberTag for updated labels of points
     //LineNumberTag(id=16) is used to label the faces as valid(=100) or invalid(101) and also make one *.Top file (all_faces)
     //LineLabelTag(id=0) is used to transfer segment number of points to faces
-    updated_labels = associatePointsToFace3D_withTag(lp_segmented, min_seg_size, dist_threshold, area_threshld, min_points_for_face_selection,
+    points_with_face_num = associatePointsToFace3D_withTag(lp_segmented, min_seg_size, dist_threshold, area_threshld, min_points_for_face_selection,
                                                      new_polys_v, new_polys_e, faces_with_points, faces_without_points, all_faces);
     // write updated labels which has the face number in ScanLineNumberTag
     std::string points_w_facenum_path = lp_seg_dir + "/laser/" + filename + "_facenum.laser" ;
-    updated_labels.Write(strcpy(char_arr, points_w_facenum_path.c_str()), false);
+    points_with_face_num.Write(strcpy(char_arr, points_w_facenum_path.c_str()), false);
     // write faces with points as valid and without points as invalid
     std::string faces_w_points_path, faces_wout_points_path;
     faces_w_points_path = faces_mesh_dir +"/" + filename + "_faces_valid.top"; // vertices are the same: polys_v_path and new_polys_v
@@ -160,12 +160,20 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     LaserPoints sampled_points;
     double vox_l = 0.05;
     double noise_level = 0.025;
-    // TODO check if points get the face number as scanlinenumber
-    sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_without_points, (char*) dump_dir.c_str(), vox_l, noise_level);
-    sampled_points.SetAttribute(LabelTag, 101);
-    updated_labels.SetAttribute(LabelTag, 100);
-    //TODO: for invalid faces sample points are generated, these points can given a label and added to the orignila points
-    //
+    // face numbers are stored in ScanLineNumberTag
+    sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_without_points, (char*) dump_dir.c_str(), vox_l, noise_level, ScanLineNumberTag);
+    sampled_points.SetAttribute(LabelTag, 101); // sample points on invalid faces
+    points_with_face_num.SetAttribute(LabelTag, 100); // sample points on valid faces
+    //merge original points with sampled points
+    LaserPoints main_points_plus_sampledpoints;
+    main_points_plus_sampledpoints.AddPoints(points_with_face_num);
+    main_points_plus_sampledpoints.AddPoints(sampled_points);
+    // write the sampled points on invalid faces and original points
+    std::string sampled_points_w_facenum_path = lp_seg_dir + "/laser/" + filename + "_sampled_pnts_facenum.laser" ;
+    sampled_points.Write(strcpy(char_arr, sampled_points_w_facenum_path.c_str()), false);
+    std::string main_points_plus_sampledpoints_path = lp_seg_dir + "/laser/" + filename + "_main_points_plus_sampledpoints_facenum.laser" ;
+    main_points_plus_sampledpoints.Write(strcpy(char_arr, main_points_plus_sampledpoints_path.c_str()), false);
+
 
     /// 7 convert faces to OFF format
     LineTopologies_withAttr_to_OFF(new_polys_v, all_faces, LineLabelTag, (char*) OFF_dir.c_str(), true);

@@ -11,7 +11,7 @@ void ExtractFaces_from_3DPolygonsIntersection(LaserPoints laserPoints, Planes pl
                                               ObjectPoints &vertices,  //output faces
                                               LineTopologies &faces);
 
-void bounding_cube(char *root_dir, LaserPoints lp, double scalefactor,
+void bounding_cube(char *off_file, LaserPoints lp, double scalefactor,
                    ObjectPoints &lp_vertices, LineTopologies &lp_faces);
 
 Planes bounding_cube(char *root_dir, LaserPoints &lp, ObjectPoints &lp_vertices,

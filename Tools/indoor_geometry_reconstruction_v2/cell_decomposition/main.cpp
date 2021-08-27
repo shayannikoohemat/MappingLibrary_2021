@@ -165,12 +165,12 @@ int main() {
     LineTopologies faces_edges;
     ObjectPoints faces_vertices;
     LaserPoints sampled_points;
-    //faces_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_vertices.objpts");
-    //faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
+    faces_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_vertices.objpts");
+    faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
     //sampled_points = Sample_Laserpoints_3D (faces_vertices, faces_edges, root_dir);
     //sampled_points = Face_to_Voxel(faces_vertices, faces_edges, root_dir, 0.2);
-    //sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025);
-//    sampled_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points.laser", false);
+    sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025);
+    sampled_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points.laser", false);
 //    LaserPoints sampled_points_noise, sampled_points_noiseG;
 //    sampled_points_noise = sampled_points.AddNoise(0.1);
 //    sampled_points_noise.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noise.laser", false);
@@ -210,8 +210,8 @@ int main() {
 //    lp.Write("/mnt/DataPartition/threed_modeling/input_data/office_1.laser", false);
 
     /// calcualte area, get the convex hull, get the countour of points
-    LaserPoints one_segment;
-    one_segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/wall_crop.laser");
+ //   LaserPoints one_segment;
+//    one_segment.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/wall_crop.laser");
 //    ObjectPoints conv_hull_v, contour_v;
 //    LineTopology conv_hull_e, contour_e;
 //    LineTopologies conv_hull_es, contour_es;
@@ -239,7 +239,7 @@ int main() {
 //    centers.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/centers.objpts");
 //    edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/edges.top", false);
 
-    alphashape_w_fastlocation(one_segment, "/mnt/DataPartition/CGI_UT/cell_decomposition/alpha_sh.off");
+//    alphashape_w_fastlocation(one_segment, "/mnt/DataPartition/CGI_UT/cell_decomposition/alpha_sh.off");
 
 
 

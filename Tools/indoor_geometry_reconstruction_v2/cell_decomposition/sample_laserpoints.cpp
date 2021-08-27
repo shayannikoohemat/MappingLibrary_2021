@@ -195,82 +195,89 @@ LaserPoints Face_to_Voxel_with_noise(ObjectPoints faces_vertices, LineTopologies
     std::clock_t start;
     double duration;
     start = std::clock();
+    LaserPoints all_sampled_points;
+    for (auto &face : faces_edges){
 
-    /// convert the face vertices to laserpoints
-    LineTopology face;
-    ObjectPoints face_v;
-    face = faces_edges[0];
-    face_v = GetCorresponding_vertices(faces_vertices, face);
-    LaserPoints v_points;
-    PointNumberList p_numlist;
-    for (auto &v : face_v) v_points.push_back(v.Position3DRef());
+        /// convert the face vertices to laserpoints
+        ObjectPoints face_v;
+        face_v = GetCorresponding_vertices(faces_vertices, face);
+        LaserPoints v_points;
+        PointNumberList p_numlist;
+        for (auto &v : face_v) v_points.push_back(v.Position3DRef());
 
+        ///initialize the LaserVoxel
+        LaserVoxel vox(v_points, vox_l);
+        //vox.statistics();
 
-    ///initialize the LaserVoxel
-    LaserVoxel vox(v_points, vox_l);
-    //vox.statistics();
+    //    char *vox_centers_path;
+        char str_root[500];
+    //    strcpy (str_root,root_dir);
+    //    vox_centers_path = strcat(str_root, "vox_centers.laser");
+        vector< vector < vector < int > > > vec_ijk;
 
-//    char *vox_centers_path;
-    char str_root[500];
-//    strcpy (str_root,root_dir);
-//    vox_centers_path = strcat(str_root, "vox_centers.laser");
-    vector< vector < vector < int > > > vec_ijk;
+        /// generating vox_centers in the given path and generating a vector to relate voxel ijk and centers
+        LaserPoints vox_centers, vox_centers_occupied;
+        vec_ijk = vox.export_vox_centres(1, vox_centers);
+        //vox_centers.Write(vox_centers_path, false);
 
-    /// generating vox_centers in the given path and generating a vector to relate voxel ijk and centers
-    LaserPoints vox_centers, vox_centers_occupied;
-    vec_ijk = vox.export_vox_centres(1, vox_centers);
-    //vox_centers.Write(vox_centers_path, false);
-
-    /// select voxel-centers in a specific distance of the segment_plane, we don't need all voxel centers
-    Plane plane;
-    v_points.SetAttribute(SegmentNumberTag, 1); // 1 random number, later replace it with segment number
-    plane = v_points.FitPlane(v_points[0].SegmentNumber());
-    plane.Number()= v_points[0].SegmentNumber();
-    LaserPoints face_voxel_centers;
-    bool full_point_segment = false; /// segment has no opening or gaps
-    int planar_vox_cnt =0, occupy_cnt=0;
-    DataBoundsLaser db;
-    db = v_points.DeriveDataBounds(0);
-    for(int i=0; i<vox_centers.size(); i++)
-    {
-        double dist_plane_voxel;
-        dist_plane_voxel = plane.Distance(vox_centers[i]);
-        //cout << "distance: " << dist_plane_voxel << endl;
-        if(fabs(dist_plane_voxel) < vox_l/2) // sqrt(3)*vox_l is a big threshold
+        /// select voxel-centers in a specific distance of the segment_plane, we don't need all voxel centers
+        Plane plane;
+        v_points.SetAttribute(SegmentNumberTag, 1); // 1 random number, later replace it with segment number
+        plane = v_points.FitPlane(v_points[0].SegmentNumber());
+        plane.Number()= v_points[0].SegmentNumber();
+        LaserPoints face_voxel_centers;
+        bool full_point_segment = false; /// segment has no opening or gaps
+        int planar_vox_cnt =0, occupy_cnt=0;
+        DataBoundsLaser db;
+        db = v_points.DeriveDataBounds(0);
+        for(int i=0; i<vox_centers.size(); i++)
         {
-            //if(InsideSegmentBounds(vox_centers[i].Position3DRef(), db)){ // it is not accurate
-                planar_vox_cnt++;
-                face_voxel_centers.push_back(vox_centers[i]);
-            //}
+            double dist_plane_voxel;
+            dist_plane_voxel = plane.Distance(vox_centers[i]);
+            //cout << "distance: " << dist_plane_voxel << endl;
+            if(fabs(dist_plane_voxel) < vox_l/2) // sqrt(3)*vox_l is a big threshold
+            {
+                //if(InsideSegmentBounds(vox_centers[i].Position3DRef(), db)){ // it is not accurate
+                    planar_vox_cnt++;
+                    face_voxel_centers.push_back(vox_centers[i]);
+                //}
+            }
         }
+        //cout << "points near plane: " << planar_vox_cnt << endl;
+        /// project points to the plane
+        LaserPoints projected_points;
+        projected_points = Project_points_to_Plane(face_voxel_centers, plane);
+        //strcpy (str_root,root_dir);
+        //projected_points.Write(strcat(str_root, "projected_points.laser"), false);
+
+        /// remove duplicates
+        projected_points.RemoveAlmostDoublePoints(false, vox_l/2);
+        /// subsample points on the plane
+        //LaserPoints projected_points_sub;
+        //projected_points_sub = projected_points.SubSampleSimple(5);
+        //strcpy (str_root,root_dir);
+        //projected_points_sub.Write(strcat(str_root, "projected_points_sampled.laser"), false);
+
+        /// add points on the plane to the voxel centers
+        face_voxel_centers.AddPoints(projected_points);
+        //strcpy (str_root,root_dir);
+        //face_voxel_centers.Write(strcat(str_root, "face_voxel_centers.laser"), false);
+
+        /// add Gaussian Noise to the points
+        LaserPoints lp_with_noise;
+        lp_with_noise = face_voxel_centers.AddNoiseG(noise_level, 0);
+        //strcpy (str_root,root_dir);
+        //lp_with_noise.Write(strcat(str_root, "face_voxel_centers_noise.laser"), false);
+
+        /// add the face number to sampled points
+        lp_with_noise.SetAttribute(ScanLineNumberTag, face.Number());
+
+        /// add points of this face to all_samplepoints
+        all_sampled_points.AddPoints(lp_with_noise);
     }
-    //cout << "points near plane: " << planar_vox_cnt << endl;
-    /// project points to the plane
-    LaserPoints projected_points;
-    projected_points = Project_points_to_Plane(face_voxel_centers, plane);
-    strcpy (str_root,root_dir);
-    projected_points.Write(strcat(str_root, "projected_points.laser"), false);
 
-    /// remove duplicates
-    projected_points.RemoveAlmostDoublePoints(false, vox_l/2);
-    /// subsample points on the plane
-    //LaserPoints projected_points_sub;
-    //projected_points_sub = projected_points.SubSampleSimple(5);
-    //strcpy (str_root,root_dir);
-    //projected_points_sub.Write(strcat(str_root, "projected_points_sampled.laser"), false);
 
-    /// add points on the plane to the voxel centers
-    face_voxel_centers.AddPoints(projected_points);
-    strcpy (str_root,root_dir);
-    face_voxel_centers.Write(strcat(str_root, "face_voxel_centers.laser"), false);
-
-    /// add Gaussian Noise to the points
-    LaserPoints lp_with_noise;
-    lp_with_noise = face_voxel_centers.AddNoiseG(noise_level, 0);
-    strcpy (str_root,root_dir);
-    lp_with_noise.Write(strcat(str_root, "face_voxel_centers_noise.laser"), false);
-
-    return face_voxel_centers;
+    return all_sampled_points;
 }
 
 
