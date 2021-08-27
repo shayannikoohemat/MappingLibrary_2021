@@ -57,8 +57,8 @@ LaserPoints read_ascii(char *ascii_file){
             //point.SetReflectance(value[??]);
 
             /// if label
-            int l = value[7];
-            point.SetAttribute(LabelTag, l);
+            //int l = value[7];
+            //point.SetAttribute(LabelTag, l);
 
             temp_laser_points.push_back(point);
         }

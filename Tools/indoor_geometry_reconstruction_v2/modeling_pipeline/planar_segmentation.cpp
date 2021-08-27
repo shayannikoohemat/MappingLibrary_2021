@@ -82,7 +82,7 @@ int set_parameters (Efficient_ransac::Parameters &parameters,
 /// use this function for planar segmentation
 int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
-                                       int nb_neighbors, LaserPoints lp_seg_out, bool estimate_normals) {
+                                       int nb_neighbors, LaserPoints &lp_seg_out, bool estimate_normals) {
     std::cout << "Efficient RANSAC" << std::endl;
 
     // Points with normals.
@@ -144,7 +144,7 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
   ransac.preprocess();
   // Measure time after preprocessing.
   time.stop();
-  std::cout << "preprocessing time: " << time.time() << "s" << std::endl;
+  std::cout << "ransac prepreprocessing time: " << time.time() << "s" << std::endl;
   // Perform detection several times and choose result with the highest coverage.
   Efficient_ransac::Shape_range shapes = ransac.shapes();
   FT best_coverage = 0;
@@ -208,8 +208,9 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
     it++;
     shape_counter++;
   }
+    char char_arr[500];
     std::string output_seg_laser = outdir + "/lp_segmented.laser";
-    lp_seg_out.Write(output_seg_laser.c_str(), false);
+    lp_seg_out.Write(strcpy(char_arr ,output_seg_laser.c_str()), false);
 
   return EXIT_SUCCESS;
 }

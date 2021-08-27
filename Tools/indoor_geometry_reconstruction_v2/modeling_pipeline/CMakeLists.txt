@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(modeling_pipeline LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set a customized build directory
@@ -17,6 +17,9 @@ find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
+## CGAL 5.3
+find_package(CGAL)
+
 #include_directories(${MAPPING_INCLUDE_DIR}/Photogrammetry/include)
 include_directories(../../../Library/Photogrammetry/include)
 include_directories(../../../Library/Buildings/include)
@@ -24,8 +27,11 @@ include_directories(../../../Library/Buildings/include)
 include_directories(../../../Library/LaserScan/include)
 include_directories(../../../Foreign/ANN/include/ANN)
 include_directories(../../../Foreign/ANN/src)
+
 link_directories(${MAPPING_LIB_DIR})
-link_libraries(-lLaserScan -lPhotogrammetry -lBuildings -lEispack -lLinpack -lANN -lnewmat -lgfortran -g3 -llas)
+link_libraries(-lLaserScan -lPhotogrammetry -lBuildings -lEispack -lLinpack
+                -lANN -lnewmat -lgfortran -g3 -llas
+                -lboost_system -lboost_filesystem)
 
 
 file(GLOB visualisation_Sources
@@ -56,6 +62,6 @@ set(SOURCE_FILES main.cpp
         ${utils_Sources})
 
 add_executable(3dmodeling ${SOURCE_FILES})
-target_link_libraries(3dmodeling ${Boost_LIBRARIES})
+target_link_libraries(3dmodeling ${Boost_LIBRARIES} CGAL::CGAL)
 target_link_options(3dmodeling PRIVATE -no-pie)
 
