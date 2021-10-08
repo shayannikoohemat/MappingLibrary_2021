@@ -132,7 +132,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     int min_seg_size = 500;
     // outputs are polygons which are new faces created by intersection to the data bbox
     Intersect_Planes_3DBoxFaces(lp_segmented, min_seg_size, threedbox_faces, threedbox_vertices,
-                                polygons_edges, polygons_vertices, true, true);
+                                polygons_edges, polygons_vertices, true, false);
     /// 4.2 split all intersected faces to create cell decomposition
     cout << "@@@@@ Process: cell decomposition: SplitPolygons3DByPlanes3D() @@@@@" << endl;
     ObjectPoints new_polys_v;
@@ -179,9 +179,11 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     double vox_l = 0.05;
     double noise_level = 0.025;
     // face numbers are stored in ScanLineNumberTag
-    invalid_faces_sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_without_points, (char*) dump_dir.c_str(), vox_l, noise_level, ScanLineNumberTag);
+    invalid_faces_sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_without_points,
+                                   strcpy(char_arr, dump_dir.c_str()), vox_l, noise_level, ScanLineNumberTag);
     // we sample points also for valid faces which have already points only for later experiment
-    valid_faces_sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_with_points, (char*) dump_dir.c_str(), vox_l, noise_level, ScanLineNumberTag);
+    valid_faces_sampled_points = Face_to_Voxel_with_noise(new_polys_v, faces_with_points,
+                                                          strcpy(char_arr, dump_dir.c_str()), vox_l, noise_level, ScanLineNumberTag);
     invalid_faces_sampled_points.SetAttribute(LabelTag, 101);   // sample points on invalid faces
     valid_faces_sampled_points.SetAttribute(LabelTag, 100);     // sample points on valid faces
     points_with_face_num.SetAttribute(LabelTag, 100);           // original points on valid faces

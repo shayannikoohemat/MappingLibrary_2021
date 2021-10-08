@@ -351,7 +351,7 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
             continue;
         }
         //LineTopology polygon = polygons_e[3]; //inx0=1, inx1=2, inx2=3, inx3=60
-        cout << "polygon:" << polygon.Number() << " ----------------------------------------------" << endl;
+        if (verbose) cout << "polygon:" << polygon.Number() << " ----------------------------------------------" << endl;
         /// set the polygon number=segment number to the attribute tags
         polygon.SetAttribute(LineLabelTag, polygon.Number());
         LineTopologies polygons_to_be_cut;
@@ -362,15 +362,15 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
             Plane plane = *(cutting_planes.begin());
             if(polygon.Number() == plane.Number()) {
                 cutting_planes.erase(cutting_planes.begin());
-                //cout << "  !X plane: " << plane.Number() << " //skip self spliting!" << endl;
-                //continue;
+                if (verbose) cout << "  !X plane: " << plane.Number() << " //skip self spliting!" << endl;
+                continue;
             }
             for (auto &poly_child : polygons_to_be_cut){
                 if(poly_child.empty()){
                     //cout << "Warning: polygon_child is empty. Nothing to split!" << endl;
                     continue;
                 }
-                cout << "   X plane:" << plane.Number() << endl;
+                if (verbose) cout << "   X plane:" << plane.Number() << endl;
                 LineSegment3D linesegment;
                 //if(verbose) cout << "Poly child: "; poly_child.Print(); cout << endl;
                 /// get the linesegment from intersectn of polyg_child and plane
@@ -391,14 +391,12 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
 
                     if(new_poly_e.empty()){ // this is a hack if SplitPolygon3DByLineSegment3D() returns empty
                         remained_polygons.push_back(poly_child);
-                        //cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
-                        //     <<" !X plane " << plane.Number()<< endl;
+                        if (verbose) cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number() <<" !X plane " << plane.Number()<< endl;
                         //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
                     }
                 } else
                 {
-                    //cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
-                    //     <<" !X plane " << plane.Number()<< endl;
+                    if (verbose) cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number() <<" !X plane " << plane.Number()<< endl;
                     remained_polygons.push_back(poly_child);
                     //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
                 }
