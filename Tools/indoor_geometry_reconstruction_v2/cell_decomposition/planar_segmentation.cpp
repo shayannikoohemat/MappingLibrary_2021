@@ -80,6 +80,7 @@ int set_parameters (Efficient_ransac::Parameters &parameters,
 }
 
 /// use this function for planar segmentation
+/// it reads space delimited files with number of points in the begining of the file
 int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
                                        int nb_neighbors, LaserPoints &lp_seg_out, bool estimate_normals) {
@@ -89,12 +90,7 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
     Pwn_vector points;
     // Load point set from a file.
     std::ifstream stream(filename);
-    if (!stream ||
-      !CGAL::read_xyz_points(
-        stream,
-        std::back_inserter(points),
-        CGAL::parameters::point_map(Point_map()).
-        normal_map(Normal_map()))) {
+    if (!stream || !CGAL::read_xyz_points(stream, std::back_inserter(points), CGAL::parameters::point_map(Point_map()).normal_map(Normal_map()))) {
       std::cerr << "Error: cannot read the file!" << std::endl;
       return EXIT_FAILURE;
     }
@@ -214,6 +210,147 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
   return EXIT_SUCCESS;
 }
 
+
+
+/// use this function for planar segmentation if you have laserpoints as input
+int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outdir,
+                                       Efficient_ransac::Parameters ransac_parameters,
+                                       int nb_neighbors, LaserPoints &lp_seg_out, bool estimate_normals) {
+    std::cout << "Efficient RANSAC" << std::endl;
+
+    // Points with normals.
+    Pwn_vector points;
+//    // Load point set from a file.
+//    std::ifstream stream(filename);
+//    if (!stream || !CGAL::read_xyz_points(stream, std::back_inserter(points), CGAL::parameters::point_map(Point_map()).normal_map(Normal_map()))) {
+//      std::cerr << "Error: cannot read the file!" << std::endl;
+//      return EXIT_FAILURE;
+//    }
+
+    for( auto &p : laserpoints){
+        Kernel::Point_3 point3(p.X(), p.Y(), p.Z());
+        Kernel::Vector_3 normal3;
+        Point_with_normal pwn;
+        pwn = std::make_pair(point3, normal3);
+        points.push_back(pwn);
+    }
+
+    std::cout << points.size() << " points" << std::endl;
+
+    if(estimate_normals)
+    {
+        CGAL::pca_estimate_normals<Concurrency_tag>
+                (points, nb_neighbors,
+                 CGAL::parameters::point_map(Point_map()).
+                         normal_map(Normal_map()));
+
+        // Orients normals.
+        // Note: mst_orient_normals() requires a range of points
+        // as well as property maps to access each point's position and normal.
+        //std::list<PointVectorPair>::iterator unoriented_points_begin =
+        std::vector<Point_with_normal>::iterator unoriented_points_begin =
+                CGAL::mst_orient_normals(points, nb_neighbors,
+                                         CGAL::parameters::point_map(CGAL::First_of_pair_property_map<Point_with_normal>()).
+                                                 normal_map(CGAL::Second_of_pair_property_map<Point_with_normal>()));
+        // Optional: delete points with an unoriented normal
+        // if you plan to call a reconstruction algorithm that expects oriented normals.
+        points.erase(unoriented_points_begin, points.end());
+
+        // Saves point set with normals.
+        //char* output_filename = (char*) "/00_wNormals.xyz";
+        std::string output_filename = outdir + "/00_wNormals.xyz";
+        std::ofstream out(output_filename);
+        out.precision(6);
+        CGAL::write_xyz_points(
+                out, points,
+                CGAL::parameters::point_map(CGAL::First_of_pair_property_map<Point_with_normal>()).
+                        normal_map(CGAL::Second_of_pair_property_map<Point_with_normal>()));
+    }
+
+
+  // Instantiate shape detection engine.
+  Efficient_ransac ransac;
+  // Provide input data.
+  ransac.set_input(points);
+  // Register detection of planes.
+  ransac.add_shape_factory<Cgal_Plane>();
+  // Measure time before setting up the shape detection.
+  CGAL::Timer time;
+  time.start();
+  // Build internal data structures.
+  ransac.preprocess();
+  // Measure time after preprocessing.
+  time.stop();
+  std::cout << "preprocessing time: " << time.time() << "s" << std::endl;
+  // Perform detection several times and choose result with the highest coverage.
+  Efficient_ransac::Shape_range shapes = ransac.shapes();
+  FT best_coverage = 0;
+  for (std::size_t i = 0; i < 3; ++i) {
+    // Reset timer.
+    time.reset();
+    time.start();
+    // Detect shapes.
+    ransac.detect(ransac_parameters);
+    // Measure time after detection.
+    time.stop();
+    // Compute coverage, i.e. ratio of the points assigned to a shape.
+    FT coverage =
+    FT(points.size() - ransac.number_of_unassigned_points()) / FT(points.size());
+    // Print number of assigned shapes and unassigned points.
+    std::cout << "shape detection time: " << time.time() << "s" << std::endl;
+    std::cout << ransac.shapes().end() - ransac.shapes().begin()
+    << " primitives, " << coverage << " coverage" << std::endl;
+    // Choose result with the highest coverage.
+    if (coverage > best_coverage) {
+      best_coverage = coverage;
+      // Efficient_ransac::shapes() provides
+      // an iterator range to the detected shapes.
+      shapes = ransac.shapes();
+    }
+  }
+  Efficient_ransac::Shape_range::iterator it = shapes.begin();
+  int shape_counter=0;
+  while (it != shapes.end()) {
+    boost::shared_ptr<Efficient_ransac::Shape> shape = *it;
+    /// Use Shape_base::info() to print the parameters of the detected shape.
+    //std::cout << (*it)->info();
+    // Sums distances of points to the detected shapes.
+    FT sum_distances = 0;
+    /// Iterate through point indices assigned to each detected shape.
+    std::vector<std::size_t>::const_iterator
+    index_it = (*it)->indices_of_assigned_points().begin();
+    while (index_it != (*it)->indices_of_assigned_points().end()) {
+      /// Retrieve point.
+      const Point_with_normal& p = *(points.begin() + (*index_it));
+      /// construct a laserpoint and set a segmentnumber to it and add it
+      /// to laserpoints class in mapping library
+      LaserPoint point(p.first.x(), p.first.y(), p.first.z());
+      //point.X() = p.first.x();
+      //point.Y() = p.first.y();
+      //point.Z() = p.first.z();
+      point.SetNormal(Vector3D(p.second.x(), p.second.y(), p.second.z()));
+      point.SetAttribute(SegmentNumberTag, shape_counter);
+      lp_seg_out.push_back(point);
+      //point.Print();
+
+      /// Adds Euclidean distance between point and shape.
+      sum_distances += CGAL::sqrt((*it)->squared_distance(p.first));
+      /// Proceed with the next point.
+      index_it++;
+    }
+    // Compute and print the average distance.
+    FT average_distance = sum_distances / shape->indices_of_assigned_points().size();
+    std::cout << " average distance: " << average_distance << std::endl;
+    // Proceed with the next detected shape.
+    it++;
+    shape_counter++;
+  }
+    std::string output_seg_laser = outdir + "/lp_segmented.laser";
+    lp_seg_out.Write(output_seg_laser.c_str(), false);
+
+  return EXIT_SUCCESS;
+
+}
 
 /// this has a bug in populating points into a point_set in store_shapes()
 int basic_efficient_ransac (const char *filename, std::string outdir,

@@ -186,11 +186,10 @@ LaserPoints Face_to_Voxel(ObjectPoints faces_vertices, LineTopologies faces_edge
     return face_voxel_centers;
 }
 
-/// use this to add points to a 3D polygon
+/// use this to sample points on 3D polygons
 //TODO: points inside the polygon
-//TODO: run it for all faces with out points
 LaserPoints Face_to_Voxel_with_noise(ObjectPoints faces_vertices, LineTopologies faces_edges,
-                          char *root_dir, double vox_l, double noise_level)
+                          char *root_dir, double vox_l, double noise_level, LaserPointTag face_tag)
 {
     std::clock_t start;
     double duration;
@@ -270,7 +269,7 @@ LaserPoints Face_to_Voxel_with_noise(ObjectPoints faces_vertices, LineTopologies
         //lp_with_noise.Write(strcat(str_root, "face_voxel_centers_noise.laser"), false);
 
         /// add the face number to sampled points
-        lp_with_noise.SetAttribute(ScanLineNumberTag, face.Number());
+        lp_with_noise.SetAttribute(face_tag, face.Number());
 
         /// add points of this face to all_samplepoints
         all_sampled_points.AddPoints(lp_with_noise);

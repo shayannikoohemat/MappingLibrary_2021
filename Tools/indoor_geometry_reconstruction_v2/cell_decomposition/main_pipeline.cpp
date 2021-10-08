@@ -1,12 +1,20 @@
 #include <cstring>
+//#include <filesystem>
 #include "main_pipeline.h"
 #include <LaserPoints.h>
 #include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 #include "intersecting_clippers.h"
 #include "face_selection.h"
 #include "planar_segmentation.h"
 #include "sample_laserpoints.h"
 #include "../visualization_tools/visualization_tools.h" ///for converting to OFF format
+
+//TODO: remove unnecessary prints from all functions
+//TODO: add log file for each file
+//TODO: line 180-182 correct (char*) dump_dir.c_str() to a char. The cast doesnt work.
+//TODO: when writing this laser file": _original_points_facenum check if the naming is correct.
+//TODO: when writing the obj files check if it doen't override the previose file with the same naming
 
 /*
  *  1. read the data per room (wall+floor+ceiling+pillar+beams)
@@ -30,7 +38,7 @@
 
 LaserPoints read_ascii(char *ascii_file);
 
-
+//TODO: now it works with space delimited file, fix it to work with comma delimited
 void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 
     char char_arr[500];
@@ -73,14 +81,17 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// main pipeline ////////
-
+    //TODO: *** Important*** step one reads labels and clors in addition to xyz and step two can be done on segmented laser after step 3
+    // better use points with labels and colors for step3
     /// 1. read txt points and convert it to laser. It works with space and comma delimited files and ignores the first line
     /// it expects: xyz rgb Label (for changing columns look at the ReadAscii.cpp)
+    cout << "@@@@@ Process: ascii2laser @@@@@" << endl;
     LaserPoints laserpoints;
     laserpoints = read_ascii(input_ascii);
 
     /// parameter settings (better to read this from a json file)
     /// 2. create a threedbox around the data:
+    cout << "@@@@@ Process: creating data 3D box @@@@@" << endl;
     double scalefactor = 1.1;       // 1=fit to the data, 0.9=smaller than the data, 1.1= 0.1 larger than the data
     ObjectPoints threedbox_vertices; //output
     LineTopologies threedbox_faces; // output
@@ -95,6 +106,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     threedbox_faces.Write(strcpy(char_arr, threedboxes_f_path.c_str()), false);
 
     /// 3. planar segmentation (e.g. RANSAC) on txt file
+    cout << "@@@@@ Process: planar RANSAC @@@@@" << endl;
     double  probability     = 0.05 ;
     int     min_points      = 500  ;
     double  epsilon         = 0.02 ;
@@ -105,15 +117,16 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     Efficient_ransac::Parameters ransac_parameters;
     LaserPoints lp_segmented;
     set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-    efficient_RANSAC_with_point_access (input_ascii, dump_dir, ransac_parameters,
+    efficient_RANSAC_with_point_access (laserpoints, dump_dir, ransac_parameters,
                                  nb_neighbors, lp_segmented, estimate_normals);
     /// write segmented laser file, the output laserfile will have: xyz, rgb, label, segment_num
-    std::string lp_seg_path = lp_seg_dir + "/laser/" + filename + ".laser" ;
+    std::string lp_seg_path = lp_seg_dir + "/laser/" + filename + "_seg.laser" ;
     lp_segmented.Write(strcpy(char_arr ,lp_seg_path.c_str()), false);
 
     /// 4. running the cell decomposition process
     /// 4.1 intersect planes to the bbox of the room
     /// (for further comments check the implementation in intersecting_clippers.cpp)
+    cout << "@@@@@ Process: cell decomposition: Intersect_Planes_3DBoxFaces() @@@@@" << endl;
     LineTopologies polygons_edges;
     ObjectPoints polygons_vertices;
     int min_seg_size = 500;
@@ -121,6 +134,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     Intersect_Planes_3DBoxFaces(lp_segmented, min_seg_size, threedbox_faces, threedbox_vertices,
                                 polygons_edges, polygons_vertices, true, true);
     /// 4.2 split all intersected faces to create cell decomposition
+    cout << "@@@@@ Process: cell decomposition: SplitPolygons3DByPlanes3D() @@@@@" << endl;
     ObjectPoints new_polys_v;
     LineTopologies new_polys_e;
     // outputs are new faces created by intersection with eachother
@@ -135,6 +149,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 
     /// 5 associating points to faces, this returns points with label of the faces and
     /// also valid faces (containing points) vs invalid faces (no points)
+    cout << "@@@@@ Process: associate points to faces @@@@@" << endl;
     LaserPoints points_with_face_num; // formerly was updated_labels.laser
     LineTopologies faces_with_points, faces_without_points, all_faces;
     // for s3dis: 500, 0.08, 0.5, 500
@@ -159,6 +174,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 
     /// 6 sample points on faces which don't have points (these can be valid faces where there was a gap/occlusion in data or invalid faces
     /// such as those are created during the cell decomposition)
+    cout << "@@@@@ Process: sample points on faces wihtout points @@@@@" << endl;
     LaserPoints invalid_faces_sampled_points, valid_faces_sampled_points;
     double vox_l = 0.05;
     double noise_level = 0.025;
@@ -180,13 +196,14 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     std::string val_sampled_points_w_facenum_path = lp_seg_dir + "/laser/" + filename + "_valid_sampled_pnts_facenum.laser" ;
     valid_faces_sampled_points.Write(strcpy(char_arr, val_sampled_points_w_facenum_path.c_str()), false);
     // write the sampled points on invalid faces plus original points
-    std::string main_points_plus_sampledpoints_path = lp_seg_dir + "/laser/" + filename + "_original_points_plus_invalid_sampled_pnts_facenum.laser" ;
+    std::string main_points_plus_sampledpoints_path = lp_seg_dir + "/laser/" + filename + "_original_pnts_plus_invalid_sampled_pnts_facenum.laser" ;
     main_points_plus_invalid_sampledpoints.Write(strcpy(char_arr, main_points_plus_sampledpoints_path.c_str()), false);
 
 
     /// 7 convert faces to OFF format
     /// linelabeltag is used for transferring the segmentnumber of points to faces and to OFF as color
     /// TODO: NOTE: currently the face number is not stored in the off file neither in a met file
+    cout << "@@@@@ Process: convert faces to OFF format @@@@@" << endl;
     std::string face_off_path = OFF_dir + "/" + filename + "_decomposed.off";
     LineTopologies_withAttr_to_OFF(new_polys_v, all_faces, LineLabelTag, strcpy(char_arr, face_off_path.c_str()), true);
 
@@ -194,15 +211,30 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     /// 8. manual check of the points to see if valid/invalid points associated to faces are correct
     ///
 
-    /// 10. convert all laser files to ascii for later quality check
+    /// 10. convert all necessary laser files to ascii for quality check
 
 
+}
 
+void cell_decomposition_wrapper(std::string data_dir){
+    /// loop in the data directory and get the path of each file
+//    // with C++17
+//    std::string path = "/path/to/directory";
+//    for (const auto & entry : std::filesystem::directory_iterator(path))
+//        std::cout << entry.path() << std::endl;
 
-
-
-
-
+    // with boost: NOTE it takes more time to compile
+    //#include <boost/range/iterator_range.hpp>
+    std::string input_dir = data_dir + "/input_data";
+    boost::filesystem::path p(input_dir);
+    if(is_directory(p)) {
+        //std::cout << p << " is a directory containing:\n";
+        for(auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {})){
+            std::cout << "\n ******** File: " << entry << " ********* \n";
+            char* file_path_c = (char*) entry.path().c_str();
+            room2cellsdecomposition(file_path_c, data_dir);
+        }
+    } else std::cout << p << " is NOT a directory. \n";
 }
 
 

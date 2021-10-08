@@ -15,6 +15,7 @@
 
 LaserPoints read_ascii(char *ascii_file);
 void room2cellsdecomposition(char *input_ascii, std::string data_dir);
+void cell_decomposition_wrapper(std::string data_dir);
 void occup_grid(LaserPoints lp, double vox_size, char *out_dir);
 
 
@@ -140,14 +141,24 @@ int main() {
 //    new_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_faces.top", false);
 
     /// efficient ransac
-    //char *filename = "/mnt/DataPartition/CGI_UT/cell_decomposition/room1_spacedel.txt";
-    //char *outdir = "/mnt/DataPartition/CGI_UT/cell_decomposition/out";
-    //Efficient_ransac::Parameters parameters;
-    ///set_parameters(parameters, 0.05, 500, 0.02, 0.08, 0.087); // parameters for S3DIS
-    //set_parameters(parameters, 0.05, 200, 0.02, 0.08, 0.087);
-    ///basic_efficient_ransac0
-    // LaserPoints lp_seg_out;
-    //efficient_RANSAC_with_point_access(filename, outdir, parameters, nb_neighbors, lp_seg_out, estimate_normals);
+//    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
+//    char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.txt";
+//    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
+//    //Efficient_ransac::Parameters parameters;
+//    LaserPoints laserpoints, lp_seg_out;
+//    laserpoints.Read("/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.laser");
+//    double  probability     = 0.05 ;
+//    int     min_points      = 500  ;
+//    double  epsilon         = 0.02 ;
+//    double  cluster_epsilon = 0.08 ;
+//    double  normal_thresh   = 0.087;
+//    int     nb_neighbors    = 20   ;
+//    bool    estimate_normals = True ;
+//    Efficient_ransac::Parameters ransac_parameters;
+//    LaserPoints lp_segmented;
+//    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
+//    //efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+//    efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
 
     /// linetopology to off format
     ObjectPoints vertices;
@@ -169,8 +180,8 @@ int main() {
     faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
     //sampled_points = Sample_Laserpoints_3D (faces_vertices, faces_edges, root_dir);
     //sampled_points = Face_to_Voxel(faces_vertices, faces_edges, root_dir, 0.2);
-    sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025);
-    sampled_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points.laser", false);
+    //sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025, ScanLineNumberTag);
+   // sampled_points.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points.laser", false);
 //    LaserPoints sampled_points_noise, sampled_points_noiseG;
 //    sampled_points_noise = sampled_points.AddNoise(0.1);
 //    sampled_points_noise.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noise.laser", false);
@@ -178,8 +189,8 @@ int main() {
 //    sampled_points_noiseG.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/sampled_points_noiseG.laser", false);
 
 
-//    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office1_crop.txt";
-//    //std::string data_dir = "/mnt/DataPartition/threed_modeling/data";
+   // char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
+   // std::string data_dir = "/mnt/DataPartition/threed_modeling/";
 //    std::string filename, file_ext;
 //    boost::filesystem::path p(input_ascii);
 //    file_ext = p.filename().c_str();    // office1.txt
@@ -202,6 +213,8 @@ int main() {
 //    bounding_cube(strcpy(char_arr ,off_outfile_str.c_str()), lp_segmented, 1.1, threedbox_vertices, threedbox_faces);
 
     //room2cellsdecomposition(input_ascii, data_dir);
+    std::string in_dir =  "/mnt/DataPartition/threed_modeling";
+    cell_decomposition_wrapper(in_dir);
 
     /// ascii to laserpoints
 //    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";

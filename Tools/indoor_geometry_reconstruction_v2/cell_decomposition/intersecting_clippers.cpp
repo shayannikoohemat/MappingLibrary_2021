@@ -362,8 +362,8 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
             Plane plane = *(cutting_planes.begin());
             if(polygon.Number() == plane.Number()) {
                 cutting_planes.erase(cutting_planes.begin());
-                cout << "  !X plane: " << plane.Number() << " //skip self spliting!" << endl;
-                continue;
+                //cout << "  !X plane: " << plane.Number() << " //skip self spliting!" << endl;
+                //continue;
             }
             for (auto &poly_child : polygons_to_be_cut){
                 if(poly_child.empty()){
@@ -391,14 +391,14 @@ void SplitPolygons3DByPlanes3D(ObjectPoints &polygons_v, LineTopologies &polygon
 
                     if(new_poly_e.empty()){ // this is a hack if SplitPolygon3DByLineSegment3D() returns empty
                         remained_polygons.push_back(poly_child);
-                        cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
-                             <<" !X plane " << plane.Number()<< endl;
+                        //cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
+                        //     <<" !X plane " << plane.Number()<< endl;
                         //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
                     }
                 } else
                 {
-                    cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
-                         <<" !X plane " << plane.Number()<< endl;
+                    //cout << "    polygon " << polygon.Number()<< "-" << poly_child.Number()
+                    //     <<" !X plane " << plane.Number()<< endl;
                     remained_polygons.push_back(poly_child);
                     //if(verbose) cout << "remained_polygons:" ; remained_polygons.Print(); cout << endl;
                 }
