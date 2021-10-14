@@ -1,4 +1,5 @@
 #include <cstring>
+#include <chrono>
 //#include <filesystem>
 #include "main_pipeline.h"
 #include <LaserPoints.h>
@@ -9,6 +10,7 @@
 #include "planar_segmentation.h"
 #include "sample_laserpoints.h"
 #include "../visualization_tools/visualization_tools.h" ///for converting to OFF format
+
 
 //TODO: remove unnecessary prints from all functions
 //TODO: add log file for each file
@@ -52,32 +54,39 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 //    if(!boost::filesystem::create_directories(data_dir + "/out_data"))
 //        cerr << "Warning! direcotry: " << data_dir + "/out_data" << " exists!" << endl;
     std::string dump_dir = data_dir + "/dump";
-    if(!boost::filesystem::create_directories(dump_dir))
-        cerr << "Warning! direcotry: " << dump_dir << " exists!" << endl;
+    if(!boost::filesystem::create_directories(dump_dir)) {
+        //cerr << "Warning! direcotry: " << dump_dir << " exists!" << endl;
+    }
 
     /// for laserpoints files
     std::string lp_seg_dir = data_dir + "/laserpoints";
-    if(!boost::filesystem::create_directories(lp_seg_dir))
-        cerr << "Warning! direcotry: " << lp_seg_dir << " exists!" << endl;
-    if(!boost::filesystem::create_directories(lp_seg_dir + "/ascii"))
-        cerr << "Warning! direcotry: " << lp_seg_dir + "/ascii" << " exists!" << endl;
-    if(!boost::filesystem::create_directories(lp_seg_dir + "/laser"))
-        cerr << "Warning! direcotry: " << lp_seg_dir + "/laser" << " exists!" << endl;
+    if(!boost::filesystem::create_directories(lp_seg_dir)) {
+        //cerr << "Warning! direcotry: " << lp_seg_dir << " exists!" << endl;
+    }
+    if(!boost::filesystem::create_directories(lp_seg_dir + "/ascii")) {
+        //cerr << "Warning! direcotry: " << lp_seg_dir + "/ascii" << " exists!" << endl;
+    }
+    if(!boost::filesystem::create_directories(lp_seg_dir + "/laser")) {
+        //cerr << "Warning! direcotry: " << lp_seg_dir + "/laser" << " exists!" << endl;
+    }
 
     /// for off files
     std::string OFF_dir = data_dir + "/off";
-    if(!boost::filesystem::create_directories(OFF_dir))
-        cerr << "Warning! direcotry: " << OFF_dir << " exists!" << endl;
+    if(!boost::filesystem::create_directories(OFF_dir)) {
+        //cerr << "Warning! direcotry: " << OFF_dir << " exists!" << endl;
+    }
 
     /// for faces and mesh
     std::string faces_mesh_dir = data_dir + "/faces_mesh";
-    if(!boost::filesystem::create_directories(faces_mesh_dir))
-        cerr << "Warning! direcotry: " << faces_mesh_dir << " exists!" << endl;
+    if(!boost::filesystem::create_directories(faces_mesh_dir)) {
+        //cerr << "Warning! direcotry: " << faces_mesh_dir << " exists!" << endl;
+    }
 
     /// for 3d boxes of rooms or any input
     std::string threed_boxes_dir = data_dir + "/threed_boxes";
-    if(!boost::filesystem::create_directories(threed_boxes_dir))
-        cerr << "Warning! direcotry: " << threed_boxes_dir << " exists!" << endl;
+    if(!boost::filesystem::create_directories(threed_boxes_dir)) {
+        //cerr << "Warning! direcotry: " << threed_boxes_dir << " exists!" << endl;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// main pipeline ////////
@@ -109,9 +118,9 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     cout << "@@@@@ Process: planar RANSAC @@@@@" << endl;
     double  probability     = 0.05 ;
     int     min_points      = 500  ;
-    double  epsilon         = 0.02 ;
-    double  cluster_epsilon = 0.08 ;
-    double  normal_thresh   = 0.087;
+    double  epsilon         = 0.02; //0.02 ;
+    double  cluster_epsilon = 0.12 ; //0.08 ;
+    double  normal_thresh   = 0.10 ; //0.087;
     int     nb_neighbors    = 20   ;
     bool    estimate_normals = True ;
     Efficient_ransac::Parameters ransac_parameters;
@@ -219,6 +228,7 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
 }
 
 void cell_decomposition_wrapper(std::string data_dir){
+    auto start = std::chrono::high_resolution_clock::now();
     /// loop in the data directory and get the path of each file
 //    // with C++17
 //    std::string path = "/path/to/directory";
@@ -237,6 +247,10 @@ void cell_decomposition_wrapper(std::string data_dir){
             room2cellsdecomposition(file_path_c, data_dir);
         }
     } else std::cout << p << " is NOT a directory. \n";
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>
+            (std::chrono::high_resolution_clock::now() - start);
+    auto time_minutes = duration/(1.0e3*60);
+    cout << "process time: " << time_minutes.count() << "min" << endl;
 }
 
 

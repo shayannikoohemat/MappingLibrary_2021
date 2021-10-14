@@ -45,8 +45,8 @@ int main() {
     //cube_global_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/cube_global_edges_scaled.top", false);
     LineTopologies box3d_faces;
     ObjectPoints box3d_vertices;
-    box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_edges.top", false);
-    box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_vertices.objpts");
+    //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_edges.top", false);
+    //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_vertices.objpts");
     //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_edges_scaled.top", false);
     //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_vertices_scaled.objpts");
 
@@ -146,7 +146,7 @@ int main() {
 //    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
 //    //Efficient_ransac::Parameters parameters;
 //    LaserPoints laserpoints, lp_seg_out;
-//    laserpoints.Read("/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.laser");
+//    laserpoints.Read("/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2.laser");
 //    double  probability     = 0.05 ;
 //    int     min_points      = 500  ;
 //    double  epsilon         = 0.02 ;
@@ -176,8 +176,8 @@ int main() {
     LineTopologies faces_edges;
     ObjectPoints faces_vertices;
     LaserPoints sampled_points;
-    faces_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_vertices.objpts");
-    faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
+    //faces_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_vertices.objpts");
+    //faces_edges.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/out/out_4segments_faceselection/polygon_new_edges.top", false);
     //sampled_points = Sample_Laserpoints_3D (faces_vertices, faces_edges, root_dir);
     //sampled_points = Face_to_Voxel(faces_vertices, faces_edges, root_dir, 0.2);
     //sampled_points = Face_to_Voxel_with_noise(faces_vertices, faces_edges, root_dir, 0.05, 0.025, ScanLineNumberTag);

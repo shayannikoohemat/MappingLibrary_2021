@@ -54,6 +54,10 @@ typedef CGAL::Parallel_tag Concurrency_tag;
 typedef CGAL::Sequential_tag Concurrency_tag;
 #endif
 
+///The parameter cluster_epsilon defines the spacing between two cells of the regular grid,
+///so that two points separated by a distance of at most 22–√ cluster_epsilon are considered adjacent.
+///source: https://doc.cgal.org/latest/Shape_detection/index.html#Shape_detection_RANSACParameters
+
 /// Set parameters for shape detection.
 int set_parameters (Efficient_ransac::Parameters &parameters,
                     double probability, int min_points, double epsilon,

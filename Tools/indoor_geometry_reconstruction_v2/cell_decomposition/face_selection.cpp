@@ -40,18 +40,18 @@ LaserPoints associatePointsToFace3D_withTag(LaserPoints segments, int min_segsiz
     for (auto &segment : segments_vec){
         if(segment.size() < min_segsize) continue;
         int segment_num = segment[0].SegmentNumber();
-        cout << "Segment: " << segment_num << endl;
+        //cout << "Segment: " << segment_num << endl;
 
         LaserPoints updated_tmp;
         LineTopologies::iterator poly_it;
         //for (auto &polygon : new_polys_e){ // crashes in debug mode ??!!
         for (poly_it=faces_e.begin(); poly_it!=faces_e.end(); poly_it++){
             LineTopology polygon = *poly_it;
-            cout << "polygon number: " << polygon.Number();
+            //cout << "polygon number: " << polygon.Number();
             /// check if the polygon and segment don't have the same tag continue to the next polygon
             if(polygon.HasAttribute(LineLabelTag)){
                 int polygon_tag = polygon.Attribute(LineLabelTag);
-                cout << "   polygon tag: " << polygon_tag << endl;
+                //cout << "   polygon tag: " << polygon_tag << endl;
                 if(polygon_tag != segment_num)
                     continue;
             } else
