@@ -28,7 +28,7 @@ In this file you see sampled points on invalid faces with label 101 and original
 asscoiated with a face using the ScaLineNumberTag. And you can select points associated to a segment using the SegmentNumber.
 If you wish to use sample points for all faces, replace the original points with `foo_valid_sampled_pnts_facenum.laser`.
 
-#### Where autoamtic labeling goes wrong?
+#### Where automatic labeling goes wrong?
 If a face is created for a permanent structure but doesn't have supporting points from the original scan, then it gets invalid label autoamtically,
 this should be corrected during the manual checkup.
 Similarly, if a face is created but doesn't belong to any structure and has some supporting points and those points belong to a clutter or noise then that face
@@ -71,3 +71,6 @@ DATA
     ├── Area_1_conferenceRoom_1_3dbox.top           # 3D Box of the room faces
     ├── ... next file
 ```
+
+### Cell decomposition steps
+![Figure1: the cell decomposition steps](./image/celldecomposition_steps.png)
