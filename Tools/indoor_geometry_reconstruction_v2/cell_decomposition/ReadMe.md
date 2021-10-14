@@ -80,4 +80,4 @@ DATA
 
 &nbsp;
 
-![Figure1: the cell decomposition steps](image/celldecomposition_steps.png)
+![Figure1: the cell decomposition steps](https://github.com/shayannikoohemat/MappingLibrary_2021/blob/master/Tools/indoor_geometry_reconstruction_v2/cell_decomposition/images/celldecomposition_steps.png)
