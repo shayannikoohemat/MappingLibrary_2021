@@ -73,4 +73,11 @@ DATA
 ```
 
 ### Cell decomposition steps
-![Figure1: the cell decomposition steps](./image/celldecomposition_steps.png)
+&nbsp;
+<p float="left">
+    <img src="image/celldecomposition_steps.png"/>
+</p>
+
+&nbsp;
+
+![Figure1: the cell decomposition steps](image/celldecomposition_steps.png)
