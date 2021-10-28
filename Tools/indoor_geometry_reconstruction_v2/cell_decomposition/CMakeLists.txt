@@ -45,6 +45,7 @@ file(GLOB utils_Sources
 
 set(SOURCE_FILES main.cpp
         main_pipeline.cpp
+        #../../../Library/Photogrammetry/src/Vector3D.cc
         Laservoxel.cpp
         ReadAscii.cpp
         sample_laserpoints.cpp

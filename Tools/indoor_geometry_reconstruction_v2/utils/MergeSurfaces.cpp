@@ -24,9 +24,10 @@ forceVerticality(double verticality_angle_threshold, Vector3D &normal, LaserPoin
 /* Parameters:
  * condition1: double max_angle_between_normals (in degrees): segments with normal angle less than this threshold will be merged.
  * condition2: double max_dist_between_planes: segments with planes distance less than this threshold will be merged.
- * condition3: double max_dist: segments with point distance less than this threshold will be merged.
+ * condition3: double max_dist: segments with distance less than this threshold will be merged. Not along the noraml vector but alogn
+ * the plane direction, for almost coplanar segments.
  * double max_second_dist_between_planes: if two segments' plane are further than this threshold they are flagged for later check
- * bool calculate_middle_plane: if TRUE then when a merge happens for two faces of a wall,
+ * bool calculate_middle_plane: if TRUE then when a merge happens for two faces of a wall, the middle is where the plane is placed and calculated.
  * bool calculate_weighted_plane: if TRUE then the size of segments (number of supporting points) will be considered to
  * assign a weight when calculating the plane. However, because is not tested, is not recommended to be used.
  * NOTE: either the "bool calculate_middle_plane" OR "bool calculate_weighted_plane" should be TRUE.

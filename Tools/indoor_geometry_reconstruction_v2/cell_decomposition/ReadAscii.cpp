@@ -56,9 +56,12 @@ LaserPoints read_ascii(char *ascii_file){
             /// if intensity
             //point.SetReflectance(value[??]);
 
+            /// we can use componentTag instead of labelTag
+            ///  if labeltag is used for something else
             /// if label
             int l = value[7];
             point.SetAttribute(LabelTag, l);
+
 
             temp_laser_points.push_back(point);
         }

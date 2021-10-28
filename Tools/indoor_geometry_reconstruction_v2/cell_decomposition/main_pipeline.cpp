@@ -10,6 +10,7 @@
 #include "planar_segmentation.h"
 #include "sample_laserpoints.h"
 #include "../visualization_tools/visualization_tools.h" ///for converting to OFF format
+#include "../utils/utils.h" /// for mergesurfaces
 
 
 //TODO: remove unnecessary prints from all functions
@@ -114,13 +115,14 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     threedbox_vertices.Write(strcpy(char_arr, threedboxes_v_path.c_str()));
     threedbox_faces.Write(strcpy(char_arr, threedboxes_f_path.c_str()), false);
 
-    /// 3. planar segmentation (e.g. RANSAC) on txt file
+    /// 3.planar segmentation and generalization of similar surfaces
+    /// 3.1 efficinet ransac (e.g. RANSAC) on txt file
     cout << "@@@@@ Process: planar RANSAC @@@@@" << endl;
-    double  probability     = 0.05 ;
-    int     min_points      = 500  ;
-    double  epsilon         = 0.02; //0.02 ;
-    double  cluster_epsilon = 0.12 ; //0.08 ;
-    double  normal_thresh   = 0.10 ; //0.087;
+    double  probability     = 0.05 ;        // Set probability to miss the largest primitive at each iteration.
+    int     min_points      = 500  ;        // Detect shapes with at least n-min points.
+    double  epsilon         = 0.02; //0.02 ;// Set maximum Euclidean distance between a point and a shape.
+    double  cluster_epsilon = 0.12 ; //0.08 ; // Set maximum Euclidean distance between points to be clustered.
+    double  normal_thresh   = 0.17 ; //0.087 rad=5 degrees; // Set maximum normal deviation.// 0.9 < dot(surface_normal, point_normal);
     int     nb_neighbors    = 20   ;
     bool    estimate_normals = True ;
     Efficient_ransac::Parameters ransac_parameters;
@@ -131,6 +133,16 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     /// write segmented laser file, the output laserfile will have: xyz, rgb, label, segment_num
     std::string lp_seg_path = lp_seg_dir + "/laser/" + filename + "_seg.laser" ;
     lp_segmented.Write(strcpy(char_arr ,lp_seg_path.c_str()), false);
+
+    /// 3.2 merge coplanar surfaces and in close proximity
+    double planes_dist      = cluster_epsilon; //distance along their normal vector
+    double planes_angle     = normal_thresh*(180.0/M_PI); //degrees
+    double segments_dist    = 10; // two almost coplanar but far segments can belong to the same surface
+    int min_segSize         = min_points;
+    double planes_dist_second = planes_dist;
+    double verticality_angle_threshold = normal_thresh*(180.0/M_PI); //degrees
+   // Mergesurfaces(lp_segmented, planes_dist, planes_angle, segments_dist, min_segSize, dump_dir, planes_dist_second,
+   //               true, false,true, verticality_angle_threshold, false);
 
     /// 4. running the cell decomposition process
     /// 4.1 intersect planes to the bbox of the room

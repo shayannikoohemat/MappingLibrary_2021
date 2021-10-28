@@ -47,8 +47,8 @@ int main() {
     ObjectPoints box3d_vertices;
     //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_edges.top", false);
     //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/s3dis/cube_global_vertices.objpts");
-    //box3d_faces.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_edges_scaled.top", false);
-    //box3d_vertices.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/cube_global_vertices_scaled.objpts");
+    box3d_faces.Read("/mnt/DataPartition/threed_modeling/threed_boxes/Area_1_conferenceRoom_2_3dbox.top", false);
+    box3d_vertices.Read("/mnt/DataPartition/threed_modeling/threed_boxes/Area_1_conferenceRoom_2_3dbox.objpts");
 
     /// a test on linetopology tags
 //    LineTopologies box3d_faces_tagged;
@@ -66,11 +66,11 @@ int main() {
 
 
     /// test Intersect_Planes_3DBoxFaces
-    LaserPoints segments;
-    LineTopologies polygons_edges;
-    ObjectPoints polygons_vertices;
+//    LaserPoints segments;
+//    LineTopologies polygons_edges;
+//    ObjectPoints polygons_vertices;
 //    int min_seg_size = 500;
-//    segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/room_segmented.laser");
+//    segments.Read("/mnt/DataPartition/threed_modeling/laserpoints/laser/Area_1_conferenceRoom_2_seg.laser");
 //    Intersect_Planes_3DBoxFaces(segments, min_seg_size, box3d_faces, box3d_vertices,
 //                                polygons_edges, polygons_vertices, true, true);
 //    polygons_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygons_vertices.objpts");
@@ -87,10 +87,10 @@ int main() {
 
     //////////// CELL DECOMPOSITION ///////////////////
     /// Use this with output of Intersect_Planes_3DBoxFaces() for CELL DECOMPOSITION
-    ObjectPoints new_polys_v; LineTopologies new_polys_e;
-    //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
-    ///input polygons are created by Intersect_Planes_3DBoxFaces()
-//    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, min_seg_size, new_polys_v, new_polys_e, false);
+//    ObjectPoints new_polys_v; LineTopologies new_polys_e;
+//    //segments.Read("/mnt/DataPartition/CGI_UT/cell_decomposition/segments.laser"); // for the spliting planes
+//    ///input polygons are created by Intersect_Planes_3DBoxFaces()
+//    SplitPolygons3DByPlanes3D(polygons_vertices, polygons_edges, segments, min_seg_size, new_polys_v, new_polys_e, true);
 //    new_polys_v.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_vertices.objpts");
 //    new_polys_e.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/polygon_decomposed_edges.top", false);
 
@@ -141,24 +141,24 @@ int main() {
 //    new_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_faces.top", false);
 
     /// efficient ransac
-//    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
-//    char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.txt";
-//    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
-//    //Efficient_ransac::Parameters parameters;
-//    LaserPoints laserpoints, lp_seg_out;
-//    laserpoints.Read("/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2.laser");
-//    double  probability     = 0.05 ;
-//    int     min_points      = 500  ;
-//    double  epsilon         = 0.02 ;
-//    double  cluster_epsilon = 0.08 ;
-//    double  normal_thresh   = 0.087;
-//    int     nb_neighbors    = 20   ;
-//    bool    estimate_normals = True ;
-//    Efficient_ransac::Parameters ransac_parameters;
-//    LaserPoints lp_segmented;
-//    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-//    //efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
-//    efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
+    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.txt";
+    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
+    //Efficient_ransac::Parameters parameters;
+    LaserPoints laserpoints, lp_seg_out;
+    laserpoints.Read("/mnt/DataPartition/threed_modeling/Area_1_conferenceRoom_2_crop.laser");
+    double  probability     = 0.05 ;    // Set probability to miss the largest primitive at each iteration.
+    int     min_points      = 100  ;    // Detect shapes with at least n-min points.
+    double  epsilon         = 0.02 ;    // Set maximum Euclidean distance between a point and a shape.
+    double  cluster_epsilon = 0.12;     //0.08 ;  // Set maximum Euclidean distance between points to be clustered.
+    double  normal_thresh   = 0.087;    // Set maximum normal deviation.// 0.9 < dot(surface_normal, point_normal);
+    int     nb_neighbors    = 20   ;
+    bool    estimate_normals = True ;
+    Efficient_ransac::Parameters ransac_parameters;
+    LaserPoints lp_segmented;
+    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
+    //efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+    efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
 
     /// linetopology to off format
     ObjectPoints vertices;
@@ -214,13 +214,13 @@ int main() {
 
     //room2cellsdecomposition(input_ascii, data_dir);
     std::string in_dir =  "/mnt/DataPartition/threed_modeling";
-    cell_decomposition_wrapper(in_dir);
+    //cell_decomposition_wrapper(in_dir);
 
     /// ascii to laserpoints
-//    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/office_1.txt";
+//    char *input_ascii = (char*) "/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2.txt";
 //    LaserPoints lp;
 //    lp = read_ascii(input_ascii);
-//    lp.Write("/mnt/DataPartition/threed_modeling/input_data/office_1.laser", false);
+//    lp.Write("/mnt/DataPartition/threed_modeling/dump/Area_1_conferenceRoom_2.laser", false);
 
     /// calcualte area, get the convex hull, get the countour of points
  //   LaserPoints one_segment;
@@ -253,7 +253,6 @@ int main() {
 //    edges.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/edges.top", false);
 
 //    alphashape_w_fastlocation(one_segment, "/mnt/DataPartition/CGI_UT/cell_decomposition/alpha_sh.off");
-
 
 
     return 0;

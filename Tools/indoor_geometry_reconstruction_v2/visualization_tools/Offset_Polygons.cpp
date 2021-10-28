@@ -303,7 +303,7 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
 
     Vector3D normal;
     normal = plane.Normal ();
-    normal.PrintVector();
+    //normal.PrintVector();
     /// check if the plane is axis-aligend then we project/swap to opposit plane xz or yz
     double angle_Xaxis = Angle(normal, Vector3D(0,1,0));
     if (angle_Xaxis > M_PI/2) angle_Xaxis = M_PI - angle_Xaxis;
@@ -326,7 +326,7 @@ LaserPoints PointsInsidePolygon3D(LaserPoints lpoints, double dist_threshold,
             //polygon_points.SwapXZ(); // ignore X-axis
             SwapXZ(polygon_vertices);
         }
-        cout << "plane is vertical!" << endl;
+        //cout << "plane is vertical!" << endl;
     }
 
     LaserPoints updated_points;
