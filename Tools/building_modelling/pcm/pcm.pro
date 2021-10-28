@@ -20,7 +20,7 @@
 CONFIG += qt thread
 QT += opengl widgets
 
-LIBS +=  -lBuildings -lLaserScan -llas -lPhotogrammetry -lEispack -lLinpack -lgfortran  -L $(MAPPING_LIB_DIR)
+LIBS +=  -lBuildings -lLaserScan -llas -lPhotogrammetry -lEispack -lLinpack -lgfortran -lGL -lGLU -lglut -L $(MAPPING_LIB_DIR)
 LIBS += -lnewmat -lANN
 MOC_DIR = ./moc/
 OBJECTS_DIR = ./obj/
@@ -28,7 +28,7 @@ RESOURCES = ./button_icons.qrc
 TEMPLATE = app
 DEPENDPATH += . include src
 INCLUDEPATH += . include  ../../../Library/LaserScan/include ../../../Library/Photogrammetry/include ../../../Library/Buildings/include ../../../Foreign/ANN/include/ANN
-
+QMAKE_LFLAGS = -no-pie
 #if on windows define windows. used by Libraries internally
 win32 {
 	DEFINES += windows
