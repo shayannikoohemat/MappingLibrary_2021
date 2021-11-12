@@ -23,10 +23,8 @@ typedef CGAL::Shape_detection::Efficient_RANSAC_traits
 typedef CGAL::Shape_detection::Efficient_RANSAC<Traits> Efficient_ransac;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  Kernel;
 typedef Kernel::FT                                           FT;
-typedef std::pair<Kernel::Point_3, Kernel::Vector_3>         Point_with_normal;
-typedef std::vector<Point_with_normal>                       Pwn_vector;
 typedef Kernel::Point_3 Point;
-typedef Kernel::Vector_3 Vector;
+//typedef Kernel::Vector_3 Vector;
 typedef CGAL::Point_set_3<Point> Point_set;
 // Point with normal vector stored in a std::pair.
 typedef std::pair<Point, Vector> PointVectorPair;
@@ -60,5 +58,11 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
 int pca_normal_estimation(const char* fname, std::list<PointVectorPair> &points, double r);
 
 int store_shapes(std::string outdir, Efficient_ransac ransac, Pwn_vector points);
+
+void print_point_set (const Point_set& point_set);
+
+void save_point_set (const Point_set& point_set, std::string out_ascii);
+
+bool read_color_label_ascii(const string &ascii_filename, Point_set &point_set, int header_lines=1);
 
 #endif // PLANAR_SEGMENTATION_H

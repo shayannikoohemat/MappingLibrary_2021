@@ -49,8 +49,8 @@ Vector3D &Vector3D::operator = (const Vector3D &p) {
     // Check for self assignment
     if (this == &p) return *this;
 //	memmove(this, &p, sizeof(Vector3D));
-	memcpy(this, &p, sizeof(Vector3D));
-	return *this;
+    memcpy(this, &p, sizeof(Vector3D));
+    return *this;
 }
 
 double Vector3D::SqLength() const {

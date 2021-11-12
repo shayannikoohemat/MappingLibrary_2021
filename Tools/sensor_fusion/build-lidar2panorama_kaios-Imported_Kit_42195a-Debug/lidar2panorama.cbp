@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="lidar2panorama"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\Qt\;CMake Files\..\..\..\..\Qt\Tools\;CMake Files\..\..\..\..\Qt\Tools\QtCreator\;CMake Files\..\..\..\..\Qt\Tools\QtCreator\share\;CMake Files\..\..\..\..\Qt\Tools\QtCreator\share\qtcreator\;CMake Files\..\..\..\..\Qt\Tools\QtCreator\share\qtcreator\package-manager\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\..\..\usr\lib\cmake\eigen3\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lidar2panorama">
+				<Option output="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/lidar2panorama" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/Photogrammetry/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/Buildings/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/LaserScan/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Foreign/ANN/include/ANN"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 lidar2panorama"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lidar2panorama/fast">
+				<Option output="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/lidar2panorama" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/Photogrammetry/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/Buildings/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Library/LaserScan/include"/>
+					<Add directory="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../Foreign/ANN/include/ANN"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 lidar2panorama/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/equi_proj.cpp">
+			<Option target="lidar2panorama"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/lidar_projection.cpp">
+			<Option target="lidar2panorama"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/lidar_projection.h">
+			<Option target="lidar2panorama"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/main.cpp">
+			<Option target="lidar2panorama"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../../Qt/Tools/QtCreator/share/qtcreator/package-manager/auto-setup.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\Qt\Tools\QtCreator\share\qtcreator\package-manager\"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../../../../usr/lib/cmake/eigen3/Eigen3Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../../../../usr/lib/cmake/eigen3/Eigen3ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+		<Unit filename="/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios/../../../../../../usr/lib/cmake/eigen3/Eigen3Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

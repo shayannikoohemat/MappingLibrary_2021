@@ -142,23 +142,23 @@ int main() {
 
     /// efficient ransac
     //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
-    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/copyRoom_1.txt";
+    char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2.txt";
     char *outdir = "/mnt/DataPartition/threed_modeling/dump";
     //Efficient_ransac::Parameters parameters;
     LaserPoints laserpoints, lp_seg_out;
-    laserpoints.Read("/mnt/DataPartition/threed_modeling/Area_1_conferenceRoom_2_crop.laser");
+    //laserpoints.Read("/mnt/DataPartition/threed_modeling/Area_1_conferenceRoom_2_crop.laser");
     double  probability     = 0.05 ;    // Set probability to miss the largest primitive at each iteration.
     int     min_points      = 100  ;    // Detect shapes with at least n-min points.
     double  epsilon         = 0.02 ;    // Set maximum Euclidean distance between a point and a shape.
-    double  cluster_epsilon = 0.12;     //0.08 ;  // Set maximum Euclidean distance between points to be clustered.
+    double  cluster_epsilon = 0.08;     //0.08 ;  // Set maximum Euclidean distance between points to be clustered.
     double  normal_thresh   = 0.087;    // Set maximum normal deviation.// 0.9 < dot(surface_normal, point_normal);
     int     nb_neighbors    = 20   ;
     bool    estimate_normals = True ;
     Efficient_ransac::Parameters ransac_parameters;
     LaserPoints lp_segmented;
     set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-    //efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
-    efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+    efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+    //efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
 
     /// linetopology to off format
     ObjectPoints vertices;

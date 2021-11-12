@@ -1,0 +1,59 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "lidar2panorama",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "lidar2panorama::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-lidar2panorama-Debug-461536503e0f2c834931.json",
+					"name" : "lidar2panorama",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/shayan/MappingLibrary/Tools/sensor_fusion/build-lidar2panorama_kaios-Imported_Kit_42195a-Debug",
+		"source" : "/home/shayan/MappingLibrary/Tools/sensor_fusion/lidar2panorama_kaios"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}

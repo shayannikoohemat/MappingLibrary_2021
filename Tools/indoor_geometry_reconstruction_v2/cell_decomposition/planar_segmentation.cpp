@@ -16,6 +16,7 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Shape_detection/Efficient_RANSAC.h>
 #include <CGAL/Point_set_3/IO.h>
+#include <CGAL/draw_point_set_3.h>
 
 // for normal estimation
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -27,6 +28,9 @@
 
 // for mapping library
 #include "LaserPoints.h"
+
+// for reading asccii
+#include <boost/algorithm/string.hpp>
 
 
 // Type declarations.
@@ -94,8 +98,9 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
     Pwn_vector points;
     // Load point set from a file.
     std::ifstream stream(filename);
-    if (!stream || !CGAL::read_xyz_points(stream, std::back_inserter(points), CGAL::parameters::point_map(Point_map()).normal_map(Normal_map()))) {
-      std::cerr << "Error: cannot read the file!" << std::endl;
+    if (!stream || !CGAL::read_xyz_points(stream, std::back_inserter(points),
+                                          CGAL::parameters::point_map(Point_map()).normal_map(Normal_map()))) {
+        std::cerr << "Error: cannot read the file!" << std::endl;
       return EXIT_FAILURE;
     }
     std::cout << points.size() << " points" << std::endl;
@@ -215,7 +220,6 @@ int efficient_RANSAC_with_point_access(const char *filename, std::string outdir,
 }
 
 
-
 /// use this function for planar segmentation if you have laserpoints as input
 int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outdir,
                                        Efficient_ransac::Parameters ransac_parameters,
@@ -244,7 +248,7 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
     assert (success);
     /// if label
     FT_map label;
-    boost::tie (label, success) = point_set.add_property_map<FT> ("label", 1000000);
+    boost::tie (label, success) = point_set.add_property_map<FT> ("label");
     assert (success);
     point_set.reserve (laserpoints.size()); // For memory optimization
     Point_set::iterator pset_it = point_set.begin();
@@ -269,6 +273,12 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
         //}
     }
 
+    //print_point_set (point_set);
+    std::string outascii_filename = outdir + "/input.txt";
+    save_point_set(point_set, outascii_filename);
+    //CGAL::draw(point_set);
+
+
     std::cout << points.size() << " points" << std::endl;
 
     if(estimate_normals)
@@ -288,14 +298,14 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
                                                  normal_map(CGAL::Second_of_pair_property_map<Point_with_normal>()));
         // Optional: delete points with an unoriented normal
         // if you plan to call a reconstruction algorithm that expects oriented normals.
-        points.erase(unoriented_points_begin, points.end());
-        cout << points.size() << " points after erasing unoriented points!!!" << endl;
+        //points.erase(unoriented_points_begin, points.end());
+        //cout << points.size() << " points after erasing unoriented points!!!" << endl;
 
         // Saves point set with normals and properties.
         //char* output_filename = (char*) "/00_wNormals.xyz";
         /// NOTE: here I changed points to point_set to export
-        std::string output_filename = outdir + "/00_wNormals.xyz";
-        std::ofstream out(output_filename);
+        std::string outnormals_filename = outdir + "/00_wNormals.xyz";
+        std::ofstream out(outnormals_filename);
         out.precision(6);
         CGAL::write_xyz_points(out, points,
                 CGAL::parameters::point_map(CGAL::First_of_pair_property_map<Point_with_normal>()).
@@ -346,16 +356,18 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
   Efficient_ransac::Shape_range::iterator it = shapes.begin();
   int shape_counter=0;
   Pwn_vector::iterator pwn_it = points.begin();
+  Point_set::const_iterator pointset_it = point_set.begin();
   while (it != shapes.end()) {
     boost::shared_ptr<Efficient_ransac::Shape> shape = *it;
     /// Use Shape_base::info() to print the parameters of the detected shape.
-    //std::cout << (*it)->info();
+    std::cout << "shape info: " << (*it)->info() << std::endl;
     // Sums distances of points to the detected shapes.
     FT sum_distances = 0;
     /// Iterate through point indices assigned to each detected shape.
     std::vector<std::size_t>::const_iterator
     index_it = (*it)->indices_of_assigned_points().begin();
     while (index_it != (*it)->indices_of_assigned_points().end()) {
+        std::cout << "point index: "<< *index_it << std::endl;
       /// Retrieve point.
       const Point_with_normal& p = *(points.begin() + (*index_it));
       /// construct a laserpoint and set a segmentnumber to it and add it
@@ -368,13 +380,20 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
       point.SetNormal(Vector3D(p.second.x(), p.second.y(), p.second.z()));
       point.SetAttribute(SegmentNumberTag, shape_counter);
 
-//TODO: there is an error here in indexing (also becasue of erased points).
+//TODO: there is an error here in indexing (also because of erased points).
       // we try to add labels and color to the laserpoints from CGAL::point_set
       pwn_it = points.begin() + (*index_it);
+      pointset_it = point_set.begin() + (*index_it);
+      cout << "point: " << point;
+      cout << "point set: " << point_set.point(*pointset_it) << endl;
+
       if(pwn_it != points.end()){
           int pindex = std::distance( points.begin(), pwn_it ); // error is here
-          int plabel = label[pindex];
+          std::cout << pindex << std::endl;
+          std::cout << *pointset_it << std::endl;
+          int plabel = label[*pointset_it];//label[pindex];
           point.Label(plabel);
+          point.SetColour(color[*pointset_it][0], color[*pointset_it][1], color[*pointset_it][2]);
           lp_seg_out.push_back(point);
           //point.Print();
       }
@@ -398,6 +417,7 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
   return EXIT_SUCCESS;
 
 }
+
 
 /// this has a bug in populating points into a point_set in store_shapes()
 int basic_efficient_ransac (const char *filename, std::string outdir,
@@ -638,6 +658,140 @@ int store_shapes(std::string outdir, Efficient_ransac ransac, Pwn_vector points)
    //CGAL::write_xyz_point_set(outPointset, point_set); // doesnt save the segment number
 
     return EXIT_SUCCESS;
+}
+
+void print_point_set (const Point_set& point_set)
+{
+  Color_map color;
+  boost::tie (color, boost::tuples::ignore) = point_set.property_map<Color>("color");
+  FT_map intensity;
+  boost::tie (intensity, boost::tuples::ignore) =  point_set.property_map<FT>("intensity");
+  /// if label
+  FT_map label;
+  boost::tie (label, boost::tuples::ignore) = point_set.property_map<FT> ("label");
+
+  std::cerr << "Content of point set:" << std::endl;
+  for (Point_set::const_iterator it = point_set.begin(); it != point_set.end(); ++ it)
+  {
+    std::cerr << "* Point " << point_set.point(*it) // or point_set[it]
+              << " with color [" << (int)(color[*it][0])
+              << " " << (int)(color[*it][1])
+              << " " << (int)(color[*it][2])
+              << "] and intensity " << intensity[*it]
+              << " Label: " << label[*it]
+              << std::endl;
+  }
+}
+
+/// save pointset as ascii with xyz, color, intensity and label
+void save_point_set (const Point_set& point_set, std::string out_ascii)
+{
+  Color_map color;
+  boost::tie (color, boost::tuples::ignore) = point_set.property_map<Color>("color");
+  FT_map intensity;
+  boost::tie (intensity, boost::tuples::ignore) =  point_set.property_map<FT>("intensity");
+  /// if label
+  FT_map label;
+  boost::tie (label, boost::tuples::ignore) = point_set.property_map<FT> ("label");
+
+  /// open the file to write
+  std::ofstream outfile;
+  outfile.open(out_ascii, std::ios_base::app); // append mode
+  outfile << "x y z r g b intensity label" << std::endl;
+  for (Point_set::const_iterator it = point_set.begin(); it != point_set.end(); ++ it)
+  {
+
+    outfile   << point_set.point(*it) // or point_set[it]
+              << " " << (int)(color[*it][0])
+              << " " << (int)(color[*it][1])
+              << " " << (int)(color[*it][2])
+              << " " << intensity[*it]
+              << " " << label[*it]
+              << std::endl;
+
+  }
+  std::cout << point_set.size() << " points written to: " << out_ascii << std::endl;
+}
+
+/// read ascii conversion to cgal Point_set
+bool read_color_label_ascii(const string &ascii_filename, Point_set &point_set, int header_lines=1)
+{
+    /// prepare the point_set
+    point_set.add_normal_map();
+    Color black = {{0,0,0}};
+    bool success = false;
+    Color_map color;
+    boost::tie (color, success) = point_set.add_property_map<Color> ("color", black);
+    assert (success);
+    /// if intensity
+    FT_map intensity;
+    boost::tie (intensity, success) = point_set.add_property_map<FT> ("intensity", 0.);
+    assert (success);
+    /// if label
+    FT_map label;
+    boost::tie (label, success) = point_set.add_property_map<FT> ("label");
+    assert (success);
+    //point_set.reserve (laserpoints.size()); // For memory optimization
+
+    /// read the ascii file
+    ifstream fs;
+    fs.open (ascii_filename.c_str (), ios::binary);
+    if (!fs.is_open () || fs.fail ())
+    {
+        printf("Could not open file '%s'! Error : %s\n", ascii_filename.c_str (), strerror (errno));
+        fs.close ();
+        return (false);
+    }
+
+    string line;
+    vector<string> st;
+
+    /// skip headers
+    /// header_lines=11 // for PCD headers
+    for (int i=0; i<header_lines; i++){
+        getline (fs, line);
+    }
+
+    Point_set::iterator pset_it = point_set.begin();
+    while (!fs.eof ()) {
+        getline(fs, line);
+        // Ignore empty lines
+        if (line == "")
+            continue;
+
+        // Tokenize the line
+        boost::trim (line);
+        boost::split (st, line, boost::is_any_of ("\t\r , "), boost::token_compress_on);
+
+        if(st.size() < 3)
+            continue;
+
+        /// construct a cgal point3 object
+        Kernel::Point_3 point3( float (atof (st[0].c_str ())),
+                                float (atof (st[1].c_str ())),
+                                float (atof (st[2].c_str ())));
+        point_set.insert(point3);
+        /// NOTE: there is no check if there is color or not
+        int r, g, b;
+        r = atoi (st[3].c_str ());
+        g = atoi (st[4].c_str ());
+        b = atoi (st[5].c_str ());
+        color[*pset_it] = {{(unsigned char) r, (unsigned char) g, (unsigned char) b }};
+        /// reserve for normals (for later)
+        Kernel::Vector_3 normal3;
+        point_set.normal(*pset_it)=normal3;
+        /// if intensity uncomment this line and add the index of intensity column instead of ???
+        //intensity[*pset_it] = atoi (st[???].c_str ());
+
+        /// label
+        label[*pset_it] = atoi (st[6].c_str ());
+
+        pset_it++;
+    }
+    fs.close();
+
+
+    return(true);
 }
 
 
