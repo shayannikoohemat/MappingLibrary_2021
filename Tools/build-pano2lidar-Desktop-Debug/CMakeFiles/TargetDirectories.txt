@@ -1,3 +1,0 @@
-/home/shayan/MappingLibrary/Tools/build-pano2lidar-Desktop-Debug/CMakeFiles/rebuild_cache.dir
-/home/shayan/MappingLibrary/Tools/build-pano2lidar-Desktop-Debug/CMakeFiles/edit_cache.dir
-/home/shayan/MappingLibrary/Tools/build-pano2lidar-Desktop-Debug/CMakeFiles/lidar2panorama.dir
