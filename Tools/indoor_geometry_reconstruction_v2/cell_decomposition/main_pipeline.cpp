@@ -127,9 +127,9 @@ void room2cellsdecomposition(char *input_ascii, std::string data_dir) {
     bool    estimate_normals = True ;
     Efficient_ransac::Parameters ransac_parameters;
     LaserPoints lp_segmented;
-    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-    efficient_RANSAC_with_point_access (laserpoints, dump_dir, ransac_parameters,
-                                 nb_neighbors, lp_segmented, estimate_normals);
+    //set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
+    //efficient_RANSAC_with_point_access (laserpoints, dump_dir, ransac_parameters,
+    //                             nb_neighbors, lp_segmented, estimate_normals);
     /// write segmented laser file, the output laserfile will have: xyz, rgb, label, segment_num
     std::string lp_seg_path = lp_seg_dir + "/laser/" + filename + "_seg.laser" ;
     lp_segmented.Write(strcpy(char_arr ,lp_seg_path.c_str()), false);
@@ -267,69 +267,69 @@ void cell_decomposition_wrapper(std::string data_dir){
 
 
 // not finished
-void pipeline_v0(char* project_dir, std::string proj_dir_str){
-    /// flags to swith on/off process
-    bool do_threedbox_creation = False;
-    bool do_planar_segmentation = True;
+//void pipeline_v0(char* project_dir, std::string proj_dir_str){
+//    /// flags to swith on/off process
+//    bool do_threedbox_creation = False;
+//    bool do_planar_segmentation = True;
 
-    /// parameter settings (read this from a json file)
-    /// 1. threedbox:
-    double scalefactor = 1.1;
+//    /// parameter settings (read this from a json file)
+//    /// 1. threedbox:
+//    double scalefactor = 1.1;
 
-    /// 2. efficient ransac
-    double  probability     = 0.05 ;
-    int     min_points      = 500  ;
-    double  epsilon         = 0.02 ;
-    double  cluster_epsilon = 0.08 ;
-    double  normal_thresh   = 0.087;
-    int     nb_neighbors    = 20   ;
-    bool    estimate_normals = True ;
-
-
-    char* out_dir = "/mnt/DataPartition/threed_modeling/out_dir";
-    std::string out_dir_str = proj_dir_str + "/out_dir";
-
-    if(!boost::filesystem::create_directories(out_dir))
-        cerr << "Warning! direcotry: " << out_dir << " exists!" << endl;
-
-    std::string out_lpoints = proj_dir_str + "/out_lpoints";
-
-    if(!boost::filesystem::create_directories(out_lpoints))
-        cerr << "Warning! direcotry: " << out_lpoints << " exists!" << endl;
-
-    std::string input_data_laser = proj_dir_str + "/input_data/room.laser";
-
-    /// 1. create the 3d bbox
-    LaserPoints lpoints;
-    lpoints.Read(input_data_laser.c_str());
-    ObjectPoints threedbox_vertices; // output
-    LineTopologies threedbox_faces; // output
-    if(do_threedbox_creation){
-        bounding_cube(out_dir, lpoints, scalefactor, threedbox_vertices, threedbox_faces);
-        //strcpy (str_outdir, out_dir);
-        //threedbox_vertices.Write(strcat(str_outdir, "/threedbox_v.objpts"));
-        std::string threedbox_v_path = out_dir_str + "/threedbox_v.objpts";
-        threedbox_vertices.Write(threedbox_v_path.c_str());
-
-        //strcpy (str_outdir, out_dir);
-        //threedbox_faces.Write(strcat(str_outdir, "/threedbox_e.top"), false);
-        std::string threedbox_e_path = out_dir_str + "/threedbox_e.top";
-        threedbox_faces.Write(threedbox_e_path.c_str(), false);
-    }
+//    /// 2. efficient ransac
+//    double  probability     = 0.05 ;
+//    int     min_points      = 500  ;
+//    double  epsilon         = 0.02 ;
+//    double  cluster_epsilon = 0.08 ;
+//    double  normal_thresh   = 0.087;
+//    int     nb_neighbors    = 20   ;
+//    bool    estimate_normals = True ;
 
 
-    /// 2. efficinet ransac
-    LaserPoints lp_seg_out;
-    if(do_planar_segmentation){
-        char str_input[500];
-        Efficient_ransac::Parameters ransac_parameters;
-        set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-        char* input_data_ascii = (char*) strcat(strcpy (str_input, project_dir), "/input_data/room1_spacedel.txt");
-        efficient_RANSAC_with_point_access (input_data_ascii, out_lpoints, ransac_parameters,
-                                     nb_neighbors,lp_seg_out, estimate_normals);
-    }
+//    char* out_dir = "/mnt/DataPartition/threed_modeling/out_dir";
+//    std::string out_dir_str = proj_dir_str + "/out_dir";
 
-   // std::string output_seg_laser = outdir + "/lp_segmented.laser";
-    //lp_segmented.Write(output_seg_laser.c_str(), false);
+//    if(!boost::filesystem::create_directories(out_dir))
+//        cerr << "Warning! direcotry: " << out_dir << " exists!" << endl;
 
-}
+//    std::string out_lpoints = proj_dir_str + "/out_lpoints";
+
+//    if(!boost::filesystem::create_directories(out_lpoints))
+//        cerr << "Warning! direcotry: " << out_lpoints << " exists!" << endl;
+
+//    std::string input_data_laser = proj_dir_str + "/input_data/room.laser";
+
+//    /// 1. create the 3d bbox
+//    LaserPoints lpoints;
+//    lpoints.Read(input_data_laser.c_str());
+//    ObjectPoints threedbox_vertices; // output
+//    LineTopologies threedbox_faces; // output
+//    if(do_threedbox_creation){
+//        bounding_cube(out_dir, lpoints, scalefactor, threedbox_vertices, threedbox_faces);
+//        //strcpy (str_outdir, out_dir);
+//        //threedbox_vertices.Write(strcat(str_outdir, "/threedbox_v.objpts"));
+//        std::string threedbox_v_path = out_dir_str + "/threedbox_v.objpts";
+//        threedbox_vertices.Write(threedbox_v_path.c_str());
+
+//        //strcpy (str_outdir, out_dir);
+//        //threedbox_faces.Write(strcat(str_outdir, "/threedbox_e.top"), false);
+//        std::string threedbox_e_path = out_dir_str + "/threedbox_e.top";
+//        threedbox_faces.Write(threedbox_e_path.c_str(), false);
+//    }
+
+
+//    /// 2. efficinet ransac
+//    LaserPoints lp_seg_out;
+//    if(do_planar_segmentation){
+//        char str_input[500];
+//        Efficient_ransac::Parameters ransac_parameters;
+//        set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
+//        char* input_data_ascii = (char*) strcat(strcpy (str_input, project_dir), "/input_data/room1_spacedel.txt");
+//        efficient_RANSAC_with_point_access (input_data_ascii, out_lpoints, ransac_parameters,
+//                                     nb_neighbors,lp_seg_out, estimate_normals);
+//    }
+
+//   // std::string output_seg_laser = outdir + "/lp_segmented.laser";
+//    //lp_segmented.Write(output_seg_laser.c_str(), false);
+
+//}

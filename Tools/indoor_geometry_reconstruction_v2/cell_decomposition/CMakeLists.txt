@@ -59,7 +59,8 @@ set(SOURCE_FILES main.cpp
         sample_laserpoints.cpp
         intersecting_clippers.cpp
         face_selection.cpp
-        planar_segmentation.cpp
+        #planar_segmentation.cpp
+        planar_ransac.cpp
         alpha_shape.cpp
         occupancy_grid.cpp
         ../utils/utils.h

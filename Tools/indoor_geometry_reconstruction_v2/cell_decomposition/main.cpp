@@ -6,11 +6,12 @@
 #include "face_selection.h"
 #include "../utils/utils.h"
 #include "../visualization_tools/visualization_tools.h"
-#include "planar_segmentation.h"
 #include "sample_laserpoints.h"
 #include "main_pipeline.h"
 #include <boost/filesystem.hpp>
 #include "alpha_shape.h"
+//#include "planar_segmentation.h" (use planar_ransac.h which is newer)
+#include "planar_ransac.h"
 
 
 LaserPoints read_ascii(char *ascii_file);
@@ -140,25 +141,42 @@ int main() {
 //    new_vertices.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_vertices.objpts");
 //    new_faces.Write("/mnt/DataPartition/CGI_UT/cell_decomposition/out/new_faces.top", false);
 
-    /// efficient ransac
-    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
-    char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2.txt";
-    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
-    //Efficient_ransac::Parameters parameters;
-    LaserPoints laserpoints, lp_seg_out;
-    //laserpoints.Read("/mnt/DataPartition/threed_modeling/Area_1_conferenceRoom_2_crop.laser");
+    /// efficient ransac (defiend in planar_segmentation.h)
+//    //char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/room1_crop_spacedel.txt";
+//    char *input_ascii = "/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2_sub.xyz";
+//    char *outdir = "/mnt/DataPartition/threed_modeling/dump";
+//    //Efficient_ransac::Parameters parameters;
+//    LaserPoints laserpoints, lp_seg_out;
+//    //laserpoints.Read("/mnt/DataPartition/threed_modeling/Area_1_conferenceRoom_2.laser");
+//    double  probability     = 0.05 ;    // Set probability to miss the largest primitive at each iteration.
+//    int     min_points      = 100  ;    // Detect shapes with at least n-min points.
+//    double  epsilon         = 0.02 ;    // Set maximum Euclidean distance between a point and a shape.(increase this to get thicker planar shapes)
+//    double  cluster_epsilon = 0.08;     //0.08 ;  // Set maximum Euclidean distance between points to be clustered.
+//    double  normal_thresh   = 0.087;    // Set maximum normal deviation.// 0.9 < dot(surface_normal, point_normal);
+//    int     nb_neighbors    = 20   ;
+//    bool    estimate_normals = True ;
+//    Efficient_ransac::Parameters ransac_parameters;
+//    LaserPoints lp_segmented;
+//    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
+//    efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+//    //efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+
+    /// use the new planar_ransac with reading labels and colors (defined in planar_ransac.h)
+    std::string ascii_in="/mnt/DataPartition/threed_modeling/input_data/Area_1_conferenceRoom_2_sub.txt";
+    std::string ascii_out="/mnt/DataPartition/threed_modeling/out/points_normal_segment.txt";
+    LaserPoints lp_segmented;
+    //calculate_normal_wrapper(ascii_in, ascii_out);
     double  probability     = 0.05 ;    // Set probability to miss the largest primitive at each iteration.
     int     min_points      = 100  ;    // Detect shapes with at least n-min points.
     double  epsilon         = 0.02 ;    // Set maximum Euclidean distance between a point and a shape.
     double  cluster_epsilon = 0.08;     //0.08 ;  // Set maximum Euclidean distance between points to be clustered.
     double  normal_thresh   = 0.087;    // Set maximum normal deviation.// 0.9 < dot(surface_normal, point_normal);
-    int     nb_neighbors    = 20   ;
-    bool    estimate_normals = True ;
     Efficient_ransac::Parameters ransac_parameters;
-    LaserPoints lp_segmented;
-    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh); // parameters for S3DIS
-    efficient_RANSAC_with_point_access (input_ascii, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
-    //efficient_RANSAC_with_point_access (laserpoints, outdir, ransac_parameters, nb_neighbors, lp_segmented, estimate_normals);
+    set_parameters(ransac_parameters, probability, min_points, epsilon, cluster_epsilon, normal_thresh);
+    Point_set point_set;
+    planar_ransac(ascii_in, ransac_parameters, point_set, lp_segmented);
+    save_point_set(point_set, ascii_out);
+    lp_segmented.Write("/mnt/DataPartition/threed_modeling/out/lp_segmented.laser", false);
 
     /// linetopology to off format
     ObjectPoints vertices;

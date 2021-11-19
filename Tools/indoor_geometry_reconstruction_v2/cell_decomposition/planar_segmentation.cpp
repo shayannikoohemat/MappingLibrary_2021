@@ -367,36 +367,35 @@ int efficient_RANSAC_with_point_access(LaserPoints laserpoints, std::string outd
     std::vector<std::size_t>::const_iterator
     index_it = (*it)->indices_of_assigned_points().begin();
     while (index_it != (*it)->indices_of_assigned_points().end()) {
-        std::cout << "point index: "<< *index_it << std::endl;
+        //std::cout << "point index: "<< *index_it << std::endl;
       /// Retrieve point.
       const Point_with_normal& p = *(points.begin() + (*index_it));
       /// construct a laserpoint and set a segmentnumber to it and add it
       /// OR retireve the orginal laser point (which has other attributes like color and label)
       /// to laserpoints class in mapping library
       LaserPoint point(p.first.x(), p.first.y(), p.first.z());
-      //point.X() = p.first.x();
-      //point.Y() = p.first.y();
-      //point.Z() = p.first.z();
       point.SetNormal(Vector3D(p.second.x(), p.second.y(), p.second.z()));
       point.SetAttribute(SegmentNumberTag, shape_counter);
+      lp_seg_out.push_back(point);
 
-//TODO: there is an error here in indexing (also because of erased points).
+//TODO: there is an error here in indexing.
       // we try to add labels and color to the laserpoints from CGAL::point_set
-      pwn_it = points.begin() + (*index_it);
-      pointset_it = point_set.begin() + (*index_it);
-      cout << "point: " << point;
-      cout << "point set: " << point_set.point(*pointset_it) << endl;
+      // a better solution is to use point_set with normals from the begininig (see planar_ransac.cpp)
+//      pwn_it = points.begin() + (*index_it);
+//      pointset_it = point_set.begin() + (*index_it);
+//      cout << "point: " << point;
+//      cout << "point set: " << point_set.point(*pointset_it) << endl;
 
-      if(pwn_it != points.end()){
-          int pindex = std::distance( points.begin(), pwn_it ); // error is here
-          std::cout << pindex << std::endl;
-          std::cout << *pointset_it << std::endl;
-          int plabel = label[*pointset_it];//label[pindex];
-          point.Label(plabel);
-          point.SetColour(color[*pointset_it][0], color[*pointset_it][1], color[*pointset_it][2]);
-          lp_seg_out.push_back(point);
-          //point.Print();
-      }
+//      if(pwn_it != points.end()){
+//          int pindex = std::distance( points.begin(), pwn_it ); // error is here
+//          std::cout << pindex << std::endl;
+//          std::cout << *pointset_it << std::endl;
+//          int plabel = label[*pointset_it];//label[pindex];
+//          point.Label(plabel);
+//          point.SetColour(color[*pointset_it][0], color[*pointset_it][1], color[*pointset_it][2]);
+//          lp_seg_out.push_back(point);
+//          //point.Print();
+//      }
 
 
       /// Adds Euclidean distance between point and shape.
@@ -714,7 +713,7 @@ void save_point_set (const Point_set& point_set, std::string out_ascii)
 }
 
 /// read ascii conversion to cgal Point_set
-bool read_color_label_ascii(const string &ascii_filename, Point_set &point_set, int header_lines=1)
+bool read_color_label_ascii(const string &ascii_filename, Point_set &point_set, int header_lines)
 {
     /// prepare the point_set
     point_set.add_normal_map();
